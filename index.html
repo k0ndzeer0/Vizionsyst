@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestão Empresarial</title>
+    <title id="pageTitle">Sistema de Gestão Empresarial</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -159,15 +159,91 @@
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             padding: 24px;
             overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            margin-right: 16px;
         }
 
         .sidebar-logo {
-            color: var(--primary);
-            font-size: 24px;
-            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
             margin-bottom: 32px;
             padding-bottom: 24px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+        }
+
+        .logo-image {
+            max-width: 100%;
+            max-height: 120px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+        }
+
+        .logo-text {
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .sidebar-logo:has(.logo-image) .logo-text {
+            font-size: 20px;
+        }
+
+        /* Quando só tem logo (sem texto), centralizar */
+        .sidebar-logo:has(.logo-image:not([style*="display: none"])):has(.logo-text[style*="display: none"]) {
+            justify-content: center;
+        }
+
+        .login-logo-container {
+            text-align: center;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .login-logo {
+            max-width: 280px;
+            max-height: 160px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 16px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .menu-item {
@@ -207,6 +283,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .header-title {
@@ -218,6 +296,7 @@
             display: flex;
             align-items: center;
             gap: 16px;
+            flex-wrap: wrap;
         }
 
         .user-info {
@@ -419,6 +498,40 @@
             color: #ef4444;
         }
 
+        /* Badges de Prioridade */
+        .badge-prioridade-baixa {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+        }
+
+        .badge-prioridade-media {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .badge-prioridade-alta {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .badge-prioridade-urgente {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        /* Tags */
+        .tag-badge {
+            background: rgba(255, 102, 0, 0.2);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
         .btn-action {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -494,6 +607,7 @@
             max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
+            margin: 20px;
         }
 
         .modal-header {
@@ -709,9 +823,12 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
             .sidebar {
                 transform: translateX(-100%);
-                transition: transform 0.3s;
             }
 
             .sidebar.open {
@@ -720,10 +837,201 @@
 
             .main-content {
                 margin-left: 0;
+                padding: 16px;
+            }
+
+            .header {
+                padding: 12px 16px;
+                margin: -16px -16px 16px -16px;
+            }
+
+            .header-title {
+                font-size: 18px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+
+            .btn-logout {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .page-subtitle {
+                font-size: 14px;
             }
 
             .cards-grid {
                 grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .card-value {
+                font-size: 20px;
+            }
+
+            .section-card {
+                padding: 16px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+
+            .search-bar {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table {
+                min-width: 600px;
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .btn-action {
+                padding: 4px 8px;
+                font-size: 11px;
+                margin-right: 4px;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+                max-height: 95vh;
+                margin: 10px;
+            }
+
+            .modal-title {
+                font-size: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .details-section {
+                margin-bottom: 20px;
+                padding-bottom: 20px;
+            }
+
+            .details-section-title {
+                font-size: 16px;
+            }
+
+            .modal-actions {
+                flex-direction: column-reverse;
+                gap: 8px;
+            }
+
+            .modal-actions .btn {
+                width: 100%;
+            }
+
+            .servicos-list {
+                gap: 6px;
+            }
+
+            .servico-badge, .tag-badge {
+                font-size: 11px;
+                padding: 3px 10px;
+            }
+
+            .login-box {
+                padding: 24px;
+            }
+
+            .login-title {
+                font-size: 28px;
+            }
+
+            .login-logo {
+                max-width: 100px;
+                max-height: 100px;
+            }
+
+            .logo-image {
+                max-width: 32px;
+                max-height: 32px;
+            }
+
+            .sidebar-logo:has(.logo-image) .logo-text {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 10px 12px;
+                margin: -12px -12px 12px -12px;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+
+            .card {
+                padding: 12px;
+            }
+
+            .card-value {
+                font-size: 18px;
+            }
+
+            .section-card {
+                padding: 12px;
+            }
+
+            .modal-content {
+                padding: 16px;
+            }
+
+            .form-input, .btn {
+                font-size: 14px;
+            }
+
+            .login-box {
+                padding: 20px;
+            }
+
+            .login-title {
+                font-size: 24px;
             }
         }
     </style>
@@ -732,7 +1040,10 @@
     <!-- Login Page -->
     <div id="loginPage" class="login-container">
         <div class="login-box">
-            <h1 class="login-title">Sistema de Gestão</h1>
+            <div class="login-logo-container">
+                <img id="loginLogo" class="login-logo" src="" alt="Logo" style="display: none;">
+            </div>
+            <h1 class="login-title" id="loginTitle">Sistema de Gestão</h1>
             <p class="login-subtitle">Faça login para continuar</p>
             
             <div id="errorMessage" class="error-message"></div>
@@ -769,29 +1080,33 @@
 
     <!-- Dashboard -->
     <div id="dashboardPage" class="dashboard-container">
-        <div class="sidebar">
-            <div class="sidebar-logo">Gestão</div>
-            <a href="#" class="menu-item active" data-page="dashboard">
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <img id="sidebarLogo" class="logo-image" src="" alt="Logo" style="display: none;">
+                <span class="logo-text" id="sidebarLogoText">Gestão</span>
+            </div>
+            <a href="#" class="menu-item active" data-page="dashboard" onclick="closeSidebarMobile()">
                 <span>📊</span>
                 <span>Dashboard</span>
             </a>
-            <a href="#" class="menu-item" data-page="clientes">
+            <a href="#" class="menu-item" data-page="clientes" onclick="closeSidebarMobile()">
                 <span>👥</span>
                 <span>Clientes</span>
             </a>
-            <a href="#" class="menu-item" data-page="projetos">
+            <a href="#" class="menu-item" data-page="projetos" onclick="closeSidebarMobile()">
                 <span>📁</span>
                 <span>Projetos</span>
             </a>
-            <a href="#" class="menu-item" data-page="orcamentos">
+            <a href="#" class="menu-item" data-page="orcamentos" onclick="closeSidebarMobile()">
                 <span>📄</span>
                 <span>Orçamentos</span>
             </a>
-            <a href="#" class="menu-item" data-page="financeiro">
+            <a href="#" class="menu-item" data-page="financeiro" onclick="closeSidebarMobile()">
                 <span>💰</span>
                 <span>Financeiro</span>
             </a>
-            <a href="#" class="menu-item" data-page="plataformas">
+            <a href="#" class="menu-item" data-page="plataformas" onclick="closeSidebarMobile()">
                 <span>🔑</span>
                 <span>Plataformas</span>
             </a>
@@ -799,7 +1114,10 @@
 
         <div class="main-content">
             <div class="header">
-                <h2 class="header-title">Dashboard</h2>
+                <div style="display: flex; align-items: center;">
+                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <h2 class="header-title">Dashboard</h2>
+                </div>
                 <div class="header-user">
                     <div class="user-info">
                         <div class="user-name" id="userName">Usuário</div>
@@ -1356,6 +1674,25 @@
 
                 <div class="form-row">
                     <div class="form-group">
+                        <label class="form-label">Prioridade</label>
+                        <select id="projetoPrioridade" class="form-input">
+                            <option value="">Selecione a prioridade</option>
+                            <option value="baixa">Baixa</option>
+                            <option value="media">Média</option>
+                            <option value="alta">Alta</option>
+                            <option value="urgente">Urgente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Responsável</label>
+                        <select id="projetoResponsavelId" class="form-input">
+                            <option value="">Selecione um responsável</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
                         <label class="form-label">Data de Início</label>
                         <input type="date" id="projetoDataInicio" class="form-input">
                     </div>
@@ -1374,6 +1711,12 @@
                         <label class="form-label">Valor do Projeto (R$)</label>
                         <input type="number" id="projetoValor" class="form-input" step="0.01" min="0" placeholder="0.00">
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tags/Categorias</label>
+                    <input type="text" id="projetoTags" class="form-input" placeholder="Ex: urgente, site, e-commerce (separadas por vírgula)">
+                    <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">Separe as tags por vírgula</small>
                 </div>
 
                 <div class="form-group">
@@ -1599,6 +1942,16 @@
             }).format(value);
         }
 
+        // Mapeamento de títulos das páginas
+        const pageTitles = {
+            'dashboard': 'Dashboard',
+            'clientes': 'Clientes',
+            'projetos': 'Projetos',
+            'orcamentos': 'Orçamentos',
+            'financeiro': 'Financeiro',
+            'plataformas': 'Plataformas'
+        };
+
         // Navegação do menu
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', (e) => {
@@ -1616,6 +1969,13 @@
                 const page = item.dataset.page;
                 const contentId = page + 'Content';
                 const content = document.getElementById(contentId);
+                
+                // Atualizar título do header
+                const headerTitle = document.querySelector('.header-title');
+                if (headerTitle && pageTitles[page]) {
+                    headerTitle.textContent = pageTitles[page];
+                }
+                
                 if (content) {
                     content.style.display = 'block';
                     
@@ -2166,10 +2526,27 @@
                     console.warn('Erro ao carregar clientes para projetos:', e);
                 }
 
+                // Buscar usuários (responsáveis)
+                let usuariosMap = {};
+                try {
+                    const { data: usuariosData, error: usuariosError } = await supabase
+                        .from('usuarios')
+                        .select('id, nome');
+
+                    if (!usuariosError && usuariosData) {
+                        usuariosData.forEach(usuario => {
+                            usuariosMap[usuario.id] = usuario;
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar usuários para projetos:', e);
+                }
+
                 // Combinar dados
                 allProjetos = (projetosData || []).map(projeto => ({
                     ...projeto,
-                    cliente: clientesMap[projeto.cliente_id] || null
+                    cliente: clientesMap[projeto.cliente_id] || null,
+                    responsavel: usuariosMap[projeto.responsavel_id] || null
                 }));
 
                 filteredProjetos = [...allProjetos];
@@ -2297,6 +2674,40 @@
             }
         }
 
+        // Carregar usuários no select de responsável
+        async function loadUsuariosForSelect() {
+            try {
+                const { data, error } = await supabase
+                    .from('usuarios')
+                    .select('id, nome')
+                    .eq('ativo', true)
+                    .order('nome', { ascending: true });
+
+                if (error) throw error;
+
+                const select = document.getElementById('projetoResponsavelId');
+                const currentValue = select.value; // Preservar valor atual
+                select.innerHTML = '<option value="">Selecione um responsável</option>';
+                
+                (data || []).forEach(usuario => {
+                    const option = document.createElement('option');
+                    option.value = usuario.id;
+                    option.textContent = usuario.nome;
+                    select.appendChild(option);
+                });
+                
+                // Restaurar valor se existir
+                if (currentValue) {
+                    select.value = currentValue;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar usuários:', error);
+                // Se não conseguir carregar, apenas limpa o select
+                const select = document.getElementById('projetoResponsavelId');
+                select.innerHTML = '<option value="">Erro ao carregar usuários</option>';
+            }
+        }
+
         // Abrir modal de projeto (novo)
         async function openProjetoModal() {
             document.getElementById('projetoModalTitle').textContent = 'Novo Projeto';
@@ -2307,8 +2718,11 @@
             const hoje = new Date().toISOString().split('T')[0];
             document.getElementById('projetoDataInicio').value = hoje;
             
-            // Carregar clientes no select
-            await loadClientesForSelect();
+            // Carregar clientes e usuários nos selects
+            await Promise.all([
+                loadClientesForSelect(),
+                loadUsuariosForSelect()
+            ]);
             
             document.getElementById('projetoModal').classList.add('active');
         }
@@ -2327,16 +2741,31 @@
             document.getElementById('projetoId').value = projeto.id;
             document.getElementById('projetoNome').value = projeto.nome || '';
             document.getElementById('projetoStatus').value = projeto.status || 'planejamento';
+            document.getElementById('projetoPrioridade').value = projeto.prioridade || '';
             document.getElementById('projetoDataInicio').value = projeto.data_inicio ? projeto.data_inicio.split('T')[0] : '';
             document.getElementById('projetoDataPrevista').value = projeto.data_prevista ? projeto.data_prevista.split('T')[0] : '';
             document.getElementById('projetoDataConclusao').value = projeto.data_conclusao ? projeto.data_conclusao.split('T')[0] : '';
             document.getElementById('projetoValor').value = projeto.valor || '';
             document.getElementById('projetoDescricao').value = projeto.descricao || '';
             document.getElementById('projetoObservacoes').value = projeto.observacoes || '';
+            
+            // Tags - converter array para string separada por vírgula
+            if (projeto.tags && Array.isArray(projeto.tags)) {
+                document.getElementById('projetoTags').value = projeto.tags.join(', ');
+            } else if (typeof projeto.tags === 'string') {
+                document.getElementById('projetoTags').value = projeto.tags;
+            } else {
+                document.getElementById('projetoTags').value = '';
+            }
 
-            // Carregar clientes e selecionar o cliente do projeto
-            await loadClientesForSelect();
+            // Carregar clientes e usuários, depois selecionar valores
+            await Promise.all([
+                loadClientesForSelect(),
+                loadUsuariosForSelect()
+            ]);
+            
             document.getElementById('projetoClienteId').value = projeto.cliente_id || '';
+            document.getElementById('projetoResponsavelId').value = projeto.responsavel_id || '';
 
             document.getElementById('projetoModal').classList.add('active');
         }
@@ -2355,6 +2784,12 @@
             };
 
             // Adicionar campos opcionais apenas se preenchidos
+            const prioridade = document.getElementById('projetoPrioridade').value;
+            if (prioridade) projetoData.prioridade = prioridade;
+
+            const responsavelId = document.getElementById('projetoResponsavelId').value;
+            if (responsavelId) projetoData.responsavel_id = responsavelId;
+
             const dataInicio = document.getElementById('projetoDataInicio').value;
             if (dataInicio) projetoData.data_inicio = dataInicio;
 
@@ -2367,6 +2802,13 @@
 
             const valor = document.getElementById('projetoValor').value;
             if (valor) projetoData.valor = parseFloat(valor);
+
+            // Tags - processar string separada por vírgula e converter para array
+            const tagsInput = document.getElementById('projetoTags').value.trim();
+            if (tagsInput) {
+                const tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+                projetoData.tags = tagsArray;
+            }
 
             const descricao = document.getElementById('projetoDescricao').value.trim();
             if (descricao) projetoData.descricao = descricao;
@@ -2490,6 +2932,36 @@
 
             const status = statusMap[projeto.status] || { label: projeto.status, class: 'badge-planejamento' };
 
+            // Prioridade
+            const prioridadeMap = {
+                'baixa': { label: 'Baixa', class: 'badge-prioridade-baixa' },
+                'media': { label: 'Média', class: 'badge-prioridade-media' },
+                'alta': { label: 'Alta', class: 'badge-prioridade-alta' },
+                'urgente': { label: 'Urgente', class: 'badge-prioridade-urgente' }
+            };
+            const prioridade = prioridadeMap[projeto.prioridade] || null;
+
+            // Responsável
+            const responsavel = projeto.responsavel || {};
+            const responsavelNome = responsavel.nome || '-';
+
+            // Tags
+            let tagsHtml = '<span class="details-value empty">Nenhuma tag</span>';
+            if (projeto.tags) {
+                let tagsArray = [];
+                if (Array.isArray(projeto.tags)) {
+                    tagsArray = projeto.tags;
+                } else if (typeof projeto.tags === 'string') {
+                    tagsArray = projeto.tags.split(',').map(t => t.trim()).filter(t => t.length > 0);
+                }
+                
+                if (tagsArray.length > 0) {
+                    tagsHtml = tagsArray.map(tag => 
+                        `<span class="tag-badge">${tag}</span>`
+                    ).join('');
+                }
+            }
+
             // Helper para exibir valor ou "-"
             const displayValue = (value) => value || '<span class="empty">-</span>';
 
@@ -2514,9 +2986,26 @@
                             </div>
                         </div>
                         <div class="details-item">
+                            <div class="details-label">Prioridade</div>
+                            <div class="details-value">
+                                ${prioridade ? `<span class="badge ${prioridade.class}">${prioridade.label}</span>` : '<span class="empty">-</span>'}
+                            </div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Responsável</div>
+                            <div class="details-value">${responsavelNome}</div>
+                        </div>
+                        <div class="details-item">
                             <div class="details-label">Valor do Projeto</div>
                             <div class="details-value">${formatCurrency(projeto.valor)}</div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-section-title">Tags/Categorias</div>
+                    <div class="servicos-list">
+                        ${tagsHtml}
                     </div>
                 </div>
 
@@ -2561,7 +3050,96 @@
             document.getElementById('projetoDetailsModal').classList.remove('active');
         }
 
+        // Funções para menu mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeSidebarMobile() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+
+        // Fechar sidebar ao clicar no overlay
+        document.getElementById('sidebarOverlay').addEventListener('click', closeSidebarMobile);
+
+        // Fechar sidebar ao redimensionar para desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                closeSidebarMobile();
+            }
+        });
+
+        // ========== CONFIGURAÇÃO DA PLATAFORMA ==========
+        // Configure aqui o nome e logo da sua plataforma
+        
+        const PLATAFORMA_CONFIG = {
+            nome: 'Vizion Hub',  // Nome da plataforma
+            emoji: '',  // Emoji ao lado do nome (deixar vazio para não exibir)
+            logoUrl: 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/Logotipo%20Banco%20Moderno%20Preto,%20Branco%20e%20Amarelo%20(1)%20(2).png',  // Logo na página de login
+            sidebarLogoUrl: 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/VizionHUB.png',  // Logo no sidebar
+        };
+
+        // Aplicar configurações
+        function aplicarConfiguracaoPlataforma() {
+            // Atualizar nome (com emoji apenas se fornecido)
+            const nomeCompleto = PLATAFORMA_CONFIG.emoji ? `${PLATAFORMA_CONFIG.emoji} ${PLATAFORMA_CONFIG.nome}` : PLATAFORMA_CONFIG.nome;
+            
+            if (PLATAFORMA_CONFIG.nome) {
+                // Se tiver logo, ocultar o título no login (só mostrar logo)
+                if (PLATAFORMA_CONFIG.logoUrl) {
+                    document.getElementById('loginTitle').style.display = 'none';
+                } else {
+                    document.getElementById('loginTitle').textContent = nomeCompleto;
+                    document.getElementById('loginTitle').style.display = 'block';
+                }
+                
+                document.getElementById('sidebarLogoText').textContent = nomeCompleto;
+                document.getElementById('pageTitle').textContent = PLATAFORMA_CONFIG.nome + ' - Empresarial';
+            }
+
+            // Aplicar logo na página de login
+            if (PLATAFORMA_CONFIG.logoUrl) {
+                const loginLogo = document.getElementById('loginLogo');
+                
+                if (loginLogo) {
+                    loginLogo.src = PLATAFORMA_CONFIG.logoUrl;
+                    loginLogo.style.display = 'block';
+                    loginLogo.onerror = function() {
+                        this.style.display = 'none';
+                        console.warn('Erro ao carregar logo do login');
+                    };
+                }
+            }
+
+            // Aplicar logo no sidebar
+            if (PLATAFORMA_CONFIG.sidebarLogoUrl) {
+                const sidebarLogo = document.getElementById('sidebarLogo');
+                const sidebarLogoText = document.getElementById('sidebarLogoText');
+                
+                if (sidebarLogo) {
+                    sidebarLogo.src = PLATAFORMA_CONFIG.sidebarLogoUrl;
+                    sidebarLogo.style.display = 'block';
+                    sidebarLogo.onerror = function() {
+                        this.style.display = 'none';
+                        console.warn('Erro ao carregar logo do sidebar');
+                    };
+                }
+                
+                // Ocultar o texto quando tiver logo
+                if (sidebarLogoText) {
+                    sidebarLogoText.style.display = 'none';
+                }
+            }
+        }
+
         // Verificar autenticação ao carregar
+        aplicarConfiguracaoPlataforma();
         checkAuth();
     </script>
 </body>
