@@ -4313,10 +4313,9 @@
                 if (itens.length > 0) {
                     // Definir posições das colunas de forma clara
                     const colDescricao = margin + 2;
-                    const colQtd = margin + 70;
-                    const colValorUnit = margin + 90;
-                    const colDesconto = margin + 125;
-                    const colSubtotal = pageWidth - margin - 40;
+                    const colQtd = margin + 65;
+                    const colValorUnit = margin + 85;
+                    const colDesconto = margin + 120;
                     
                     // Cabeçalho da tabela
                     doc.setFillColor(240, 240, 240);
@@ -4329,7 +4328,6 @@
                     doc.text('Qtd', colQtd, y);
                     doc.text('Valor Unit.', colValorUnit, y);
                     doc.text('Desconto', colDesconto, y);
-                    doc.text('Subtotal', colSubtotal, y);
                     y += 8;
 
                     let subtotal = 0;
@@ -4351,7 +4349,7 @@
                         
                         // Descrição (pode quebrar linha se muito longa)
                         const descricao = item.descricao || '-';
-                        const descLines = doc.splitTextToSize(descricao, 55);
+                        const descLines = doc.splitTextToSize(descricao, 60);
                         const firstLineY = y;
                         doc.text(descLines, colDescricao, firstLineY);
                         
@@ -4365,9 +4363,6 @@
                         // Desconto
                         const desconto = item.desconto_percent || 0;
                         doc.text(desconto + '%', colDesconto, firstLineY);
-                        
-                        // Subtotal
-                        doc.text(formatCurrency(item.subtotal || 0), colSubtotal, firstLineY);
                         
                         subtotal += item.subtotal || 0;
                         y += Math.max(6, descLines.length * 6);
