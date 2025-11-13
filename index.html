@@ -4313,10 +4313,10 @@
                 if (itens.length > 0) {
                     // Definir posições das colunas de forma clara
                     const colDescricao = margin + 2;
-                    const colQtd = margin + 75;
-                    const colValorUnit = margin + 95;
-                    const colDesconto = margin + 130;
-                    const colSubtotal = pageWidth - margin - 35;
+                    const colQtd = margin + 70;
+                    const colValorUnit = margin + 90;
+                    const colDesconto = margin + 125;
+                    const colSubtotal = pageWidth - margin - 40;
                     
                     // Cabeçalho da tabela
                     doc.setFillColor(240, 240, 240);
@@ -4328,7 +4328,7 @@
                     doc.text('Descrição', colDescricao, y);
                     doc.text('Qtd', colQtd, y);
                     doc.text('Valor Unit.', colValorUnit, y);
-                    doc.text('Desc. %', colDesconto, y);
+                    doc.text('Desconto', colDesconto, y);
                     doc.text('Subtotal', colSubtotal, y);
                     y += 8;
 
@@ -4351,7 +4351,7 @@
                         
                         // Descrição (pode quebrar linha se muito longa)
                         const descricao = item.descricao || '-';
-                        const descLines = doc.splitTextToSize(descricao, 60);
+                        const descLines = doc.splitTextToSize(descricao, 55);
                         const firstLineY = y;
                         doc.text(descLines, colDescricao, firstLineY);
                         
@@ -4437,6 +4437,7 @@
 
                 // ========== VALIDADE E FORMA DE PAGAMENTO ==========
                 // Verificar se há espaço suficiente na página (condições ~35px + rodapé ~20px = 55px)
+                // Se não houver espaço, quebrar para nova página
                 if (y > pageHeight - 55) {
                     doc.addPage();
                     y = margin + 10;
@@ -4444,38 +4445,43 @@
                 
                 y += 5;
                 doc.setFillColor(250, 250, 250);
-                const condicoesHeight = 30;
+                const condicoesHeight = 35;
                 doc.rect(margin, y, pageWidth - (margin * 2), condicoesHeight, 'F');
                 
                 doc.setFontSize(11);
                 doc.setFont(undefined, 'bold');
                 doc.setTextColor(0, 0, 0);
-                doc.text('CONDIÇÕES COMERCIAIS', margin + 3, y + 7);
+                doc.text('CONDIÇÕES COMERCIAIS', margin + 3, y + 8);
                 
                 doc.setFont(undefined, 'normal');
                 doc.setFontSize(9);
                 doc.setTextColor(60, 60, 60);
                 
-                let condY = y + 15;
+                let condY = y + 16;
                 doc.text(`Validade da proposta: ${orcamento.validade_dias || 30} dias, sujeita à disponibilidade de recursos.`, margin + 3, condY);
-                condY += 5;
+                condY += 6;
                 
                 doc.text('Forma de pagamento: A combinar, sujeita à aprovação mútua.', margin + 3, condY);
-                condY += 5;
+                condY += 6;
                 
                 doc.text('Prazo de entrega: A combinar.', margin + 3, condY);
-                condY += 5;
+                condY += 6;
                 
                 doc.text('Condições especiais: Conforme negociação.', margin + 3, condY);
                 
-                y += condicoesHeight + 3;
+                y += condicoesHeight + 5;
 
                 // ========== RODAPÉ COM TERMOS ==========
-                const footerY = pageHeight - 50;
+                // Verificar se há espaço para o rodapé (termos + contato = ~25px)
+                if (y > pageHeight - 25) {
+                    doc.addPage();
+                    y = margin + 10;
+                }
                 
                 // Linha divisória antes do rodapé
                 doc.setDrawColor(200, 200, 200);
-                doc.line(margin, footerY - 2, pageWidth - margin, footerY - 2);
+                doc.line(margin, y, pageWidth - margin, y);
+                y += 5;
                 
                 doc.setFontSize(7);
                 doc.setTextColor(100, 100, 100);
@@ -4486,14 +4492,18 @@
                     'Para mais informações, entre em contato conosco através dos canais indicados.'
                 ];
                 
-                let termoY = footerY + 5;
                 termos.forEach(termo => {
+                    // Verificar se precisa de nova página para os termos
+                    if (y > pageHeight - 15) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
                     const termoLines = doc.splitTextToSize(termo, pageWidth - (margin * 2));
-                    doc.text(termoLines, margin, termoY);
-                    termoY += termoLines.length * 4 + 2;
+                    doc.text(termoLines, margin, y);
+                    y += termoLines.length * 4 + 2;
                 });
                 
-                // Informações de contato no rodapé - Melhor formatado
+                // Informações de contato no rodapé - Sempre na última linha da página
                 const contatoY = pageHeight - 8;
                 doc.setFontSize(7);
                 doc.setTextColor(128, 128, 128);
