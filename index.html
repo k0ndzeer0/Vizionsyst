@@ -4162,7 +4162,7 @@
                 
                 // Tentar adicionar logo
                 try {
-                    const logoUrl = 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/Logotipo%20Banco%20Moderno%20Preto,%20Branco%20e%20Amarelo%20(1)%20(2).png';
+                    const logoUrl = 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/LOGO%203D%20SEM%20FUNDO.png';
                     
                     // Usar fetch para obter a imagem como base64
                     const response = await fetch(logoUrl);
@@ -4178,7 +4178,7 @@
                         
                         const logoData = reader.result;
                         // Adicionar logo (ajustar tamanho conforme necessário)
-                        doc.addImage(logoData, 'PNG', margin, 8, 50, 20);
+                        doc.addImage(logoData, 'PNG', margin, 5, 60, 25);
                         logoLoaded = true;
                     }
                 } catch (e) {
@@ -4193,22 +4193,32 @@
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(28);
                     doc.setFont(undefined, 'bold');
-                    doc.text('VIZION HUB', margin, 30);
+                    doc.text('AUTOVIZION', margin, 30);
                     
                     doc.setFontSize(11);
                     doc.setFont(undefined, 'normal');
                     doc.text('Soluções em Marketing Digital e Tecnologia', margin, 38);
                 }
                 
-                // Dados da empresa no cabeçalho (lado direito)
-                doc.setFontSize(8);
+                // Dados da empresa no cabeçalho (lado direito) - Melhor formatado
+                const dadosX = pageWidth - margin - 60;
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'bold');
                 doc.setTextColor(0, 0, 0);
-                doc.setFont(undefined, 'normal');
-                doc.text('www.autovizon.com.br', pageWidth - margin - 50, 20);
-                doc.text('autovizioncomercial@gmail.com', pageWidth - margin - 50, 26);
-                doc.text('(14) 99600-5936', pageWidth - margin - 50, 32);
+                doc.text('AUTOVIZION', dadosX, 12);
                 
-                y = 60;
+                doc.setFontSize(8);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(60, 60, 60);
+                doc.text('www.autovizon.com.br', dadosX, 20);
+                doc.text('autovizioncomercial@gmail.com', dadosX, 26);
+                doc.text('(14) 99600-5936', dadosX, 32);
+                
+                // Linha divisória abaixo do cabeçalho
+                doc.setDrawColor(200, 200, 200);
+                doc.line(margin, 35, pageWidth - margin, 35);
+                
+                y = 45;
 
                 // ========== TÍTULO DO DOCUMENTO ==========
                 doc.setTextColor(0, 0, 0);
@@ -4301,6 +4311,13 @@
 
                 const itens = orcamento.itens || [];
                 if (itens.length > 0) {
+                    // Definir posições das colunas de forma clara
+                    const colDescricao = margin + 2;
+                    const colQtd = margin + 75;
+                    const colValorUnit = margin + 95;
+                    const colDesconto = margin + 130;
+                    const colSubtotal = pageWidth - margin - 35;
+                    
                     // Cabeçalho da tabela
                     doc.setFillColor(240, 240, 240);
                     doc.rect(margin, y - 5, pageWidth - (margin * 2), 8, 'F');
@@ -4308,11 +4325,11 @@
                     doc.setFontSize(9);
                     doc.setFont(undefined, 'bold');
                     doc.setTextColor(0, 0, 0);
-                    doc.text('Descrição', margin + 2, y);
-                    doc.text('Qtd', margin + 90, y);
-                    doc.text('Valor Unit.', margin + 110, y);
-                    doc.text('Desc. %', margin + 145, y);
-                    doc.text('Subtotal', pageWidth - margin - 35, y);
+                    doc.text('Descrição', colDescricao, y);
+                    doc.text('Qtd', colQtd, y);
+                    doc.text('Valor Unit.', colValorUnit, y);
+                    doc.text('Desc. %', colDesconto, y);
+                    doc.text('Subtotal', colSubtotal, y);
                     y += 8;
 
                     let subtotal = 0;
@@ -4320,10 +4337,10 @@
                     doc.setFontSize(9);
                     
                     itens.forEach((item, index) => {
-                        // Verificar se precisa de nova página
-                        if (y > pageHeight - 60) {
+                        // Verificar se precisa de nova página (deixar espaço para pelo menos 3 linhas + totais)
+                        if (y > pageHeight - 80) {
                             doc.addPage();
-                            y = margin;
+                            y = margin + 10;
                         }
                         
                         // Linha alternada (opcional)
@@ -4334,21 +4351,23 @@
                         
                         // Descrição (pode quebrar linha se muito longa)
                         const descricao = item.descricao || '-';
-                        const descLines = doc.splitTextToSize(descricao, 75);
+                        const descLines = doc.splitTextToSize(descricao, 60);
                         const firstLineY = y;
-                        doc.text(descLines, margin + 2, firstLineY);
+                        doc.text(descLines, colDescricao, firstLineY);
                         
-                        // Quantidade (alinhado à direita)
-                        doc.text((item.quantidade || 0).toString(), margin + 90, firstLineY);
+                        // Quantidade
+                        const qtd = (item.quantidade || 0).toString();
+                        doc.text(qtd, colQtd, firstLineY);
                         
-                        // Valor unitário (alinhado à direita)
-                        doc.text(formatCurrency(item.valor_unitario || 0), margin + 110, firstLineY);
+                        // Valor unitário
+                        doc.text(formatCurrency(item.valor_unitario || 0), colValorUnit, firstLineY);
                         
-                        // Desconto (alinhado à direita)
-                        doc.text((item.desconto_percent || 0) + '%', margin + 145, firstLineY);
+                        // Desconto
+                        const desconto = item.desconto_percent || 0;
+                        doc.text(desconto + '%', colDesconto, firstLineY);
                         
-                        // Subtotal (alinhado à direita)
-                        doc.text(formatCurrency(item.subtotal || 0), pageWidth - margin - 35, firstLineY);
+                        // Subtotal
+                        doc.text(formatCurrency(item.subtotal || 0), colSubtotal, firstLineY);
                         
                         subtotal += item.subtotal || 0;
                         y += Math.max(6, descLines.length * 6);
@@ -4360,31 +4379,39 @@
                     y += 10;
 
                     // ========== TOTAIS ==========
+                    // Verificar se há espaço para os totais (subtotal + desconto + total + linha = ~30px)
+                    if (y > pageHeight - 50) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+                    
                     const descontoGeral = parseFloat(orcamento.desconto_geral || 0);
-                    const totalX = pageWidth - margin - 30;
+                    const totalX = pageWidth - margin - 35;
+                    const labelX = totalX - 50;
                     
                     doc.setFontSize(10);
                     doc.setFont(undefined, 'normal');
-                    doc.text('Subtotal:', totalX - 50, y);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Subtotal:', labelX, y);
                     doc.text(formatCurrency(subtotal), totalX, y);
                     y += 7;
 
                     if (descontoGeral > 0) {
                         doc.setTextColor(200, 0, 0);
-                        doc.text('Desconto Geral:', totalX - 50, y);
+                        doc.text('Desconto Geral:', labelX, y);
                         doc.text(formatCurrency(descontoGeral), totalX, y);
                         y += 7;
                     }
 
                     doc.setDrawColor(255, 102, 0);
                     doc.setLineWidth(0.5);
-                    doc.line(totalX - 50, y, totalX, y);
+                    doc.line(labelX, y, totalX, y);
                     y += 5;
 
                     doc.setFontSize(14);
                     doc.setFont(undefined, 'bold');
                     doc.setTextColor(255, 102, 0);
-                    doc.text('TOTAL:', totalX - 50, y);
+                    doc.text('TOTAL:', labelX, y);
                     doc.text(formatCurrency(orcamento.valor || 0), totalX, y);
                     y += 15;
                 } else {
@@ -4409,39 +4436,39 @@
                 }
 
                 // ========== VALIDADE E FORMA DE PAGAMENTO ==========
-                // Verificar se há espaço suficiente na página (deixar mais espaço para o rodapé)
-                if (y > pageHeight - 100) {
+                // Verificar se há espaço suficiente na página (condições ~35px + rodapé ~20px = 55px)
+                if (y > pageHeight - 55) {
                     doc.addPage();
-                    y = margin;
+                    y = margin + 10;
                 }
                 
-                y += 8;
+                y += 5;
                 doc.setFillColor(250, 250, 250);
-                const condicoesHeight = 35;
+                const condicoesHeight = 30;
                 doc.rect(margin, y, pageWidth - (margin * 2), condicoesHeight, 'F');
                 
                 doc.setFontSize(11);
                 doc.setFont(undefined, 'bold');
                 doc.setTextColor(0, 0, 0);
-                doc.text('CONDIÇÕES COMERCIAIS', margin + 3, y + 8);
+                doc.text('CONDIÇÕES COMERCIAIS', margin + 3, y + 7);
                 
                 doc.setFont(undefined, 'normal');
                 doc.setFontSize(9);
                 doc.setTextColor(60, 60, 60);
                 
-                let condY = y + 16;
+                let condY = y + 15;
                 doc.text(`Validade da proposta: ${orcamento.validade_dias || 30} dias, sujeita à disponibilidade de recursos.`, margin + 3, condY);
-                condY += 6;
+                condY += 5;
                 
                 doc.text('Forma de pagamento: A combinar, sujeita à aprovação mútua.', margin + 3, condY);
-                condY += 6;
+                condY += 5;
                 
                 doc.text('Prazo de entrega: A combinar.', margin + 3, condY);
-                condY += 6;
+                condY += 5;
                 
                 doc.text('Condições especiais: Conforme negociação.', margin + 3, condY);
                 
-                y += condicoesHeight + 5;
+                y += condicoesHeight + 3;
 
                 // ========== RODAPÉ COM TERMOS ==========
                 const footerY = pageHeight - 50;
@@ -4466,11 +4493,18 @@
                     termoY += termoLines.length * 4 + 2;
                 });
                 
-                // Informações de contato no rodapé
+                // Informações de contato no rodapé - Melhor formatado
                 const contatoY = pageHeight - 8;
                 doc.setFontSize(7);
                 doc.setTextColor(128, 128, 128);
-                doc.text('VIZION HUB | www.autovizon.com.br | autovizioncomercial@gmail.com | (14) 99600-5936', margin, contatoY);
+                doc.setFont(undefined, 'normal');
+                doc.text('AUTOVIZION', margin, contatoY);
+                doc.text('|', margin + 25, contatoY);
+                doc.text('www.autovizon.com.br', margin + 30, contatoY);
+                doc.text('|', margin + 70, contatoY);
+                doc.text('autovizioncomercial@gmail.com', margin + 75, contatoY);
+                doc.text('|', margin + 130, contatoY);
+                doc.text('(14) 99600-5936', margin + 135, contatoY);
                 
                 // Salvar PDF
                 const fileName = `Proposta_${orcamento.numero || 'N'}_${clienteNome.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
