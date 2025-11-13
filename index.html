@@ -1869,11 +1869,63 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Valor Total (R$) *</label>
-                        <input type="number" id="orcamentoValor" class="form-input" step="0.01" min="0" placeholder="0.00" required>
+                <div class="form-group">
+                    <label class="form-label">Serviços do Cliente</label>
+                    <div id="orcamentoServicosContainer" class="servicos-list" style="min-height: 40px; padding: 12px; background: var(--tertiary); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <span style="color: var(--text-gray); font-style: italic;">Selecione um cliente para ver os serviços contratados</span>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <label class="form-label">Itens do Orçamento *</label>
+                        <button type="button" class="btn btn-secondary" onclick="adicionarItemOrcamento()" style="padding: 6px 12px; font-size: 12px;">+ Adicionar Item</button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table id="orcamentoItensTable" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--tertiary);">
+                                    <th style="padding: 8px; text-align: left; font-size: 12px; color: var(--text-gray);">Descrição</th>
+                                    <th style="padding: 8px; text-align: center; font-size: 12px; color: var(--text-gray); width: 80px;">Qtd</th>
+                                    <th style="padding: 8px; text-align: right; font-size: 12px; color: var(--text-gray); width: 100px;">Valor Unit.</th>
+                                    <th style="padding: 8px; text-align: right; font-size: 12px; color: var(--text-gray); width: 80px;">Desc. %</th>
+                                    <th style="padding: 8px; text-align: right; font-size: 12px; color: var(--text-gray); width: 120px;">Subtotal</th>
+                                    <th style="padding: 8px; text-align: center; font-size: 12px; color: var(--text-gray); width: 50px;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orcamentoItensBody">
+                                <tr>
+                                    <td colspan="6" style="padding: 20px; text-align: center; color: var(--text-gray); font-style: italic;">
+                                        Nenhum item adicionado. Clique em "Adicionar Item" para começar.
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" style="padding: 8px; text-align: right; font-weight: 600;">Subtotal:</td>
+                                    <td id="orcamentoSubtotal" style="padding: 8px; text-align: right; font-weight: 600;">R$ 0,00</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="padding: 8px; text-align: right;">
+                                        <input type="number" id="orcamentoDescontoGeral" class="form-input" step="0.01" min="0" placeholder="0.00" style="width: 100px; display: inline-block; margin-left: 8px;" onchange="calcularTotalOrcamento()">
+                                        <label style="display: inline-block; margin-left: 4px;">Desconto Geral (R$):</label>
+                                    </td>
+                                    <td id="orcamentoDescontoGeralValor" style="padding: 8px; text-align: right; color: var(--danger);">R$ 0,00</td>
+                                    <td></td>
+                                </tr>
+                                <tr style="border-top: 2px solid var(--primary);">
+                                    <td colspan="4" style="padding: 8px; text-align: right; font-weight: 700; font-size: 16px;">Total:</td>
+                                    <td id="orcamentoValorTotal" style="padding: 8px; text-align: right; font-weight: 700; font-size: 16px; color: var(--primary);">R$ 0,00</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <input type="hidden" id="orcamentoValor" value="0">
+                </div>
+
+                <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Status *</label>
                         <select id="orcamentoStatus" class="form-input" required>
@@ -1884,18 +1936,6 @@
                             <option value="expirado">Expirado</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Serviços do Cliente</label>
-                    <div id="orcamentoServicosContainer" class="servicos-list" style="min-height: 40px; padding: 12px; background: var(--tertiary); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                        <span style="color: var(--text-gray); font-style: italic;">Selecione um cliente para ver os serviços contratados</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Descrição dos Serviços *</label>
-                    <textarea id="orcamentoDescricao" class="form-input" rows="5" style="resize: vertical;" placeholder="Descreva os serviços incluídos no orçamento..." required></textarea>
                 </div>
 
                 <div class="form-group">
@@ -1922,15 +1962,22 @@
                 <!-- Conteúdo será preenchido dinamicamente -->
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeOrcamentoDetailsModal()">Fechar</button>
-                <button type="button" class="btn btn-primary" id="editOrcamentoFromDetailsBtn" onclick="">Editar</button>
-                <button type="button" class="btn btn-danger" id="deleteOrcamentoFromDetailsBtn" onclick="">Excluir</button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-secondary" onclick="closeOrcamentoDetailsModal()">Fechar</button>
+                    <button type="button" class="btn btn-primary" id="downloadPDFBtn" style="background: var(--danger); border-color: var(--danger);">📄 Baixar PDF</button>
+                    <button type="button" class="btn btn-primary" id="aprovarOrcamentoBtn" style="background: var(--success); border-color: var(--success); display: none;">✓ Aprovar</button>
+                    <button type="button" class="btn btn-primary" id="recusarOrcamentoBtn" style="background: var(--danger); border-color: var(--danger); display: none;">✗ Recusar</button>
+                    <button type="button" class="btn btn-primary" id="editOrcamentoFromDetailsBtn" onclick="">Editar</button>
+                    <button type="button" class="btn btn-danger" id="deleteOrcamentoFromDetailsBtn" onclick="">Excluir</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- jsPDF para geração de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <script>
         // Configuração do Supabase
@@ -1948,6 +1995,25 @@
             } else {
                 showLogin();
             }
+        }
+
+        // Funções auxiliares globais
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('pt-BR');
+            } catch {
+                return dateStr;
+            }
+        }
+
+        function formatCurrency(value) {
+            if (!value && value !== 0) return 'R$ 0,00';
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value);
         }
 
         // Mostrar página de login
@@ -3379,7 +3445,11 @@
                             </span>
                         </td>
                         <td>
-                            <button class="btn-action" onclick="viewOrcamentoDetails('${orcamento.id}')" style="border-color: var(--primary); color: var(--primary);">Ver Detalhes</button>
+                            <button class="btn-action" onclick="viewOrcamentoDetails('${orcamento.id}')" style="border-color: var(--primary); color: var(--primary); margin-right: 4px;">Ver</button>
+                            ${orcamento.status === 'enviado' ? `
+                                <button class="btn-action" onclick="aprovarOrcamento('${orcamento.id}')" style="border-color: var(--success); color: var(--success); margin-right: 4px;" title="Aprovar">✓</button>
+                                <button class="btn-action" onclick="recusarOrcamento('${orcamento.id}')" style="border-color: var(--danger); color: var(--danger);" title="Recusar">✗</button>
+                            ` : ''}
                         </td>
                     </tr>
                 `;
@@ -3416,8 +3486,10 @@
             document.getElementById('orcamentoForm').reset();
             document.getElementById('orcamentoId').value = '';
             
-            // Limpar serviços
+            // Limpar serviços e itens
             clearServicosContainer('orcamento');
+            carregarItensOrcamento([]);
+            document.getElementById('orcamentoDescontoGeral').value = '0';
             
             // Preencher data com hoje
             const hoje = new Date().toISOString().split('T')[0];
@@ -3546,10 +3618,13 @@
             document.getElementById('orcamentoNumero').value = orcamento.numero || '';
             document.getElementById('orcamentoData').value = orcamento.data ? orcamento.data.split('T')[0] : '';
             document.getElementById('orcamentoValidade').value = orcamento.validade_dias || 30;
-            document.getElementById('orcamentoValor').value = orcamento.valor || '';
+            document.getElementById('orcamentoDescontoGeral').value = orcamento.desconto_geral || 0;
             document.getElementById('orcamentoStatus').value = orcamento.status || 'rascunho';
-            document.getElementById('orcamentoDescricao').value = orcamento.descricao || '';
             document.getElementById('orcamentoObservacoes').value = orcamento.observacoes || '';
+
+            // Carregar itens
+            const itens = orcamento.itens || [];
+            carregarItensOrcamento(itens);
 
             // Carregar clientes e selecionar o cliente do orçamento
             await loadClientesForOrcamentoSelect();
@@ -3571,6 +3646,12 @@
             e.preventDefault();
 
             const id = document.getElementById('orcamentoId').value;
+            const itens = coletarItensOrcamento();
+
+            if (itens.length === 0) {
+                alert('Adicione pelo menos um item ao orçamento!');
+                return;
+            }
 
             const orcamentoData = {
                 numero: document.getElementById('orcamentoNumero').value.trim(),
@@ -3578,8 +3659,9 @@
                 data: document.getElementById('orcamentoData').value,
                 validade_dias: parseInt(document.getElementById('orcamentoValidade').value) || 30,
                 valor: parseFloat(document.getElementById('orcamentoValor').value) || 0,
+                desconto_geral: parseFloat(document.getElementById('orcamentoDescontoGeral').value) || 0,
                 status: document.getElementById('orcamentoStatus').value,
-                descricao: document.getElementById('orcamentoDescricao').value.trim(),
+                itens: itens,
                 observacoes: document.getElementById('orcamentoObservacoes').value.trim() || null
             };
 
@@ -3697,6 +3779,40 @@
 
             const displayValue = (value) => value || '<span class="empty">-</span>';
 
+            // Preparar itens do orçamento
+            const itens = orcamento.itens || [];
+            let itensHtml = '';
+            let subtotalItens = 0;
+
+            if (itens.length > 0) {
+                itensHtml = '<table style="width: 100%; border-collapse: collapse; margin-top: 12px;">';
+                itensHtml += '<thead><tr style="background: var(--tertiary); border-bottom: 1px solid rgba(255,255,255,0.1);">';
+                itensHtml += '<th style="padding: 8px; text-align: left; font-size: 12px;">Descrição</th>';
+                itensHtml += '<th style="padding: 8px; text-align: center; font-size: 12px;">Qtd</th>';
+                itensHtml += '<th style="padding: 8px; text-align: right; font-size: 12px;">Valor Unit.</th>';
+                itensHtml += '<th style="padding: 8px; text-align: right; font-size: 12px;">Desc. %</th>';
+                itensHtml += '<th style="padding: 8px; text-align: right; font-size: 12px;">Subtotal</th>';
+                itensHtml += '</tr></thead><tbody>';
+
+                itens.forEach(item => {
+                    const itemSubtotal = item.subtotal || 0;
+                    subtotalItens += itemSubtotal;
+                    itensHtml += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">`;
+                    itensHtml += `<td style="padding: 8px;">${item.descricao || '-'}</td>`;
+                    itensHtml += `<td style="padding: 8px; text-align: center;">${item.quantidade || 0}</td>`;
+                    itensHtml += `<td style="padding: 8px; text-align: right;">${formatCurrency(item.valor_unitario || 0)}</td>`;
+                    itensHtml += `<td style="padding: 8px; text-align: right;">${item.desconto_percent || 0}%</td>`;
+                    itensHtml += `<td style="padding: 8px; text-align: right; font-weight: 600;">${formatCurrency(itemSubtotal)}</td>`;
+                    itensHtml += `</tr>`;
+                });
+
+                itensHtml += '</tbody></table>';
+            } else {
+                itensHtml = '<div style="padding: 20px; text-align: center; color: var(--text-gray); font-style: italic;">Nenhum item cadastrado</div>';
+            }
+
+            const descontoGeral = parseFloat(orcamento.desconto_geral || 0);
+
             content.innerHTML = `
                 <div class="details-section">
                     <div class="details-section-title">Informações Básicas</div>
@@ -3718,10 +3834,6 @@
                             <div class="details-value">${orcamento.validade_dias || '-'} dias (até ${dataValidade})</div>
                         </div>
                         <div class="details-item">
-                            <div class="details-label">Valor Total</div>
-                            <div class="details-value">${formatCurrency(orcamento.valor)}</div>
-                        </div>
-                        <div class="details-item">
                             <div class="details-label">Status</div>
                             <div class="details-value">
                                 <span class="badge ${status.class}">
@@ -3733,9 +3845,23 @@
                 </div>
 
                 <div class="details-section">
-                    <div class="details-section-title">Descrição dos Serviços</div>
-                    <div class="details-item">
-                        <div class="details-value" style="white-space: pre-wrap;">${displayValue(orcamento.descricao)}</div>
+                    <div class="details-section-title">Itens do Orçamento</div>
+                    ${itensHtml}
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-weight: 600;">Subtotal:</span>
+                            <span style="font-weight: 600;">${formatCurrency(subtotalItens)}</span>
+                        </div>
+                        ${descontoGeral > 0 ? `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--danger);">
+                            <span>Desconto Geral:</span>
+                            <span>${formatCurrency(descontoGeral)}</span>
+                        </div>
+                        ` : ''}
+                        <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; color: var(--primary); padding-top: 8px; border-top: 2px solid var(--primary);">
+                            <span>Total:</span>
+                            <span>${formatCurrency(orcamento.valor)}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -3747,12 +3873,612 @@
                 </div>
             `;
 
+            // Configurar botões de ação
+            document.getElementById('orcamentoDetailsModal').dataset.orcamentoId = id;
+            
+            const pdfBtn = document.getElementById('downloadPDFBtn');
+            pdfBtn.onclick = () => gerarPDFOrcamento();
+
+            const aprovarBtn = document.getElementById('aprovarOrcamentoBtn');
+            const recusarBtn = document.getElementById('recusarOrcamentoBtn');
+            
+            if (orcamento.status === 'enviado') {
+                aprovarBtn.style.display = 'inline-block';
+                recusarBtn.style.display = 'inline-block';
+                aprovarBtn.onclick = () => aprovarOrcamento(id);
+                recusarBtn.onclick = () => recusarOrcamento(id);
+            } else {
+                aprovarBtn.style.display = 'none';
+                recusarBtn.style.display = 'none';
+            }
+
             document.getElementById('orcamentoDetailsModal').classList.add('active');
         }
 
         // Fechar modal de detalhes
         function closeOrcamentoDetailsModal() {
             document.getElementById('orcamentoDetailsModal').classList.remove('active');
+        }
+
+        // ========== GERENCIAMENTO DE ITENS DO ORÇAMENTO ==========
+        let orcamentoItens = [];
+        let itemCounter = 0;
+
+        // Adicionar item ao orçamento
+        function adicionarItemOrcamento() {
+            const tbody = document.getElementById('orcamentoItensBody');
+            
+            // Remover mensagem de "nenhum item"
+            if (tbody.children.length === 1 && tbody.children[0].children.length === 1) {
+                tbody.innerHTML = '';
+            }
+
+            const itemId = 'item_' + (++itemCounter);
+            const row = document.createElement('tr');
+            row.id = itemId;
+            row.innerHTML = `
+                <td>
+                    <input type="text" class="form-input item-descricao" placeholder="Descrição do item" style="width: 100%; font-size: 12px; padding: 6px;" onchange="calcularTotalOrcamento()">
+                </td>
+                <td>
+                    <input type="number" class="form-input item-quantidade" value="1" min="1" step="1" style="width: 100%; font-size: 12px; padding: 6px; text-align: center;" onchange="calcularItem('${itemId}')">
+                </td>
+                <td>
+                    <input type="number" class="form-input item-valor-unitario" value="0" min="0" step="0.01" style="width: 100%; font-size: 12px; padding: 6px; text-align: right;" onchange="calcularItem('${itemId}')">
+                </td>
+                <td>
+                    <input type="number" class="form-input item-desconto" value="0" min="0" max="100" step="0.01" style="width: 100%; font-size: 12px; padding: 6px; text-align: right;" onchange="calcularItem('${itemId}')">
+                </td>
+                <td class="item-subtotal" style="text-align: right; padding: 8px; font-weight: 600;">R$ 0,00</td>
+                <td style="text-align: center;">
+                    <button type="button" class="btn-action" onclick="removerItemOrcamento('${itemId}')" style="border-color: var(--danger); color: var(--danger); padding: 4px 8px;">✗</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+            calcularTotalOrcamento();
+        }
+
+        // Remover item do orçamento
+        function removerItemOrcamento(itemId) {
+            const row = document.getElementById(itemId);
+            if (row) {
+                row.remove();
+                calcularTotalOrcamento();
+                
+                // Se não houver mais itens, mostrar mensagem
+                const tbody = document.getElementById('orcamentoItensBody');
+                if (tbody.children.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="padding: 20px; text-align: center; color: var(--text-gray); font-style: italic;">
+                                Nenhum item adicionado. Clique em "Adicionar Item" para começar.
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+        }
+
+        // Calcular subtotal de um item
+        function calcularItem(itemId) {
+            const row = document.getElementById(itemId);
+            if (!row) return;
+
+            const quantidade = parseFloat(row.querySelector('.item-quantidade').value) || 0;
+            const valorUnitario = parseFloat(row.querySelector('.item-valor-unitario').value) || 0;
+            const descontoPercent = parseFloat(row.querySelector('.item-desconto').value) || 0;
+
+            const subtotal = quantidade * valorUnitario;
+            const descontoValor = subtotal * (descontoPercent / 100);
+            const subtotalFinal = subtotal - descontoValor;
+
+            row.querySelector('.item-subtotal').textContent = formatCurrency(subtotalFinal);
+            calcularTotalOrcamento();
+        }
+
+        // Calcular total do orçamento
+        function calcularTotalOrcamento() {
+            const tbody = document.getElementById('orcamentoItensBody');
+            let subtotal = 0;
+
+            tbody.querySelectorAll('tr').forEach(row => {
+                const quantidade = parseFloat(row.querySelector('.item-quantidade')?.value) || 0;
+                const valorUnitario = parseFloat(row.querySelector('.item-valor-unitario')?.value) || 0;
+                const descontoPercent = parseFloat(row.querySelector('.item-desconto')?.value) || 0;
+
+                const itemSubtotal = quantidade * valorUnitario;
+                const descontoValor = itemSubtotal * (descontoPercent / 100);
+                subtotal += itemSubtotal - descontoValor;
+            });
+
+            const descontoGeral = parseFloat(document.getElementById('orcamentoDescontoGeral').value) || 0;
+            const total = subtotal - descontoGeral;
+
+            document.getElementById('orcamentoSubtotal').textContent = formatCurrency(subtotal);
+            document.getElementById('orcamentoDescontoGeralValor').textContent = formatCurrency(descontoGeral);
+            document.getElementById('orcamentoValorTotal').textContent = formatCurrency(total);
+            document.getElementById('orcamentoValor').value = total.toFixed(2);
+        }
+
+        // Coletar itens do formulário
+        function coletarItensOrcamento() {
+            const tbody = document.getElementById('orcamentoItensBody');
+            const itens = [];
+
+            tbody.querySelectorAll('tr').forEach(row => {
+                const descricao = row.querySelector('.item-descricao')?.value.trim();
+                if (!descricao) return; // Pular itens sem descrição
+
+                const quantidade = parseFloat(row.querySelector('.item-quantidade')?.value) || 0;
+                const valorUnitario = parseFloat(row.querySelector('.item-valor-unitario')?.value) || 0;
+                const descontoPercent = parseFloat(row.querySelector('.item-desconto')?.value) || 0;
+                const subtotal = parseFloat(row.querySelector('.item-subtotal')?.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0;
+
+                itens.push({
+                    descricao,
+                    quantidade,
+                    valor_unitario: valorUnitario,
+                    desconto_percent: descontoPercent,
+                    subtotal
+                });
+            });
+
+            return itens;
+        }
+
+        // Carregar itens no formulário
+        function carregarItensOrcamento(itens) {
+            const tbody = document.getElementById('orcamentoItensBody');
+            tbody.innerHTML = '';
+
+            if (!itens || itens.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="padding: 20px; text-align: center; color: var(--text-gray); font-style: italic;">
+                            Nenhum item adicionado. Clique em "Adicionar Item" para começar.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            itemCounter = 0;
+            itens.forEach(item => {
+                const itemId = 'item_' + (++itemCounter);
+                const row = document.createElement('tr');
+                row.id = itemId;
+                row.innerHTML = `
+                    <td>
+                        <input type="text" class="form-input item-descricao" value="${item.descricao || ''}" placeholder="Descrição do item" style="width: 100%; font-size: 12px; padding: 6px;" onchange="calcularTotalOrcamento()">
+                    </td>
+                    <td>
+                        <input type="number" class="form-input item-quantidade" value="${item.quantidade || 1}" min="1" step="1" style="width: 100%; font-size: 12px; padding: 6px; text-align: center;" onchange="calcularItem('${itemId}')">
+                    </td>
+                    <td>
+                        <input type="number" class="form-input item-valor-unitario" value="${item.valor_unitario || 0}" min="0" step="0.01" style="width: 100%; font-size: 12px; padding: 6px; text-align: right;" onchange="calcularItem('${itemId}')">
+                    </td>
+                    <td>
+                        <input type="number" class="form-input item-desconto" value="${item.desconto_percent || 0}" min="0" max="100" step="0.01" style="width: 100%; font-size: 12px; padding: 6px; text-align: right;" onchange="calcularItem('${itemId}')">
+                    </td>
+                    <td class="item-subtotal" style="text-align: right; padding: 8px; font-weight: 600;">${formatCurrency(item.subtotal || 0)}</td>
+                    <td style="text-align: center;">
+                        <button type="button" class="btn-action" onclick="removerItemOrcamento('${itemId}')" style="border-color: var(--danger); color: var(--danger); padding: 4px 8px;">✗</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            calcularTotalOrcamento();
+        }
+
+        // Aprovar orçamento
+        async function aprovarOrcamento(id) {
+            if (!confirm('Deseja aprovar este orçamento?')) return;
+
+            try {
+                const { error } = await supabase
+                    .from('orcamentos')
+                    .update({ status: 'aprovado' })
+                    .eq('id', id);
+
+                if (error) throw error;
+                alert('Orçamento aprovado com sucesso!');
+                loadOrcamentos();
+                closeOrcamentoDetailsModal();
+            } catch (error) {
+                console.error('Erro ao aprovar orçamento:', error);
+                alert('Erro ao aprovar orçamento: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Recusar orçamento
+        async function recusarOrcamento(id) {
+            if (!confirm('Deseja recusar este orçamento?')) return;
+
+            try {
+                const { error } = await supabase
+                    .from('orcamentos')
+                    .update({ status: 'rejeitado' })
+                    .eq('id', id);
+
+                if (error) throw error;
+                alert('Orçamento recusado.');
+                loadOrcamentos();
+                closeOrcamentoDetailsModal();
+            } catch (error) {
+                console.error('Erro ao recusar orçamento:', error);
+                alert('Erro ao recusar orçamento: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Gerar PDF do orçamento
+        async function gerarPDFOrcamento() {
+            try {
+                const orcamentoId = document.getElementById('orcamentoDetailsModal').dataset.orcamentoId;
+                if (!orcamentoId) {
+                    alert('Orçamento não encontrado');
+                    return;
+                }
+                
+                const orcamento = allOrcamentos.find(o => o.id === orcamentoId);
+                if (!orcamento) {
+                    alert('Orçamento não encontrado');
+                    return;
+                }
+
+                // Buscar dados completos do cliente
+                let clienteCompleto = orcamento.cliente || {};
+                if (orcamento.cliente_id && !clienteCompleto.endereco) {
+                    try {
+                        const { data, error } = await supabase
+                            .from('clientes')
+                            .select('*')
+                            .eq('id', orcamento.cliente_id)
+                            .single();
+                        if (!error && data) {
+                            clienteCompleto = data;
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao buscar dados completos do cliente:', e);
+                    }
+                }
+
+                // Verificar se jsPDF está disponível
+                if (!window.jspdf) {
+                    alert('Biblioteca de PDF não carregada. Por favor, recarregue a página.');
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Configurações
+                const margin = 20;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                let y = margin;
+
+                // ========== CABEÇALHO - DADOS DA EMPRESA ==========
+                let logoLoaded = false;
+                
+                // Tentar adicionar logo
+                try {
+                    const logoUrl = 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/Logotipo%20Banco%20Moderno%20Preto,%20Branco%20e%20Amarelo%20(1)%20(2).png';
+                    
+                    // Usar fetch para obter a imagem como base64
+                    const response = await fetch(logoUrl);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const reader = new FileReader();
+                        
+                        await new Promise((resolve, reject) => {
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        });
+                        
+                        const logoData = reader.result;
+                        // Adicionar logo (ajustar tamanho conforme necessário)
+                        doc.addImage(logoData, 'PNG', margin, 8, 50, 20);
+                        logoLoaded = true;
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar logo:', e);
+                }
+                
+                // Se logo não carregou, usar texto
+                if (!logoLoaded) {
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(0, 0, pageWidth, 50, 'F');
+                    
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(28);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('VIZION HUB', margin, 30);
+                    
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'normal');
+                    doc.text('Soluções em Marketing Digital e Tecnologia', margin, 38);
+                }
+                
+                // Dados da empresa no cabeçalho (lado direito)
+                doc.setFontSize(8);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'normal');
+                doc.text('www.autovizon.com.br', pageWidth - margin - 50, 20);
+                doc.text('autovizioncomercial@gmail.com', pageWidth - margin - 50, 26);
+                doc.text('(14) 99600-5936', pageWidth - margin - 50, 32);
+                
+                y = 60;
+
+                // ========== TÍTULO DO DOCUMENTO ==========
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(22);
+                doc.setFont(undefined, 'bold');
+                doc.text('PROPOSTA COMERCIAL', margin, y);
+                
+                // Número e data à direita
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Nº ${orcamento.numero || 'N/A'}`, pageWidth - margin - 30, y - 5);
+                doc.text(`Data: ${formatDate(orcamento.data)}`, pageWidth - margin - 30, y + 2);
+                
+                // Linha divisória
+                y += 12;
+                doc.setDrawColor(255, 102, 0);
+                doc.setLineWidth(1);
+                doc.line(margin, y, pageWidth - margin, y);
+                y += 15;
+
+                // ========== DADOS DO CLIENTE ==========
+                // Definir variáveis do cliente primeiro
+                const clienteNome = clienteCompleto.nome || clienteCompleto.empresa || 'Cliente não encontrado';
+                const clienteEmpresa = clienteCompleto.empresa || '';
+                const clienteCpfCnpj = clienteCompleto.cpf_cnpj || '';
+                const clienteEndereco = clienteCompleto.endereco || '';
+                const clienteCidade = clienteCompleto.cidade || '';
+                const clienteEstado = clienteCompleto.estado || '';
+                const clienteCep = clienteCompleto.cep || '';
+                const clienteTelefone = clienteCompleto.telefone || '';
+                const clienteEmail = clienteCompleto.email || '';
+
+                // ========== INTRODUÇÃO ==========
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(60, 60, 60);
+                const introText = `Prezado(a) ${clienteNome},`;
+                doc.text(introText, margin, y);
+                y += 8;
+                
+                const apresentacao = `É com grande satisfação que apresentamos nossa proposta comercial, desenvolvida especialmente para atender às suas necessidades.`;
+                const apresentacaoLines = doc.splitTextToSize(apresentacao, pageWidth - (margin * 2));
+                doc.text(apresentacaoLines, margin, y);
+                y += apresentacaoLines.length * 5 + 10;
+
+                // ========== DADOS DO CLIENTE ==========
+                doc.setFillColor(245, 245, 245);
+                doc.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
+                
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(0, 0, 0);
+                doc.text('DADOS DO CLIENTE', margin + 3, y + 6);
+                y += 12;
+                
+                doc.text(`Cliente: ${clienteNome}`, margin, y);
+                y += 6;
+                if (clienteEmpresa && clienteEmpresa !== clienteNome) {
+                    doc.text(`Empresa: ${clienteEmpresa}`, margin, y);
+                    y += 6;
+                }
+                if (clienteCpfCnpj) {
+                    doc.text(`CPF/CNPJ: ${clienteCpfCnpj}`, margin, y);
+                    y += 6;
+                }
+                if (clienteEndereco) {
+                    let enderecoCompleto = clienteEndereco;
+                    if (clienteCidade) enderecoCompleto += `, ${clienteCidade}`;
+                    if (clienteEstado) enderecoCompleto += ` - ${clienteEstado}`;
+                    if (clienteCep) enderecoCompleto += ` - CEP: ${clienteCep}`;
+                    doc.text(`Endereço: ${enderecoCompleto}`, margin, y);
+                    y += 6;
+                }
+                if (clienteTelefone) {
+                    doc.text(`Telefone: ${clienteTelefone}`, margin, y);
+                    y += 6;
+                }
+                if (clienteEmail) {
+                    doc.text(`E-mail: ${clienteEmail}`, margin, y);
+                    y += 6;
+                }
+                
+                y += 10;
+
+                // ========== ITENS DO ORÇAMENTO ==========
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('ITENS DO ORÇAMENTO', margin, y);
+                y += 10;
+
+                const itens = orcamento.itens || [];
+                if (itens.length > 0) {
+                    // Cabeçalho da tabela
+                    doc.setFillColor(240, 240, 240);
+                    doc.rect(margin, y - 5, pageWidth - (margin * 2), 8, 'F');
+                    
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Descrição', margin + 2, y);
+                    doc.text('Qtd', margin + 90, y);
+                    doc.text('Valor Unit.', margin + 110, y);
+                    doc.text('Desc. %', margin + 145, y);
+                    doc.text('Subtotal', pageWidth - margin - 35, y);
+                    y += 8;
+
+                    let subtotal = 0;
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    
+                    itens.forEach((item, index) => {
+                        // Verificar se precisa de nova página
+                        if (y > pageHeight - 60) {
+                            doc.addPage();
+                            y = margin;
+                        }
+                        
+                        // Linha alternada (opcional)
+                        if (index % 2 === 0) {
+                            doc.setFillColor(250, 250, 250);
+                            doc.rect(margin, y - 3, pageWidth - (margin * 2), 6, 'F');
+                        }
+                        
+                        // Descrição (pode quebrar linha se muito longa)
+                        const descricao = item.descricao || '-';
+                        const descLines = doc.splitTextToSize(descricao, 75);
+                        const firstLineY = y;
+                        doc.text(descLines, margin + 2, firstLineY);
+                        
+                        // Quantidade (alinhado à direita)
+                        doc.text((item.quantidade || 0).toString(), margin + 90, firstLineY);
+                        
+                        // Valor unitário (alinhado à direita)
+                        doc.text(formatCurrency(item.valor_unitario || 0), margin + 110, firstLineY);
+                        
+                        // Desconto (alinhado à direita)
+                        doc.text((item.desconto_percent || 0) + '%', margin + 145, firstLineY);
+                        
+                        // Subtotal (alinhado à direita)
+                        doc.text(formatCurrency(item.subtotal || 0), pageWidth - margin - 35, firstLineY);
+                        
+                        subtotal += item.subtotal || 0;
+                        y += Math.max(6, descLines.length * 6);
+                    });
+
+                    y += 5;
+                    doc.setDrawColor(200, 200, 200);
+                    doc.line(margin, y, pageWidth - margin, y);
+                    y += 10;
+
+                    // ========== TOTAIS ==========
+                    const descontoGeral = parseFloat(orcamento.desconto_geral || 0);
+                    const totalX = pageWidth - margin - 30;
+                    
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'normal');
+                    doc.text('Subtotal:', totalX - 50, y);
+                    doc.text(formatCurrency(subtotal), totalX, y);
+                    y += 7;
+
+                    if (descontoGeral > 0) {
+                        doc.setTextColor(200, 0, 0);
+                        doc.text('Desconto Geral:', totalX - 50, y);
+                        doc.text(formatCurrency(descontoGeral), totalX, y);
+                        y += 7;
+                    }
+
+                    doc.setDrawColor(255, 102, 0);
+                    doc.setLineWidth(0.5);
+                    doc.line(totalX - 50, y, totalX, y);
+                    y += 5;
+
+                    doc.setFontSize(14);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 102, 0);
+                    doc.text('TOTAL:', totalX - 50, y);
+                    doc.text(formatCurrency(orcamento.valor || 0), totalX, y);
+                    y += 15;
+                } else {
+                    doc.setFontSize(10);
+                    doc.setTextColor(128, 128, 128);
+                    doc.text('Nenhum item cadastrado', margin, y);
+                    y += 10;
+                }
+
+                // ========== OBSERVAÇÕES ==========
+                if (orcamento.observacoes) {
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('OBSERVAÇÕES:', margin, y);
+                    y += 6;
+                    
+                    doc.setFont(undefined, 'normal');
+                    const splitObservacoes = doc.splitTextToSize(orcamento.observacoes, pageWidth - (margin * 2));
+                    doc.text(splitObservacoes, margin, y);
+                    y += splitObservacoes.length * 6 + 10;
+                }
+
+                // ========== VALIDADE E FORMA DE PAGAMENTO ==========
+                // Verificar se há espaço suficiente na página (deixar mais espaço para o rodapé)
+                if (y > pageHeight - 100) {
+                    doc.addPage();
+                    y = margin;
+                }
+                
+                y += 8;
+                doc.setFillColor(250, 250, 250);
+                const condicoesHeight = 35;
+                doc.rect(margin, y, pageWidth - (margin * 2), condicoesHeight, 'F');
+                
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(0, 0, 0);
+                doc.text('CONDIÇÕES COMERCIAIS', margin + 3, y + 8);
+                
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                doc.setTextColor(60, 60, 60);
+                
+                let condY = y + 16;
+                doc.text(`Validade da proposta: ${orcamento.validade_dias || 30} dias, sujeita à disponibilidade de recursos.`, margin + 3, condY);
+                condY += 6;
+                
+                doc.text('Forma de pagamento: A combinar, sujeita à aprovação mútua.', margin + 3, condY);
+                condY += 6;
+                
+                doc.text('Prazo de entrega: A combinar.', margin + 3, condY);
+                condY += 6;
+                
+                doc.text('Condições especiais: Conforme negociação.', margin + 3, condY);
+                
+                y += condicoesHeight + 5;
+
+                // ========== RODAPÉ COM TERMOS ==========
+                const footerY = pageHeight - 50;
+                
+                // Linha divisória antes do rodapé
+                doc.setDrawColor(200, 200, 200);
+                doc.line(margin, footerY - 2, pageWidth - margin, footerY - 2);
+                
+                doc.setFontSize(7);
+                doc.setTextColor(100, 100, 100);
+                doc.setFont(undefined, 'normal');
+                
+                const termos = [
+                    'A contratação dos serviços está sujeita à assinatura de contrato específico.',
+                    'Para mais informações, entre em contato conosco através dos canais indicados.'
+                ];
+                
+                let termoY = footerY + 5;
+                termos.forEach(termo => {
+                    const termoLines = doc.splitTextToSize(termo, pageWidth - (margin * 2));
+                    doc.text(termoLines, margin, termoY);
+                    termoY += termoLines.length * 4 + 2;
+                });
+                
+                // Informações de contato no rodapé
+                const contatoY = pageHeight - 8;
+                doc.setFontSize(7);
+                doc.setTextColor(128, 128, 128);
+                doc.text('VIZION HUB | www.autovizon.com.br | autovizioncomercial@gmail.com | (14) 99600-5936', margin, contatoY);
+                
+                // Salvar PDF
+                const fileName = `Proposta_${orcamento.numero || 'N'}_${clienteNome.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+                doc.save(fileName);
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                alert('Erro ao gerar PDF: ' + (error.message || 'Erro desconhecido'));
+            }
         }
 
         // Funções para menu mobile
