@@ -498,6 +498,32 @@
             color: #ef4444;
         }
 
+        /* Badges de Status de Orçamento */
+        .badge-rascunho {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+        }
+
+        .badge-enviado {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .badge-aprovado {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .badge-rejeitado {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .badge-expirado {
+            background: rgba(107, 114, 128, 0.2);
+            color: #6b7280;
+        }
+
         /* Badges de Prioridade */
         .badge-prioridade-baixa {
             background: rgba(156, 163, 175, 0.2);
@@ -1300,10 +1326,57 @@
             </div>
 
             <div id="orcamentosContent" class="page-content" style="display: none;">
-                <h1 class="page-title">Orçamentos</h1>
-                <p class="page-subtitle">Gerencie seus orçamentos</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h1 class="page-title">Orçamentos</h1>
+                        <p class="page-subtitle">Gerencie seus orçamentos</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openOrcamentoModal()">+ Novo Orçamento</button>
+                </div>
+
                 <div class="section-card">
-                    <div class="empty-state">Funcionalidade em desenvolvimento</div>
+                    <div class="search-bar">
+                        <input 
+                            type="text" 
+                            id="orcamentoSearch" 
+                            class="search-input" 
+                            placeholder="Buscar por número, cliente ou descrição..."
+                            onkeyup="filterOrcamentos()"
+                        >
+                        <select id="orcamentoStatusFilter" class="form-input" style="width: 200px;" onchange="filterOrcamentos()">
+                            <option value="">Todos os status</option>
+                            <option value="rascunho">Rascunho</option>
+                            <option value="enviado">Enviado</option>
+                            <option value="aprovado">Aprovado</option>
+                            <option value="rejeitado">Rejeitado</option>
+                            <option value="expirado">Expirado</option>
+                        </select>
+                    </div>
+
+                    <div class="table-container">
+                        <div id="orcamentosLoading" class="loading active">
+                            <div class="spinner"></div>
+                            <p>Carregando orçamentos...</p>
+                        </div>
+                        <table id="orcamentosTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Cliente</th>
+                                    <th>Data</th>
+                                    <th>Valor</th>
+                                    <th>Validade</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orcamentosTableBody">
+                            </tbody>
+                        </table>
+                        <div id="orcamentosEmpty" class="empty-state" style="display: none;">
+                            Nenhum orçamento encontrado
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1714,6 +1787,13 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label">Serviços do Cliente</label>
+                    <div id="projetoServicosContainer" class="servicos-list" style="min-height: 40px; padding: 12px; background: var(--tertiary); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <span style="color: var(--text-gray); font-style: italic;">Selecione um cliente para ver os serviços contratados</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">Tags/Categorias</label>
                     <input type="text" id="projetoTags" class="form-input" placeholder="Ex: urgente, site, e-commerce (separadas por vírgula)">
                     <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">Separe as tags por vírgula</small>
@@ -1751,6 +1831,100 @@
                 <button type="button" class="btn btn-secondary" onclick="closeProjetoDetailsModal()">Fechar</button>
                 <button type="button" class="btn btn-primary" id="editProjetoFromDetailsBtn" onclick="">Editar</button>
                 <button type="button" class="btn btn-danger" id="deleteProjetoFromDetailsBtn" onclick="">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Orçamento -->
+    <div id="orcamentoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="orcamentoModalTitle">Novo Orçamento</h2>
+                <button class="btn-close" onclick="closeOrcamentoModal()">&times;</button>
+            </div>
+            <form id="orcamentoForm">
+                <input type="hidden" id="orcamentoId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Número do Orçamento</label>
+                        <input type="text" id="orcamentoNumero" class="form-input" placeholder="Gerado automaticamente" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cliente *</label>
+                        <select id="orcamentoClienteId" class="form-input" required>
+                            <option value="">Selecione um cliente</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Data do Orçamento *</label>
+                        <input type="date" id="orcamentoData" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Validade (dias) *</label>
+                        <input type="number" id="orcamentoValidade" class="form-input" min="1" value="30" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Valor Total (R$) *</label>
+                        <input type="number" id="orcamentoValor" class="form-input" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status *</label>
+                        <select id="orcamentoStatus" class="form-input" required>
+                            <option value="rascunho">Rascunho</option>
+                            <option value="enviado">Enviado</option>
+                            <option value="aprovado">Aprovado</option>
+                            <option value="rejeitado">Rejeitado</option>
+                            <option value="expirado">Expirado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Serviços do Cliente</label>
+                    <div id="orcamentoServicosContainer" class="servicos-list" style="min-height: 40px; padding: 12px; background: var(--tertiary); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <span style="color: var(--text-gray); font-style: italic;">Selecione um cliente para ver os serviços contratados</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Descrição dos Serviços *</label>
+                    <textarea id="orcamentoDescricao" class="form-input" rows="5" style="resize: vertical;" placeholder="Descreva os serviços incluídos no orçamento..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Observações</label>
+                    <textarea id="orcamentoObservacoes" class="form-input" rows="3" style="resize: vertical;" placeholder="Observações adicionais..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeOrcamentoModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detalhes Orçamento -->
+    <div id="orcamentoDetailsModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Detalhes do Orçamento</h2>
+                <button class="btn-close" onclick="closeOrcamentoDetailsModal()">&times;</button>
+            </div>
+            <div id="orcamentoDetailsContent" style="color: var(--text);">
+                <!-- Conteúdo será preenchido dinamicamente -->
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeOrcamentoDetailsModal()">Fechar</button>
+                <button type="button" class="btn btn-primary" id="editOrcamentoFromDetailsBtn" onclick="">Editar</button>
+                <button type="button" class="btn btn-danger" id="deleteOrcamentoFromDetailsBtn" onclick="">Excluir</button>
             </div>
         </div>
     </div>
@@ -1984,6 +2158,8 @@
                         loadClientes();
                     } else if (page === 'projetos') {
                         loadProjetos();
+                    } else if (page === 'orcamentos') {
+                        loadOrcamentos();
                     }
                 }
                 
@@ -2669,6 +2845,18 @@
                     option.textContent = cliente.empresa ? `${cliente.nome} - ${cliente.empresa}` : cliente.nome;
                     select.appendChild(option);
                 });
+
+                // Remover listeners antigos e adicionar novo listener para carregar serviços quando cliente for selecionado
+                const newSelect = select.cloneNode(true);
+                select.parentNode.replaceChild(newSelect, select);
+                document.getElementById('projetoClienteId').addEventListener('change', async (e) => {
+                    const clienteId = e.target.value;
+                    if (clienteId) {
+                        await loadServicosCliente(clienteId, 'projeto');
+                    } else {
+                        clearServicosContainer('projeto');
+                    }
+                });
             } catch (error) {
                 console.error('Erro ao carregar clientes:', error);
             }
@@ -2714,6 +2902,9 @@
             document.getElementById('projetoForm').reset();
             document.getElementById('projetoId').value = '';
             
+            // Limpar serviços
+            clearServicosContainer('projeto');
+            
             // Preencher data de início com hoje
             const hoje = new Date().toISOString().split('T')[0];
             document.getElementById('projetoDataInicio').value = hoje;
@@ -2730,6 +2921,7 @@
         // Fechar modal
         function closeProjetoModal() {
             document.getElementById('projetoModal').classList.remove('active');
+            clearServicosContainer('projeto');
         }
 
         // Editar projeto
@@ -2764,8 +2956,16 @@
                 loadUsuariosForSelect()
             ]);
             
-            document.getElementById('projetoClienteId').value = projeto.cliente_id || '';
+            const clienteId = projeto.cliente_id || '';
+            document.getElementById('projetoClienteId').value = clienteId;
             document.getElementById('projetoResponsavelId').value = projeto.responsavel_id || '';
+            
+            // Carregar serviços do cliente se houver
+            if (clienteId) {
+                await loadServicosCliente(clienteId, 'projeto');
+            } else {
+                clearServicosContainer('projeto');
+            }
 
             document.getElementById('projetoModal').classList.add('active');
         }
@@ -3048,6 +3248,511 @@
         // Fechar modal de detalhes
         function closeProjetoDetailsModal() {
             document.getElementById('projetoDetailsModal').classList.remove('active');
+        }
+
+        // ========== CRUD ORÇAMENTOS ==========
+        let allOrcamentos = [];
+        let filteredOrcamentos = [];
+
+        // Carregar orçamentos do Supabase
+        async function loadOrcamentos() {
+            const loading = document.getElementById('orcamentosLoading');
+            const table = document.getElementById('orcamentosTable');
+            const empty = document.getElementById('orcamentosEmpty');
+            
+            loading.classList.add('active');
+            table.style.display = 'none';
+            empty.style.display = 'none';
+
+            try {
+                // Buscar orçamentos
+                const { data: orcamentosData, error: orcamentosError } = await supabase
+                    .from('orcamentos')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (orcamentosError) throw orcamentosError;
+
+                // Buscar clientes
+                let clientesMap = {};
+                try {
+                    const { data: clientesData, error: clientesError } = await supabase
+                        .from('clientes')
+                        .select('id, nome, empresa');
+
+                    if (!clientesError && clientesData) {
+                        clientesData.forEach(cliente => {
+                            clientesMap[cliente.id] = cliente;
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar clientes para orçamentos:', e);
+                }
+
+                // Combinar dados
+                allOrcamentos = (orcamentosData || []).map(orcamento => ({
+                    ...orcamento,
+                    cliente: clientesMap[orcamento.cliente_id] || null
+                }));
+
+                filteredOrcamentos = [...allOrcamentos];
+                renderOrcamentos();
+            } catch (error) {
+                console.error('Erro ao carregar orçamentos:', error);
+                allOrcamentos = [];
+                filteredOrcamentos = [];
+                renderOrcamentos();
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Renderizar tabela de orçamentos
+        function renderOrcamentos() {
+            const tbody = document.getElementById('orcamentosTableBody');
+            const table = document.getElementById('orcamentosTable');
+            const empty = document.getElementById('orcamentosEmpty');
+
+            if (filteredOrcamentos.length === 0) {
+                table.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            table.style.display = 'table';
+            empty.style.display = 'none';
+
+            tbody.innerHTML = filteredOrcamentos.map(orcamento => {
+                const cliente = orcamento.cliente || {};
+                const clienteNome = cliente.nome || cliente.empresa || 'Cliente não encontrado';
+                
+                const formatDate = (dateStr) => {
+                    if (!dateStr) return '-';
+                    try {
+                        const date = new Date(dateStr);
+                        return date.toLocaleDateString('pt-BR');
+                    } catch {
+                        return dateStr;
+                    }
+                };
+
+                const formatCurrency = (value) => {
+                    if (!value) return 'R$ 0,00';
+                    return new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }).format(value);
+                };
+
+                // Calcular data de validade
+                let dataValidade = '-';
+                if (orcamento.data && orcamento.validade_dias) {
+                    try {
+                        const data = new Date(orcamento.data);
+                        data.setDate(data.getDate() + parseInt(orcamento.validade_dias));
+                        dataValidade = formatDate(data.toISOString());
+                    } catch (e) {
+                        dataValidade = '-';
+                    }
+                }
+
+                const statusMap = {
+                    'rascunho': { label: 'Rascunho', class: 'badge-rascunho' },
+                    'enviado': { label: 'Enviado', class: 'badge-enviado' },
+                    'aprovado': { label: 'Aprovado', class: 'badge-aprovado' },
+                    'rejeitado': { label: 'Rejeitado', class: 'badge-rejeitado' },
+                    'expirado': { label: 'Expirado', class: 'badge-expirado' }
+                };
+
+                const status = statusMap[orcamento.status] || { label: orcamento.status, class: 'badge-rascunho' };
+
+                return `
+                    <tr>
+                        <td>${orcamento.numero || 'N/A'}</td>
+                        <td>${clienteNome}</td>
+                        <td>${formatDate(orcamento.data)}</td>
+                        <td>${formatCurrency(orcamento.valor)}</td>
+                        <td>${dataValidade}</td>
+                        <td>
+                            <span class="badge ${status.class}">
+                                ${status.label}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-action" onclick="viewOrcamentoDetails('${orcamento.id}')" style="border-color: var(--primary); color: var(--primary);">Ver Detalhes</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filtrar orçamentos
+        function filterOrcamentos() {
+            const search = document.getElementById('orcamentoSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('orcamentoStatusFilter').value;
+
+            filteredOrcamentos = allOrcamentos.filter(orcamento => {
+                const cliente = orcamento.cliente || {};
+                const clienteNome = (cliente.nome || cliente.empresa || '').toLowerCase();
+                const numero = (orcamento.numero || '').toLowerCase();
+                const descricao = (orcamento.descricao || '').toLowerCase();
+                
+                const matchSearch = !search || 
+                    numero.includes(search) ||
+                    clienteNome.includes(search) ||
+                    descricao.includes(search);
+                
+                const matchStatus = !statusFilter || orcamento.status === statusFilter;
+                
+                return matchSearch && matchStatus;
+            });
+
+            renderOrcamentos();
+        }
+
+        // Abrir modal de orçamento (novo)
+        async function openOrcamentoModal() {
+            document.getElementById('orcamentoModalTitle').textContent = 'Novo Orçamento';
+            document.getElementById('orcamentoForm').reset();
+            document.getElementById('orcamentoId').value = '';
+            
+            // Limpar serviços
+            clearServicosContainer('orcamento');
+            
+            // Preencher data com hoje
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('orcamentoData').value = hoje;
+            
+            // Gerar número do orçamento
+            try {
+                const { data, error } = await supabase
+                    .from('orcamentos')
+                    .select('numero')
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+                
+                let proximoNumero = 1;
+                if (!error && data && data.length > 0 && data[0].numero) {
+                    const ultimoNumero = parseInt(data[0].numero) || 0;
+                    proximoNumero = ultimoNumero + 1;
+                }
+                
+                document.getElementById('orcamentoNumero').value = proximoNumero.toString().padStart(4, '0');
+            } catch (e) {
+                document.getElementById('orcamentoNumero').value = '0001';
+            }
+            
+            // Carregar clientes no select
+            await loadClientesForOrcamentoSelect();
+            
+            document.getElementById('orcamentoModal').classList.add('active');
+        }
+
+        // Carregar clientes no select de orçamento
+        async function loadClientesForOrcamentoSelect() {
+            try {
+                const { data, error } = await supabase
+                    .from('clientes')
+                    .select('id, nome, empresa')
+                    .eq('status', 'ativo')
+                    .order('nome', { ascending: true });
+
+                if (error) throw error;
+
+                const select = document.getElementById('orcamentoClienteId');
+                select.innerHTML = '<option value="">Selecione um cliente</option>';
+                
+                (data || []).forEach(cliente => {
+                    const option = document.createElement('option');
+                    option.value = cliente.id;
+                    option.textContent = cliente.empresa ? `${cliente.nome} - ${cliente.empresa}` : cliente.nome;
+                    select.appendChild(option);
+                });
+
+                // Remover listeners antigos e adicionar novo listener para carregar serviços quando cliente for selecionado
+                const newSelect = select.cloneNode(true);
+                select.parentNode.replaceChild(newSelect, select);
+                document.getElementById('orcamentoClienteId').addEventListener('change', async (e) => {
+                    const clienteId = e.target.value;
+                    if (clienteId) {
+                        await loadServicosCliente(clienteId, 'orcamento');
+                    } else {
+                        clearServicosContainer('orcamento');
+                    }
+                });
+            } catch (error) {
+                console.error('Erro ao carregar clientes:', error);
+            }
+        }
+
+        // Carregar serviços do cliente e exibir
+        async function loadServicosCliente(clienteId, tipo) {
+            try {
+                const { data, error } = await supabase
+                    .from('clientes')
+                    .select('servicos_contratados')
+                    .eq('id', clienteId)
+                    .single();
+
+                if (error) throw error;
+
+                const containerId = tipo === 'orcamento' ? 'orcamentoServicosContainer' : 'projetoServicosContainer';
+                const container = document.getElementById(containerId);
+
+                if (!data || !data.servicos_contratados || data.servicos_contratados.length === 0) {
+                    container.innerHTML = '<span style="color: var(--text-gray); font-style: italic;">Este cliente não possui serviços contratados</span>';
+                    return;
+                }
+
+                const servicos = data.servicos_contratados;
+                const servicosHtml = servicos.map(servico => {
+                    const nomeFormatado = servico
+                        .replace(/_/g, ' ')
+                        .split(' ')
+                        .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+                        .join(' ');
+                    return `<span class="servico-badge">${nomeFormatado}</span>`;
+                }).join('');
+
+                container.innerHTML = servicosHtml;
+            } catch (error) {
+                console.error('Erro ao carregar serviços do cliente:', error);
+                const containerId = tipo === 'orcamento' ? 'orcamentoServicosContainer' : 'projetoServicosContainer';
+                const container = document.getElementById(containerId);
+                container.innerHTML = '<span style="color: var(--danger);">Erro ao carregar serviços</span>';
+            }
+        }
+
+        // Limpar container de serviços
+        function clearServicosContainer(tipo) {
+            const containerId = tipo === 'orcamento' ? 'orcamentoServicosContainer' : 'projetoServicosContainer';
+            const container = document.getElementById(containerId);
+            container.innerHTML = '<span style="color: var(--text-gray); font-style: italic;">Selecione um cliente para ver os serviços contratados</span>';
+        }
+
+        // Fechar modal
+        function closeOrcamentoModal() {
+            document.getElementById('orcamentoModal').classList.remove('active');
+            clearServicosContainer('orcamento');
+        }
+
+        // Editar orçamento
+        async function editOrcamento(id) {
+            const orcamento = allOrcamentos.find(o => o.id === id);
+            if (!orcamento) return;
+
+            document.getElementById('orcamentoModalTitle').textContent = 'Editar Orçamento';
+            document.getElementById('orcamentoId').value = orcamento.id;
+            document.getElementById('orcamentoNumero').value = orcamento.numero || '';
+            document.getElementById('orcamentoData').value = orcamento.data ? orcamento.data.split('T')[0] : '';
+            document.getElementById('orcamentoValidade').value = orcamento.validade_dias || 30;
+            document.getElementById('orcamentoValor').value = orcamento.valor || '';
+            document.getElementById('orcamentoStatus').value = orcamento.status || 'rascunho';
+            document.getElementById('orcamentoDescricao').value = orcamento.descricao || '';
+            document.getElementById('orcamentoObservacoes').value = orcamento.observacoes || '';
+
+            // Carregar clientes e selecionar o cliente do orçamento
+            await loadClientesForOrcamentoSelect();
+            const clienteId = orcamento.cliente_id || '';
+            document.getElementById('orcamentoClienteId').value = clienteId;
+            
+            // Carregar serviços do cliente se houver
+            if (clienteId) {
+                await loadServicosCliente(clienteId, 'orcamento');
+            } else {
+                clearServicosContainer('orcamento');
+            }
+
+            document.getElementById('orcamentoModal').classList.add('active');
+        }
+
+        // Salvar orçamento (criar ou atualizar)
+        document.getElementById('orcamentoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('orcamentoId').value;
+
+            const orcamentoData = {
+                numero: document.getElementById('orcamentoNumero').value.trim(),
+                cliente_id: document.getElementById('orcamentoClienteId').value,
+                data: document.getElementById('orcamentoData').value,
+                validade_dias: parseInt(document.getElementById('orcamentoValidade').value) || 30,
+                valor: parseFloat(document.getElementById('orcamentoValor').value) || 0,
+                status: document.getElementById('orcamentoStatus').value,
+                descricao: document.getElementById('orcamentoDescricao').value.trim(),
+                observacoes: document.getElementById('orcamentoObservacoes').value.trim() || null
+            };
+
+            try {
+                if (id) {
+                    // Atualizar
+                    const { error } = await supabase
+                        .from('orcamentos')
+                        .update(orcamentoData)
+                        .eq('id', id);
+
+                    if (error) throw error;
+                    alert('Orçamento atualizado com sucesso!');
+                } else {
+                    // Criar
+                    const { error } = await supabase
+                        .from('orcamentos')
+                        .insert([orcamentoData]);
+
+                    if (error) throw error;
+                    alert('Orçamento criado com sucesso!');
+                }
+
+                closeOrcamentoModal();
+                loadOrcamentos();
+                loadDashboardData();
+            } catch (error) {
+                console.error('Erro ao salvar orçamento:', error);
+                alert('Erro ao salvar orçamento: ' + (error.message || 'Erro desconhecido'));
+            }
+        });
+
+        // Ver detalhes do orçamento
+        function viewOrcamentoDetails(id) {
+            const orcamento = allOrcamentos.find(o => o.id === id);
+            if (!orcamento) {
+                alert('Orçamento não encontrado');
+                return;
+            }
+
+            const content = document.getElementById('orcamentoDetailsContent');
+            const editBtn = document.getElementById('editOrcamentoFromDetailsBtn');
+            const deleteBtn = document.getElementById('deleteOrcamentoFromDetailsBtn');
+            
+            editBtn.onclick = () => {
+                closeOrcamentoDetailsModal();
+                editOrcamento(id);
+            };
+
+            deleteBtn.onclick = async () => {
+                if (!confirm('Tem certeza que deseja excluir este orçamento? Esta ação não pode ser desfeita.')) {
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase
+                        .from('orcamentos')
+                        .delete()
+                        .eq('id', id);
+
+                    if (error) throw error;
+                    
+                    alert('Orçamento excluído com sucesso!');
+                    closeOrcamentoDetailsModal();
+                    loadOrcamentos();
+                    loadDashboardData();
+                } catch (error) {
+                    console.error('Erro ao excluir orçamento:', error);
+                    alert('Erro ao excluir orçamento: ' + (error.message || 'Erro desconhecido'));
+                }
+            };
+
+            const cliente = orcamento.cliente || {};
+            const clienteNome = cliente.nome || cliente.empresa || 'Cliente não encontrado';
+
+            const formatDate = (dateStr) => {
+                if (!dateStr) return '-';
+                try {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('pt-BR');
+                } catch {
+                    return dateStr;
+                }
+            };
+
+            const formatCurrency = (value) => {
+                if (!value) return 'R$ 0,00';
+                return new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(value);
+            };
+
+            // Calcular data de validade
+            let dataValidade = '-';
+            if (orcamento.data && orcamento.validade_dias) {
+                try {
+                    const data = new Date(orcamento.data);
+                    data.setDate(data.getDate() + parseInt(orcamento.validade_dias));
+                    dataValidade = formatDate(data.toISOString());
+                } catch (e) {
+                    dataValidade = '-';
+                }
+            }
+
+            const statusMap = {
+                'rascunho': { label: 'Rascunho', class: 'badge-rascunho' },
+                'enviado': { label: 'Enviado', class: 'badge-enviado' },
+                'aprovado': { label: 'Aprovado', class: 'badge-aprovado' },
+                'rejeitado': { label: 'Rejeitado', class: 'badge-rejeitado' },
+                'expirado': { label: 'Expirado', class: 'badge-expirado' }
+            };
+
+            const status = statusMap[orcamento.status] || { label: orcamento.status, class: 'badge-rascunho' };
+
+            const displayValue = (value) => value || '<span class="empty">-</span>';
+
+            content.innerHTML = `
+                <div class="details-section">
+                    <div class="details-section-title">Informações Básicas</div>
+                    <div class="details-grid">
+                        <div class="details-item">
+                            <div class="details-label">Número do Orçamento</div>
+                            <div class="details-value">${orcamento.numero || '-'}</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Cliente</div>
+                            <div class="details-value">${clienteNome}</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Data do Orçamento</div>
+                            <div class="details-value">${formatDate(orcamento.data)}</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Validade</div>
+                            <div class="details-value">${orcamento.validade_dias || '-'} dias (até ${dataValidade})</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Valor Total</div>
+                            <div class="details-value">${formatCurrency(orcamento.valor)}</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Status</div>
+                            <div class="details-value">
+                                <span class="badge ${status.class}">
+                                    ${status.label}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-section-title">Descrição dos Serviços</div>
+                    <div class="details-item">
+                        <div class="details-value" style="white-space: pre-wrap;">${displayValue(orcamento.descricao)}</div>
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-section-title">Observações</div>
+                    <div class="details-item">
+                        <div class="details-value" style="white-space: pre-wrap;">${displayValue(orcamento.observacoes)}</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('orcamentoDetailsModal').classList.add('active');
+        }
+
+        // Fechar modal de detalhes
+        function closeOrcamentoDetailsModal() {
+            document.getElementById('orcamentoDetailsModal').classList.remove('active');
         }
 
         // Funções para menu mobile
