@@ -1325,49 +1325,156 @@
             margin-bottom: 16px;
         }
 
+        /* ========== RESPONSIVIDADE MOBILE ========== */
         @media (max-width: 768px) {
+            /* Sidebar */
             .sidebar {
                 transform: translateX(-100%);
+                width: 280px;
             }
 
             .sidebar.open {
                 transform: translateX(0);
             }
 
+            .sidebar-overlay.active {
+                display: block;
+            }
+
             .main-content {
                 margin-left: 0;
-                padding: 16px;
+                padding: 12px;
             }
 
             .menu-toggle {
                 display: block;
+                margin-right: 12px;
             }
 
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-content {
-                width: 95%;
-                padding: 20px;
-                max-height: 95vh;
-            }
-
+            /* Header */
             .header {
-                padding: 12px 16px;
+                padding: 12px;
+                margin: -12px -12px 16px -12px;
+                flex-wrap: wrap;
             }
 
             .header-title {
                 font-size: 18px;
+                flex: 1;
+                min-width: 0;
             }
 
+            .header-user {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 8px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .user-avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+
+            .btn-logout {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            /* Títulos */
+            .page-title {
+                font-size: 22px;
+                margin-bottom: 6px;
+            }
+
+            .page-subtitle {
+                font-size: 13px;
+                margin-bottom: 16px;
+            }
+
+            /* Cards Grid */
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin-bottom: 16px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .card-value {
+                font-size: 20px;
+            }
+
+            /* Tabelas - Transformar em Cards */
             .table-container {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
+                overflow-x: visible;
+                margin: 0 -12px;
+                padding: 0 12px;
             }
 
             table {
-                min-width: 600px;
+                display: block;
+                width: 100%;
+                min-width: auto;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tbody {
+                display: block;
+            }
+
+            tr {
+                display: block;
+                background: var(--secondary);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                margin-bottom: 12px;
+                padding: 16px;
+            }
+
+            td {
+                display: block;
+                width: 100%;
+                padding: 8px 0;
+                text-align: left !important;
+                border: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            td:last-child {
+                border-bottom: none;
+            }
+
+            td:before {
+                content: attr(data-label) ": ";
+                font-weight: 600;
+                color: var(--primary);
+                display: inline-block;
+                margin-right: 8px;
+                min-width: 100px;
+            }
+
+            /* Tabela de orçamentos específica */
+            table tr td:first-child {
+                font-weight: 600;
+                font-size: 16px;
+                color: var(--primary);
+                border-bottom: 2px solid rgba(255, 102, 0, 0.3);
+                padding-bottom: 12px;
+                margin-bottom: 8px;
+            }
+
+            table tr td:first-child:before {
+                display: none;
             }
 
             /* Tabela de itens do orçamento - versão mobile */
@@ -1420,20 +1527,283 @@
                 padding: 8px 0;
             }
 
+            /* Formulários */
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .form-group {
+                margin-bottom: 16px;
+            }
+
+            .form-label {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+
+            .form-input,
+            .search-input {
+                font-size: 16px; /* Evita zoom no iOS */
+                padding: 14px 16px;
+            }
+
+            textarea.form-input {
+                min-height: 100px;
+            }
+
+            /* Botões */
+            .btn {
+                padding: 14px 20px;
+                font-size: 15px;
+                min-height: 48px; /* Área de toque adequada */
+            }
+
+            .btn-action {
+                padding: 8px 12px;
+                font-size: 13px;
+                margin-right: 6px;
+                margin-bottom: 6px;
+            }
+
+            /* Modais */
+            .modal {
+                padding: 0;
+                align-items: flex-start;
+            }
+
+            .modal.active {
+                display: flex;
+            }
+
+            .modal-content {
+                width: 100%;
+                max-width: 100%;
+                height: 100vh;
+                max-height: 100vh;
+                padding: 16px;
+                margin: 0;
+                border-radius: 0;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .modal-header {
+                position: sticky;
+                top: 0;
+                background: var(--secondary);
+                z-index: 10;
+                padding: 12px 0;
+                margin-bottom: 16px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .modal-title {
+                font-size: 20px;
+            }
+
+            .btn-close {
+                width: 40px;
+                height: 40px;
+                font-size: 28px;
+            }
+
             .modal-actions {
                 flex-direction: column;
+                gap: 12px;
+                position: sticky;
+                bottom: 0;
+                background: var(--secondary);
+                padding: 16px 0;
+                margin-top: 24px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
             }
 
             .modal-actions .btn {
                 width: 100%;
+                margin: 0;
             }
 
-            .details-grid {
-                grid-template-columns: 1fr;
+            /* Search Bar */
+            .search-bar {
+                flex-direction: column;
+                gap: 12px;
+                margin-bottom: 16px;
             }
 
-            .cards-grid {
-                grid-template-columns: 1fr;
+            .search-input {
+                width: 100%;
+            }
+
+            /* Section Cards */
+            .section-card {
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 12px;
+            }
+
+            /* Login */
+            .login-container {
+                padding: 16px;
+            }
+
+            .login-box {
+                padding: 24px;
+            }
+
+            .login-title {
+                font-size: 26px;
+            }
+
+            /* Kanban */
+            .kanban-board {
+                flex-direction: column;
+                overflow-x: visible;
+                overflow-y: visible;
+                gap: 16px;
+            }
+
+            .kanban-column {
+                width: 100%;
+                min-width: 100%;
+                margin-bottom: 16px;
+            }
+
+            .kanban-card {
+                margin-bottom: 12px;
+            }
+
+            /* Badges e Tags */
+            .badge {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+
+            .tag-badge {
+                font-size: 11px;
+                padding: 4px 10px;
+                margin-right: 6px;
+                margin-bottom: 6px;
+            }
+
+            /* Cards de Notificação */
+            .notification-card {
+                padding: 12px;
+            }
+
+            .notification-title {
+                font-size: 13px;
+            }
+
+            /* Empty State */
+            .empty-state {
+                padding: 24px 16px;
+                font-size: 14px;
+            }
+
+            /* Upload */
+            .upload-form {
+                padding: 12px;
+            }
+
+            .upload-actions {
+                flex-direction: column;
+            }
+
+            .upload-actions .btn {
+                width: 100%;
+            }
+
+            /* Checkbox Groups */
+            .checkbox-group {
+                padding: 12px;
+            }
+
+            .checkbox-item {
+                padding: 10px 0;
+            }
+
+            /* Serviços Submenu */
+            .servico-submenu {
+                padding-left: 24px;
+            }
+
+            /* Image Viewer */
+            .image-viewer {
+                padding: 16px;
+            }
+
+            .image-viewer img {
+                max-width: 100%;
+                max-height: 70vh;
+            }
+
+            .image-viewer-close {
+                top: -50px;
+                right: 16px;
+            }
+
+            /* Proposta Pública Mobile */
+            #propostaPublicaPage {
+                padding: 16px 12px;
+            }
+
+            #propostaPublicaPage > div {
+                padding: 20px 16px;
+                border-radius: 12px;
+            }
+
+            #propostaPublicaPage h1 {
+                font-size: 22px;
+            }
+
+            #propostaPublicaPage table {
+                font-size: 12px;
+            }
+
+            #propostaPublicaPage button {
+                width: 100%;
+                margin-bottom: 12px;
+                padding: 14px;
+            }
+        }
+
+        /* Mobile muito pequeno (< 375px) */
+        @media (max-width: 374px) {
+            .page-title {
+                font-size: 20px;
+            }
+
+            .modal-title {
+                font-size: 18px;
+            }
+
+            .btn {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            .card {
+                padding: 12px;
+            }
+
+            .section-card {
+                padding: 12px;
+            }
+        }
+
+        /* Landscape mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .modal-content {
+                max-height: 95vh;
+            }
+
+            .sidebar {
+                width: 260px;
             }
         }
 
@@ -3408,17 +3778,17 @@
                 
                 return `
                     <tr>
-                        <td>${cliente.nome || ''}</td>
-                        <td>${cliente.empresa || '-'}</td>
-                        <td>${cliente.email || ''}</td>
-                        <td>${cliente.telefone || cliente.whatsapp || '-'}</td>
-                        <td>${cidadeEstado}</td>
-                        <td>
+                        <td data-label="Nome">${cliente.nome || ''}</td>
+                        <td data-label="Empresa">${cliente.empresa || '-'}</td>
+                        <td data-label="Email">${cliente.email || ''}</td>
+                        <td data-label="Telefone">${cliente.telefone || cliente.whatsapp || '-'}</td>
+                        <td data-label="Localização">${cidadeEstado}</td>
+                        <td data-label="Status">
                             <span class="badge ${cliente.status === 'ativo' ? 'badge-ativo' : 'badge-inativo'}">
                                 ${cliente.status === 'ativo' ? 'Ativo' : 'Inativo'}
                             </span>
                         </td>
-                        <td>
+                        <td data-label="Ações">
                             <button class="btn-action" onclick="viewClienteDetails('${cliente.id}')" style="border-color: var(--primary); color: var(--primary); margin-right: 8px;">Ver Detalhes</button>
                             <button class="btn-action" onclick="criarOrcamentoParaCliente('${cliente.id}')" style="border-color: var(--success); color: var(--success);">📄 Novo Orçamento</button>
                         </td>
@@ -4265,17 +4635,17 @@
 
                 return `
                     <tr>
-                        <td>${projeto.nome || ''}</td>
-                        <td>${clienteNome}</td>
-                        <td>${formatDate(projeto.data_inicio)}</td>
-                        <td>${formatDate(projeto.data_prevista)}</td>
-                        <td>${formatCurrency(projeto.valor)}</td>
-                        <td>
+                        <td data-label="Nome do Projeto">${projeto.nome || ''}</td>
+                        <td data-label="Cliente">${clienteNome}</td>
+                        <td data-label="Data Início">${formatDate(projeto.data_inicio)}</td>
+                        <td data-label="Data Prevista">${formatDate(projeto.data_prevista)}</td>
+                        <td data-label="Valor">${formatCurrency(projeto.valor)}</td>
+                        <td data-label="Status">
                             <span class="badge ${status.class}">
                                 ${status.label}
                             </span>
                         </td>
-                        <td>
+                        <td data-label="Ações">
                             <button class="btn-action" onclick="viewProjetoDetails('${projeto.id}')" style="border-color: var(--primary); color: var(--primary);">Ver Detalhes</button>
                         </td>
                     </tr>
@@ -5532,17 +5902,17 @@
 
                 return `
                     <tr>
-                        <td>${orcamento.numero || 'N/A'}</td>
-                        <td>${clienteNome}</td>
-                        <td>${formatDate(orcamento.data)}</td>
-                        <td>${formatCurrency(orcamento.valor)}</td>
-                        <td>${dataValidade}</td>
-                        <td>
+                        <td data-label="Número">${orcamento.numero || 'N/A'}</td>
+                        <td data-label="Cliente">${clienteNome}</td>
+                        <td data-label="Data">${formatDate(orcamento.data)}</td>
+                        <td data-label="Valor">${formatCurrency(orcamento.valor)}</td>
+                        <td data-label="Validade">${dataValidade}</td>
+                        <td data-label="Status">
                             <span class="badge ${status.class}">
                                 ${status.label}
                             </span>
                         </td>
-                        <td>
+                        <td data-label="Ações">
                             <button class="btn-action" onclick="viewOrcamentoDetails('${orcamento.id}')" style="border-color: var(--primary); color: var(--primary); margin-right: 4px;">Ver</button>
                             ${orcamento.status === 'enviado' ? `
                                 <button class="btn-action" onclick="aprovarOrcamento('${orcamento.id}')" style="border-color: var(--success); color: var(--success); margin-right: 4px;" title="Aprovar">✓</button>
