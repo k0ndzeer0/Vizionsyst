@@ -545,6 +545,537 @@
             color: #ef4444;
         }
 
+        /* Kanban Board */
+        .kanban-board {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding: 16px 0;
+            min-height: 500px;
+        }
+
+        .kanban-column {
+            min-width: 280px;
+            max-width: 280px;
+            background: var(--tertiary);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 300px);
+        }
+
+        .kanban-column-header {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kanban-column-header h3 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .kanban-count {
+            background: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .kanban-column-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .kanban-card {
+            background: var(--secondary);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .kanban-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary);
+        }
+
+        .kanban-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+            transform: rotate(5deg);
+        }
+
+        .kanban-column-body.drag-over {
+            background: rgba(255, 102, 0, 0.1);
+            border: 2px dashed var(--primary);
+        }
+
+        .kanban-card-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .kanban-card-client {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .kanban-card-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .kanban-card-value {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 13px;
+        }
+
+        .kanban-card-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .kanban-card-actions button {
+            flex: 1;
+            padding: 6px;
+            font-size: 11px;
+        }
+
+        @media (max-width: 768px) {
+            .kanban-board {
+                flex-direction: column;
+            }
+            .kanban-column {
+                min-width: 100%;
+                max-width: 100%;
+            }
+        }
+
+        /* Timeline/Gantt */
+        .timeline-container {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+
+        .timeline-month {
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text);
+            padding: 8px;
+            background: var(--secondary);
+            border-radius: 6px;
+        }
+
+        .timeline-project {
+            margin: 12px 0;
+            padding: 12px;
+            background: var(--secondary);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            position: relative;
+        }
+
+        .timeline-project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .timeline-project-title {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .timeline-project-client {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .timeline-project-bar {
+            height: 8px;
+            background: var(--primary);
+            border-radius: 4px;
+            margin-top: 8px;
+            position: relative;
+        }
+
+        .timeline-project-dates {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-gray);
+            margin-top: 4px;
+        }
+
+        .timeline-legend {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--secondary);
+            border-radius: 8px;
+        }
+
+        .timeline-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .timeline-legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        /* Checklist de Tarefas */
+        .tarefas-container {
+            background: var(--tertiary);
+            border-radius: 8px;
+            padding: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .tarefa-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: var(--secondary);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .tarefa-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tarefa-item.concluida {
+            opacity: 0.6;
+        }
+
+        .tarefa-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .tarefa-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tarefa-descricao {
+            flex: 1;
+            color: var(--text);
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .tarefa-item.concluida .tarefa-descricao {
+            text-decoration: line-through;
+            color: var(--text-gray);
+        }
+
+        .tarefa-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .tarefa-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .tarefa-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tarefa-btn-edit {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .tarefa-btn-delete {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .tarefa-empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-gray);
+            font-style: italic;
+        }
+
+        .tarefa-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tarefa-form input {
+            flex: 1;
+            padding: 8px 12px;
+            background: var(--secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .tarefa-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .tarefa-form .btn {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        /* Arquivos e Documentos */
+        .arquivos-container {
+            background: var(--tertiary);
+            border-radius: 8px;
+            padding: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .arquivo-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--secondary);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .arquivo-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .arquivo-icon {
+            font-size: 24px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .arquivo-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .arquivo-nome {
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 500;
+            word-break: break-word;
+            margin-bottom: 4px;
+        }
+
+        .arquivo-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+
+        .arquivo-descricao {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .arquivo-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .arquivo-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text);
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .arquivo-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .arquivo-btn-download {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .arquivo-btn-delete {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .arquivo-btn-view {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Modal de visualização de imagem */
+        .image-viewer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .image-viewer-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .image-viewer-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .image-viewer-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .image-viewer-close:hover {
+            background: var(--danger);
+            transform: scale(1.1);
+        }
+
+        .arquivo-empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-gray);
+            font-style: italic;
+        }
+
+        .upload-form {
+            background: var(--secondary);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .upload-form input[type="file"] {
+            display: none;
+        }
+
+        .upload-form-label {
+            display: block;
+            padding: 12px;
+            background: var(--tertiary);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text);
+        }
+
+        .upload-form-label:hover {
+            border-color: var(--primary);
+            background: rgba(255, 102, 0, 0.1);
+        }
+
+        .upload-form-label.has-file {
+            border-color: var(--primary);
+            background: rgba(255, 102, 0, 0.1);
+        }
+
+        .upload-file-name {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--primary);
+            word-break: break-word;
+        }
+
+        .upload-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
         /* Tags */
         .tag-badge {
             background: rgba(255, 102, 0, 0.2);
@@ -1376,9 +1907,22 @@
             </div>
 
             <div id="projetosContent" class="page-content" style="display: none;">
-                <div style="margin-bottom: 24px;">
-                    <h1 class="page-title">Projetos</h1>
-                    <p class="page-subtitle">Gerencie seus projetos</p>
+                <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 class="page-title">Projetos</h1>
+                        <p class="page-subtitle">Gerencie seus projetos</p>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="viewTableBtn" class="btn" onclick="toggleProjetoView('table')" style="background: var(--primary); border-color: var(--primary);">
+                            📋 Tabela
+                        </button>
+                        <button id="viewKanbanBtn" class="btn" onclick="toggleProjetoView('kanban')" style="background: var(--tertiary); border-color: var(--tertiary);">
+                            📊 Kanban
+                        </button>
+                        <button id="viewTimelineBtn" class="btn" onclick="toggleProjetoView('timeline')" style="background: var(--tertiary); border-color: var(--tertiary);">
+                            📅 Timeline
+                        </button>
+                    </div>
                 </div>
 
                 <div class="section-card">
@@ -1400,7 +1944,8 @@
                         </select>
                     </div>
 
-                    <div class="table-container">
+                    <!-- Visualização Tabela -->
+                    <div id="projetosTableView" class="table-container">
                         <div id="projetosLoading" class="loading active">
                             <div class="spinner"></div>
                             <p>Carregando projetos...</p>
@@ -1422,6 +1967,91 @@
                         </table>
                         <div id="projetosEmpty" class="empty-state" style="display: none;">
                             Nenhum projeto encontrado
+                        </div>
+                    </div>
+
+                    <!-- Visualização Kanban -->
+                    <div id="projetosKanbanView" style="display: none;">
+                        <div id="kanbanBoard" class="kanban-board">
+                            <div class="kanban-column" data-status="planejamento">
+                                <div class="kanban-column-header">
+                                    <h3>📋 Planejamento</h3>
+                                    <span class="kanban-count" id="count-planejamento">0</span>
+                                </div>
+                                <div class="kanban-column-body" 
+                                     id="kanban-planejamento"
+                                     data-status="planejamento"
+                                     ondragover="handleDragOver(event)"
+                                     ondrop="handleDrop(event)"
+                                     ondragleave="handleDragLeave(event)">
+                                    <!-- Cards serão inseridos aqui -->
+                                </div>
+                            </div>
+                            <div class="kanban-column" data-status="em_andamento">
+                                <div class="kanban-column-header">
+                                    <h3>🚀 Em Andamento</h3>
+                                    <span class="kanban-count" id="count-em_andamento">0</span>
+                                </div>
+                                <div class="kanban-column-body" 
+                                     id="kanban-em_andamento"
+                                     data-status="em_andamento"
+                                     ondragover="handleDragOver(event)"
+                                     ondrop="handleDrop(event)"
+                                     ondragleave="handleDragLeave(event)">
+                                    <!-- Cards serão inseridos aqui -->
+                                </div>
+                            </div>
+                            <div class="kanban-column" data-status="pausado">
+                                <div class="kanban-column-header">
+                                    <h3>⏸️ Pausado</h3>
+                                    <span class="kanban-count" id="count-pausado">0</span>
+                                </div>
+                                <div class="kanban-column-body" 
+                                     id="kanban-pausado"
+                                     data-status="pausado"
+                                     ondragover="handleDragOver(event)"
+                                     ondrop="handleDrop(event)"
+                                     ondragleave="handleDragLeave(event)">
+                                    <!-- Cards serão inseridos aqui -->
+                                </div>
+                            </div>
+                            <div class="kanban-column" data-status="concluido">
+                                <div class="kanban-column-header">
+                                    <h3>✅ Concluído</h3>
+                                    <span class="kanban-count" id="count-concluido">0</span>
+                                </div>
+                                <div class="kanban-column-body" 
+                                     id="kanban-concluido"
+                                     data-status="concluido"
+                                     ondragover="handleDragOver(event)"
+                                     ondrop="handleDrop(event)"
+                                     ondragleave="handleDragLeave(event)">
+                                    <!-- Cards serão inseridos aqui -->
+                                </div>
+                            </div>
+                            <div class="kanban-column" data-status="cancelado">
+                                <div class="kanban-column-header">
+                                    <h3>❌ Cancelado</h3>
+                                    <span class="kanban-count" id="count-cancelado">0</span>
+                                </div>
+                                <div class="kanban-column-body" 
+                                     id="kanban-cancelado"
+                                     data-status="cancelado"
+                                     ondragover="handleDragOver(event)"
+                                     ondrop="handleDrop(event)"
+                                     ondragleave="handleDragLeave(event)">
+                                    <!-- Cards serão inseridos aqui -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visualização Timeline/Gantt -->
+                    <div id="projetosTimelineView" style="display: none;">
+                        <div id="timelineContainer" style="background: var(--tertiary); border-radius: 8px; padding: 20px; overflow-x: auto;">
+                            <div id="timelineContent" style="min-width: 100%; position: relative;">
+                                <!-- Timeline será renderizada aqui -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2104,7 +2734,12 @@
         const SUPABASE_URL = 'https://zhzhpctsndrcedukivhk.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoemhwY3RzbmRyY2VkdWtpdmhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5OTA2NjMsImV4cCI6MjA3ODU2NjY2M30.POJaM5AK2RPvczhIAPEjA7bvLxQxnN9rJC4f_oR5bC8';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false
+            }
+        });
 
         // Verificar se usuário está logado (localStorage)
         function checkAuth() {
@@ -2882,8 +3517,352 @@
             }
         }
 
+        // Variável para controlar a visualização atual
+        let projetoViewMode = 'table'; // 'table' ou 'kanban'
+
+        // Alternar entre visualização de tabela, kanban e timeline
+        function toggleProjetoView(mode) {
+            projetoViewMode = mode;
+            const tableView = document.getElementById('projetosTableView');
+            const kanbanView = document.getElementById('projetosKanbanView');
+            const timelineView = document.getElementById('projetosTimelineView');
+            const tableBtn = document.getElementById('viewTableBtn');
+            const kanbanBtn = document.getElementById('viewKanbanBtn');
+            const timelineBtn = document.getElementById('viewTimelineBtn');
+
+            // Resetar todos os botões
+            tableBtn.style.background = 'var(--tertiary)';
+            tableBtn.style.borderColor = 'var(--tertiary)';
+            kanbanBtn.style.background = 'var(--tertiary)';
+            kanbanBtn.style.borderColor = 'var(--tertiary)';
+            timelineBtn.style.background = 'var(--tertiary)';
+            timelineBtn.style.borderColor = 'var(--tertiary)';
+
+            // Ocultar todas as visualizações
+            tableView.style.display = 'none';
+            kanbanView.style.display = 'none';
+            timelineView.style.display = 'none';
+
+            // Mostrar a visualização selecionada
+            if (mode === 'table') {
+                tableView.style.display = 'block';
+                tableBtn.style.background = 'var(--primary)';
+                tableBtn.style.borderColor = 'var(--primary)';
+            } else if (mode === 'kanban') {
+                kanbanView.style.display = 'block';
+                kanbanBtn.style.background = 'var(--primary)';
+                kanbanBtn.style.borderColor = 'var(--primary)';
+            } else if (mode === 'timeline') {
+                timelineView.style.display = 'block';
+                timelineBtn.style.background = 'var(--primary)';
+                timelineBtn.style.borderColor = 'var(--primary)';
+            }
+
+            renderProjetos();
+        }
+
+        // ========== DRAG AND DROP NO KANBAN ==========
+        let draggedCard = null;
+        let isDragging = false;
+
+        function handleDragStart(e) {
+            // Verificar se o clique foi em um botão (não arrastar)
+            if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+                e.preventDefault();
+                return false;
+            }
+            
+            draggedCard = e.target.closest('.kanban-card');
+            if (!draggedCard) return;
+            
+            isDragging = false;
+            draggedCard.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', draggedCard.outerHTML);
+            
+            // Adicionar um pequeno delay para diferenciar drag de click
+            setTimeout(() => {
+                isDragging = true;
+            }, 100);
+        }
+
+        function handleDragEnd(e) {
+            if (draggedCard) {
+                draggedCard.classList.remove('dragging');
+            }
+            // Remover classe drag-over de todas as colunas
+            document.querySelectorAll('.kanban-column-body').forEach(col => {
+                col.classList.remove('drag-over');
+            });
+            isDragging = false;
+            draggedCard = null;
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            e.currentTarget.classList.add('drag-over');
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        async function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+
+            // Verificar se draggedCard existe e é válido
+            if (!draggedCard || !draggedCard.getAttribute) {
+                draggedCard = null;
+                return false;
+            }
+
+            const newStatus = e.currentTarget.getAttribute('data-status');
+            const projetoId = draggedCard.getAttribute('data-projeto-id');
+            const oldStatus = draggedCard.getAttribute('data-projeto-status');
+
+            // Validar dados
+            if (!projetoId || !newStatus) {
+                draggedCard = null;
+                return false;
+            }
+
+            // Se o status não mudou, não fazer nada
+            if (newStatus === oldStatus) {
+                draggedCard = null;
+                return false;
+            }
+
+            // Salvar referência do card antes de atualizar
+            const cardToMove = draggedCard;
+            const cardId = projetoId;
+
+            // Atualizar status no banco de dados
+            try {
+                const { error } = await supabase
+                    .from('projetos')
+                    .update({ status: newStatus })
+                    .eq('id', cardId);
+
+                if (error) throw error;
+
+                // Atualizar o projeto no array primeiro
+                const projeto = allProjetos.find(p => p.id === cardId);
+                if (projeto) {
+                    projeto.status = newStatus;
+                }
+
+                // Re-renderizar para atualizar tudo (move o card e atualiza contadores)
+                renderProjetosKanban();
+
+            } catch (error) {
+                console.error('Erro ao atualizar status do projeto:', error);
+                alert('Erro ao atualizar status: ' + (error.message || 'Erro desconhecido'));
+                // Recarregar projetos em caso de erro
+                await loadProjetos();
+            }
+
+            draggedCard = null;
+            isDragging = false;
+            return false;
+        }
+
+        // Renderizar projetos no Kanban
+        function renderProjetosKanban() {
+            const statusColumns = ['planejamento', 'em_andamento', 'pausado', 'concluido', 'cancelado'];
+            const statusMap = {
+                'planejamento': { label: 'Planejamento', emoji: '📋' },
+                'em_andamento': { label: 'Em Andamento', emoji: '🚀' },
+                'pausado': { label: 'Pausado', emoji: '⏸️' },
+                'concluido': { label: 'Concluído', emoji: '✅' },
+                'cancelado': { label: 'Cancelado', emoji: '❌' }
+            };
+
+            statusColumns.forEach(status => {
+                const columnBody = document.getElementById(`kanban-${status}`);
+                const countEl = document.getElementById(`count-${status}`);
+                
+                if (!columnBody || !countEl) return;
+
+                // Filtrar projetos por status
+                const projetosStatus = filteredProjetos.filter(p => p.status === status);
+                countEl.textContent = projetosStatus.length;
+
+                if (projetosStatus.length === 0) {
+                    columnBody.innerHTML = '<div style="text-align: center; color: var(--text-gray); font-style: italic; padding: 20px;">Nenhum projeto</div>';
+                    return;
+                }
+
+                columnBody.innerHTML = projetosStatus.map(projeto => {
+                    const cliente = projeto.cliente || {};
+                    const clienteNome = cliente.nome || cliente.empresa || 'Cliente não encontrado';
+                    
+                    const formatDate = (dateStr) => {
+                        if (!dateStr) return '-';
+                        try {
+                            const date = new Date(dateStr);
+                            return date.toLocaleDateString('pt-BR');
+                        } catch {
+                            return dateStr;
+                        }
+                    };
+
+                    const formatCurrency = (value) => {
+                        if (!value) return 'R$ 0,00';
+                        return new Intl.NumberFormat('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                        }).format(value);
+                    };
+
+                    return `
+                        <div class="kanban-card" 
+                             draggable="true" 
+                             data-projeto-id="${projeto.id}"
+                             data-projeto-status="${projeto.status}"
+                             ondragstart="handleDragStart(event)"
+                             ondragend="handleDragEnd(event)"
+                             onclick="if (!isDragging) viewProjetoDetails('${projeto.id}')">
+                            <div class="kanban-card-title">${projeto.nome || 'Sem nome'}</div>
+                            <div class="kanban-card-client">👤 ${clienteNome}</div>
+                            <div class="kanban-card-info">
+                                <span>📅 ${formatDate(projeto.data_inicio)}</span>
+                                <span>📆 ${formatDate(projeto.data_prevista)}</span>
+                            </div>
+                            <div class="kanban-card-value">${formatCurrency(projeto.valor)}</div>
+                            <div class="kanban-card-actions">
+                                <button class="btn btn-primary" onclick="event.stopPropagation(); viewProjetoDetails('${projeto.id}')" style="font-size: 11px; padding: 6px;">
+                                    Ver Detalhes
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+
+        // Renderizar projetos na Timeline
+        function renderProjetosTimeline() {
+            const timelineContent = document.getElementById('timelineContent');
+            if (!timelineContent) return;
+
+            if (filteredProjetos.length === 0) {
+                timelineContent.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-gray);">Nenhum projeto encontrado</div>';
+                return;
+            }
+
+            const formatDate = (dateStr) => {
+                if (!dateStr) return '-';
+                try {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('pt-BR');
+                } catch {
+                    return dateStr;
+                }
+            };
+
+            const formatCurrency = (value) => {
+                if (!value) return 'R$ 0,00';
+                return new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(value);
+            };
+
+            // Agrupar projetos por mês
+            const projetosPorMes = {};
+            filteredProjetos.forEach(projeto => {
+                if (!projeto.data_inicio) return;
+                const date = new Date(projeto.data_inicio);
+                const mesAno = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                const mesNome = date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+                
+                if (!projetosPorMes[mesAno]) {
+                    projetosPorMes[mesAno] = {
+                        nome: mesNome.charAt(0).toUpperCase() + mesNome.slice(1),
+                        projetos: []
+                    };
+                }
+                projetosPorMes[mesAno].projetos.push(projeto);
+            });
+
+            // Ordenar meses
+            const mesesOrdenados = Object.keys(projetosPorMes).sort();
+
+            let html = '<div class="timeline-legend">';
+            html += '<div class="timeline-legend-item"><span class="timeline-legend-color" style="background: var(--primary);"></span><span>Em Andamento</span></div>';
+            html += '<div class="timeline-legend-item"><span class="timeline-legend-color" style="background: rgba(156, 163, 175, 0.5);"></span><span>Planejamento</span></div>';
+            html += '<div class="timeline-legend-item"><span class="timeline-legend-color" style="background: rgba(16, 185, 129, 0.5);"></span><span>Concluído</span></div>';
+            html += '<div class="timeline-legend-item"><span class="timeline-legend-color" style="background: rgba(239, 68, 68, 0.5);"></span><span>Pausado/Cancelado</span></div>';
+            html += '</div>';
+
+            mesesOrdenados.forEach(mesAno => {
+                const mes = projetosPorMes[mesAno];
+                html += `<div style="margin-bottom: 24px;">`;
+                html += `<h3 style="color: var(--text); margin-bottom: 16px; font-size: 16px;">${mes.nome}</h3>`;
+                
+                mes.projetos.forEach(projeto => {
+                    const cliente = projeto.cliente || {};
+                    const clienteNome = cliente.nome || cliente.empresa || 'Cliente não encontrado';
+                    
+                    // Determinar cor baseada no status
+                    let corBarra = 'var(--primary)';
+                    if (projeto.status === 'planejamento') corBarra = 'rgba(156, 163, 175, 0.5)';
+                    else if (projeto.status === 'concluido') corBarra = 'rgba(16, 185, 129, 0.5)';
+                    else if (projeto.status === 'pausado' || projeto.status === 'cancelado') corBarra = 'rgba(239, 68, 68, 0.5)';
+
+                    html += `
+                        <div class="timeline-project" onclick="viewProjetoDetails('${projeto.id}')" style="cursor: pointer;">
+                            <div class="timeline-project-header">
+                                <div>
+                                    <div class="timeline-project-title">${projeto.nome || 'Sem nome'}</div>
+                                    <div class="timeline-project-client">👤 ${clienteNome}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600; color: var(--primary);">${formatCurrency(projeto.valor)}</div>
+                                    <span class="badge badge-${projeto.status || 'planejamento'}" style="font-size: 10px; padding: 2px 8px;">
+                                        ${projeto.status === 'em_andamento' ? 'Em Andamento' : 
+                                          projeto.status === 'concluido' ? 'Concluído' :
+                                          projeto.status === 'pausado' ? 'Pausado' :
+                                          projeto.status === 'cancelado' ? 'Cancelado' : 'Planejamento'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="timeline-project-bar" style="background: ${corBarra};"></div>
+                            <div class="timeline-project-dates">
+                                <span>📅 Início: ${formatDate(projeto.data_inicio)}</span>
+                                <span>📆 Prevista: ${formatDate(projeto.data_prevista)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            });
+
+            timelineContent.innerHTML = html;
+        }
+
         // Renderizar tabela de projetos
         function renderProjetos() {
+            // Verificar qual visualização está ativa
+            if (projetoViewMode === 'kanban') {
+                renderProjetosKanban();
+                return;
+            }
+            
+            if (projetoViewMode === 'timeline') {
+                renderProjetosTimeline();
+                return;
+            }
+
             const tbody = document.getElementById('projetosTableBody');
             const table = document.getElementById('projetosTable');
             const empty = document.getElementById('projetosEmpty');
@@ -3191,7 +4170,7 @@
         });
 
         // Ver detalhes do projeto
-        function viewProjetoDetails(id) {
+        async function viewProjetoDetails(id) {
             const projeto = allProjetos.find(p => p.id === id);
             if (!projeto) {
                 alert('Projeto não encontrado');
@@ -3374,14 +4353,683 @@
                         <div class="details-value" style="white-space: pre-wrap;">${displayValue(projeto.observacoes)}</div>
                     </div>
                 </div>
+
+                <div class="details-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div class="details-section-title">Checklist de Tarefas</div>
+                        <button type="button" class="btn btn-primary" onclick="adicionarTarefa('${projeto.id}')" style="padding: 6px 12px; font-size: 12px;">+ Nova Tarefa</button>
+                    </div>
+                    <div id="tarefasContainer-${projeto.id}" class="tarefas-container">
+                        <div style="text-align: center; padding: 20px; color: var(--text-gray);">
+                            Carregando tarefas...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div class="details-section-title">Arquivos e Documentos</div>
+                        <button type="button" class="btn btn-primary" onclick="abrirUploadArquivo('${projeto.id}')" style="padding: 6px 12px; font-size: 12px;">📎 Enviar Arquivo</button>
+                    </div>
+                    <div id="arquivosContainer-${projeto.id}" class="arquivos-container">
+                        <div style="text-align: center; padding: 20px; color: var(--text-gray);">
+                            Carregando arquivos...
+                        </div>
+                    </div>
+                </div>
             `;
 
             document.getElementById('projetoDetailsModal').classList.add('active');
+            
+            // Carregar tarefas e arquivos do projeto
+            await Promise.all([
+                loadTarefas(projeto.id),
+                loadArquivos(projeto.id)
+            ]);
         }
 
         // Fechar modal de detalhes
         function closeProjetoDetailsModal() {
             document.getElementById('projetoDetailsModal').classList.remove('active');
+        }
+
+        // ========== GESTÃO DE TAREFAS ==========
+        let tarefasEditando = {}; // Armazena tarefas sendo editadas
+
+        // Carregar tarefas do projeto
+        async function loadTarefas(projetoId) {
+            const container = document.getElementById(`tarefasContainer-${projetoId}`);
+            if (!container) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('tarefas')
+                    .select('*')
+                    .eq('projeto_id', projetoId)
+                    .order('ordem', { ascending: true })
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+
+                renderTarefas(projetoId, data || []);
+            } catch (error) {
+                console.error('Erro ao carregar tarefas:', error);
+                container.innerHTML = '<div class="tarefa-empty">Erro ao carregar tarefas</div>';
+            }
+        }
+
+        // Renderizar tarefas
+        function renderTarefas(projetoId, tarefas) {
+            const container = document.getElementById(`tarefasContainer-${projetoId}`);
+            if (!container) return;
+
+            if (!tarefas || tarefas.length === 0) {
+                container.innerHTML = '<div class="tarefa-empty">Nenhuma tarefa adicionada ainda</div>';
+                return;
+            }
+
+            let html = '';
+            tarefas.forEach(tarefa => {
+                const isEditando = tarefasEditando[tarefa.id];
+                if (isEditando) {
+                    // Modo de edição
+                    html += `
+                        <div class="tarefa-item">
+                            <div class="tarefa-form" style="width: 100%;">
+                                <input type="text" id="tarefaEditInput-${tarefa.id}" value="${(tarefa.descricao || '').replace(/"/g, '&quot;')}" placeholder="Descrição da tarefa" style="flex: 1;">
+                                <button type="button" class="btn btn-primary" onclick="salvarTarefa('${tarefa.id}', '${projetoId}')" style="padding: 8px 16px; font-size: 12px;">Salvar</button>
+                                <button type="button" class="btn btn-secondary" onclick="cancelarEdicaoTarefa('${tarefa.id}', '${projetoId}')" style="padding: 8px 16px; font-size: 12px;">Cancelar</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Modo de visualização
+                    html += `
+                        <div class="tarefa-item ${tarefa.concluida ? 'concluida' : ''}">
+                            <input type="checkbox" class="tarefa-checkbox" ${tarefa.concluida ? 'checked' : ''} 
+                                   onchange="toggleTarefa('${tarefa.id}', '${projetoId}', this.checked)">
+                            <div class="tarefa-content">
+                                <div class="tarefa-descricao">${tarefa.descricao || ''}</div>
+                            </div>
+                            <div class="tarefa-actions">
+                                <button type="button" class="tarefa-btn tarefa-btn-edit" onclick="editarTarefa('${tarefa.id}', '${projetoId}')" title="Editar">
+                                    ✏️
+                                </button>
+                                <button type="button" class="tarefa-btn tarefa-btn-delete" onclick="deletarTarefa('${tarefa.id}', '${projetoId}')" title="Excluir">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Adicionar nova tarefa
+        async function adicionarTarefa(projetoId) {
+            const container = document.getElementById(`tarefasContainer-${projetoId}`);
+            if (!container) return;
+
+            // Criar formulário de nova tarefa
+            const formHtml = `
+                <div class="tarefa-item">
+                    <div class="tarefa-form" style="width: 100%;">
+                        <input type="text" id="novaTarefaInput-${projetoId}" placeholder="Digite a descrição da tarefa..." style="flex: 1;">
+                        <button type="button" class="btn btn-primary" onclick="criarTarefa('${projetoId}')" style="padding: 8px 16px; font-size: 12px;">Adicionar</button>
+                        <button type="button" class="btn btn-secondary" onclick="cancelarNovaTarefa('${projetoId}')" style="padding: 8px 16px; font-size: 12px;">Cancelar</button>
+                    </div>
+                </div>
+            `;
+
+            // Se estiver vazio, substituir; senão, adicionar no início
+            if (container.querySelector('.tarefa-empty')) {
+                container.innerHTML = formHtml;
+            } else {
+                container.insertAdjacentHTML('afterbegin', formHtml);
+            }
+
+            // Focar no input
+            setTimeout(() => {
+                const input = document.getElementById(`novaTarefaInput-${projetoId}`);
+                if (input) input.focus();
+            }, 100);
+        }
+
+        // Criar tarefa
+        async function criarTarefa(projetoId) {
+            const input = document.getElementById(`novaTarefaInput-${projetoId}`);
+            if (!input) return;
+
+            const descricao = input.value.trim();
+            if (!descricao) {
+                alert('Por favor, digite uma descrição para a tarefa');
+                return;
+            }
+
+            try {
+                // Contar tarefas existentes para definir ordem
+                const { count } = await supabase
+                    .from('tarefas')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('projeto_id', projetoId);
+
+                const { data, error } = await supabase
+                    .from('tarefas')
+                    .insert({
+                        projeto_id: projetoId,
+                        descricao: descricao,
+                        concluida: false,
+                        ordem: (count || 0) + 1
+                    })
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                // Recarregar tarefas
+                await loadTarefas(projetoId);
+            } catch (error) {
+                console.error('Erro ao criar tarefa:', error);
+                alert('Erro ao criar tarefa: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Cancelar nova tarefa
+        async function cancelarNovaTarefa(projetoId) {
+            await loadTarefas(projetoId);
+        }
+
+        // Editar tarefa
+        function editarTarefa(tarefaId, projetoId) {
+            tarefasEditando[tarefaId] = true;
+            loadTarefas(projetoId);
+            
+            // Focar no input após renderizar
+            setTimeout(() => {
+                const input = document.getElementById(`tarefaEditInput-${tarefaId}`);
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 100);
+        }
+
+        // Salvar tarefa editada
+        async function salvarTarefa(tarefaId, projetoId) {
+            const input = document.getElementById(`tarefaEditInput-${tarefaId}`);
+            if (!input) return;
+
+            const descricao = input.value.trim();
+            if (!descricao) {
+                alert('Por favor, digite uma descrição para a tarefa');
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('tarefas')
+                    .update({ descricao: descricao })
+                    .eq('id', tarefaId);
+
+                if (error) throw error;
+
+                delete tarefasEditando[tarefaId];
+                await loadTarefas(projetoId);
+            } catch (error) {
+                console.error('Erro ao salvar tarefa:', error);
+                alert('Erro ao salvar tarefa: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Cancelar edição de tarefa
+        function cancelarEdicaoTarefa(tarefaId, projetoId) {
+            delete tarefasEditando[tarefaId];
+            loadTarefas(projetoId);
+        }
+
+        // Toggle tarefa (marcar/desmarcar como concluída)
+        async function toggleTarefa(tarefaId, projetoId, concluida) {
+            try {
+                const { error } = await supabase
+                    .from('tarefas')
+                    .update({ concluida: concluida })
+                    .eq('id', tarefaId);
+
+                if (error) throw error;
+
+                // Recarregar tarefas para atualizar visual
+                await loadTarefas(projetoId);
+            } catch (error) {
+                console.error('Erro ao atualizar tarefa:', error);
+                alert('Erro ao atualizar tarefa: ' + (error.message || 'Erro desconhecido'));
+                // Recarregar para reverter visual
+                await loadTarefas(projetoId);
+            }
+        }
+
+        // Deletar tarefa
+        async function deletarTarefa(tarefaId, projetoId) {
+            if (!confirm('Tem certeza que deseja excluir esta tarefa?')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('tarefas')
+                    .delete()
+                    .eq('id', tarefaId);
+
+                if (error) throw error;
+
+                await loadTarefas(projetoId);
+            } catch (error) {
+                console.error('Erro ao deletar tarefa:', error);
+                alert('Erro ao deletar tarefa: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // ========== GESTÃO DE ARQUIVOS ==========
+        let arquivosUpload = {}; // Armazena arquivos selecionados para upload
+
+        // Obter ícone baseado na extensão do arquivo
+        function getFileIcon(nomeArquivo) {
+            const ext = nomeArquivo.split('.').pop().toLowerCase();
+            const icons = {
+                'pdf': '📄',
+                'doc': '📝', 'docx': '📝',
+                'xls': '📊', 'xlsx': '📊',
+                'ppt': '📊', 'pptx': '📊',
+                'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️', 'svg': '🖼️',
+                'zip': '📦', 'rar': '📦', '7z': '📦',
+                'mp4': '🎥', 'avi': '🎥', 'mov': '🎥',
+                'mp3': '🎵', 'wav': '🎵',
+                'txt': '📋',
+                'html': '🌐', 'css': '🌐', 'js': '🌐',
+            };
+            return icons[ext] || '📎';
+        }
+
+        // Verificar se é uma imagem
+        function isImageFile(nomeArquivo, tipoMime) {
+            const ext = nomeArquivo.split('.').pop().toLowerCase();
+            const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp'];
+            const imageMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp', 'image/bmp'];
+            return imageExts.includes(ext) || (tipoMime && imageMimes.includes(tipoMime));
+        }
+
+        // Formatar tamanho do arquivo
+        function formatFileSize(bytes) {
+            if (!bytes) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        // Carregar arquivos do projeto
+        async function loadArquivos(projetoId) {
+            const container = document.getElementById(`arquivosContainer-${projetoId}`);
+            if (!container) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('arquivos_projeto')
+                    .select('*')
+                    .eq('projeto_id', projetoId)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                renderArquivos(projetoId, data || []);
+            } catch (error) {
+                console.error('Erro ao carregar arquivos:', error);
+                container.innerHTML = '<div class="arquivo-empty">Erro ao carregar arquivos</div>';
+            }
+        }
+
+        // Renderizar arquivos
+        function renderArquivos(projetoId, arquivos) {
+            const container = document.getElementById(`arquivosContainer-${projetoId}`);
+            if (!container) return;
+
+            if (!arquivos || arquivos.length === 0) {
+                container.innerHTML = '<div class="arquivo-empty">Nenhum arquivo enviado ainda</div>';
+                return;
+            }
+
+            let html = '';
+            arquivos.forEach(arquivo => {
+                const icon = getFileIcon(arquivo.nome_original || arquivo.nome_arquivo);
+                const tamanho = formatFileSize(arquivo.tamanho_bytes);
+                const dataUpload = new Date(arquivo.created_at).toLocaleDateString('pt-BR');
+                const isImage = isImageFile(arquivo.nome_original || arquivo.nome_arquivo, arquivo.tipo_mime);
+
+                html += `
+                    <div class="arquivo-item">
+                        <div class="arquivo-icon">${icon}</div>
+                        <div class="arquivo-info">
+                            <div class="arquivo-nome">${arquivo.nome_original || arquivo.nome_arquivo}</div>
+                            <div class="arquivo-meta">
+                                <span>📏 ${tamanho}</span>
+                                <span>📅 ${dataUpload}</span>
+                                ${arquivo.tipo_mime ? `<span>${arquivo.tipo_mime}</span>` : ''}
+                            </div>
+                            ${arquivo.descricao ? `<div class="arquivo-descricao">${arquivo.descricao}</div>` : ''}
+                        </div>
+                        <div class="arquivo-actions">
+                            ${isImage ? `
+                                <button type="button" class="arquivo-btn arquivo-btn-view" onclick="visualizarArquivo('${arquivo.id}', '${projetoId}')" title="Visualizar">
+                                    👁️ Visualizar
+                                </button>
+                            ` : ''}
+                            <button type="button" class="arquivo-btn arquivo-btn-download" onclick="downloadArquivo('${arquivo.id}', '${projetoId}')" title="Download">
+                                ⬇️ Download
+                            </button>
+                            <button type="button" class="arquivo-btn arquivo-btn-delete" onclick="deletarArquivo('${arquivo.id}', '${projetoId}')" title="Excluir">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Abrir formulário de upload
+        function abrirUploadArquivo(projetoId) {
+            const container = document.getElementById(`arquivosContainer-${projetoId}`);
+            if (!container) return;
+
+            // Criar formulário de upload
+            const formHtml = `
+                <div class="upload-form">
+                    <input type="file" id="arquivoInput-${projetoId}" onchange="selecionarArquivo('${projetoId}', this.files[0])" multiple>
+                    <label for="arquivoInput-${projetoId}" class="upload-form-label" id="uploadLabel-${projetoId}">
+                        <div>📎 Clique para selecionar arquivo(s) ou arraste aqui</div>
+                        <div class="upload-file-name" id="uploadFileName-${projetoId}" style="display: none;"></div>
+                    </label>
+                    <textarea id="arquivoDescricao-${projetoId}" class="form-input" rows="2" placeholder="Descrição opcional do arquivo..." style="margin-top: 12px; width: 100%; resize: vertical;"></textarea>
+                    <div class="upload-actions">
+                        <button type="button" class="btn btn-primary" onclick="uploadArquivo('${projetoId}')" style="flex: 1;">📤 Enviar</button>
+                        <button type="button" class="btn btn-secondary" onclick="cancelarUploadArquivo('${projetoId}')" style="flex: 1;">Cancelar</button>
+                    </div>
+                </div>
+            `;
+
+            // Se estiver vazio, substituir; senão, adicionar no início
+            if (container.querySelector('.arquivo-empty')) {
+                container.innerHTML = formHtml;
+            } else {
+                container.insertAdjacentHTML('afterbegin', formHtml);
+            }
+
+            // Permitir drag and drop
+            const label = document.getElementById(`uploadLabel-${projetoId}`);
+            if (label) {
+                label.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    label.style.borderColor = 'var(--primary)';
+                });
+                label.addEventListener('dragleave', () => {
+                    label.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                });
+                label.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    label.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        selecionarArquivo(projetoId, files[0]);
+                    }
+                });
+            }
+        }
+
+        // Selecionar arquivo
+        function selecionarArquivo(projetoId, file) {
+            if (!file) return;
+
+            arquivosUpload[projetoId] = file;
+            const label = document.getElementById(`uploadLabel-${projetoId}`);
+            const fileName = document.getElementById(`uploadFileName-${projetoId}`);
+
+            if (label && fileName) {
+                label.classList.add('has-file');
+                fileName.textContent = `📎 ${file.name} (${formatFileSize(file.size)})`;
+                fileName.style.display = 'block';
+            }
+        }
+
+        // Upload de arquivo
+        async function uploadArquivo(projetoId) {
+            const file = arquivosUpload[projetoId];
+            if (!file) {
+                alert('Por favor, selecione um arquivo');
+                return;
+            }
+
+            const descricao = document.getElementById(`arquivoDescricao-${projetoId}`)?.value.trim() || null;
+
+            try {
+                // Gerar nome único para o arquivo
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${projetoId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+                const storagePath = `projetos/${fileName}`;
+
+                // Upload para Supabase Storage
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('arquivos')
+                    .upload(storagePath, file, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
+
+                if (uploadError) {
+                    console.error('Erro detalhado do Storage:', uploadError);
+                    // Se o bucket não existir, tentar criar
+                    if (uploadError.message.includes('Bucket not found')) {
+                        alert('Bucket de storage não encontrado. Por favor, crie um bucket chamado "arquivos" no Supabase Storage.');
+                        return;
+                    }
+                    // Se for erro de RLS/política
+                    if (uploadError.message && (uploadError.message.includes('row-level security') || uploadError.message.includes('policy'))) {
+                        alert('Erro de política de Storage: Configure as políticas do bucket "arquivos" no Supabase Storage. Veja o arquivo configurar_storage_policies.md para instruções.');
+                        return;
+                    }
+                    throw uploadError;
+                }
+
+                // Obter URL pública do arquivo
+                const { data: urlData } = supabase.storage
+                    .from('arquivos')
+                    .getPublicUrl(storagePath);
+
+                // Verificar se há sessão ativa (opcional, mas ajuda no debug)
+                const { data: { session } } = await supabase.auth.getSession();
+                console.log('Session:', session);
+
+                // Salvar metadados no banco
+                const { data: dbData, error: dbError } = await supabase
+                    .from('arquivos_projeto')
+                    .insert({
+                        projeto_id: projetoId,
+                        nome_arquivo: fileName,
+                        nome_original: file.name,
+                        caminho_storage: storagePath,
+                        tipo_mime: file.type || null,
+                        tamanho_bytes: file.size,
+                        descricao: descricao
+                    })
+                    .select()
+                    .single();
+
+                if (dbError) {
+                    console.error('Erro detalhado do banco:', dbError);
+                    // Se for erro de RLS, dar mensagem mais clara
+                    if (dbError.message && dbError.message.includes('row-level security')) {
+                        throw new Error('Erro de segurança: A tabela arquivos_projeto ainda tem RLS habilitado. Execute o SQL fix_arquivos_rls.sql no Supabase.');
+                    }
+                    throw dbError;
+                }
+
+                // Limpar formulário
+                delete arquivosUpload[projetoId];
+                const input = document.getElementById(`arquivoInput-${projetoId}`);
+                if (input) input.value = '';
+                const descInput = document.getElementById(`arquivoDescricao-${projetoId}`);
+                if (descInput) descInput.value = '';
+
+                // Recarregar arquivos
+                await loadArquivos(projetoId);
+            } catch (error) {
+                console.error('Erro ao fazer upload do arquivo:', error);
+                alert('Erro ao fazer upload: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Cancelar upload
+        function cancelarUploadArquivo(projetoId) {
+            delete arquivosUpload[projetoId];
+            loadArquivos(projetoId);
+        }
+
+        // Download de arquivo
+        async function downloadArquivo(arquivoId, projetoId) {
+            try {
+                // Buscar informações do arquivo
+                const { data: arquivo, error: fetchError } = await supabase
+                    .from('arquivos_projeto')
+                    .select('*')
+                    .eq('id', arquivoId)
+                    .single();
+
+                if (fetchError) throw fetchError;
+                if (!arquivo) {
+                    alert('Arquivo não encontrado');
+                    return;
+                }
+
+                // Baixar arquivo do storage
+                const { data, error: downloadError } = await supabase.storage
+                    .from('arquivos')
+                    .download(arquivo.caminho_storage);
+
+                if (downloadError) throw downloadError;
+
+                // Criar link de download
+                const url = window.URL.createObjectURL(data);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = arquivo.nome_original || arquivo.nome_arquivo;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Erro ao fazer download do arquivo:', error);
+                alert('Erro ao fazer download: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Visualizar arquivo (imagem)
+        async function visualizarArquivo(arquivoId, projetoId) {
+            try {
+                // Buscar informações do arquivo
+                const { data: arquivo, error: fetchError } = await supabase
+                    .from('arquivos_projeto')
+                    .select('*')
+                    .eq('id', arquivoId)
+                    .single();
+
+                if (fetchError) throw fetchError;
+                if (!arquivo) {
+                    alert('Arquivo não encontrado');
+                    return;
+                }
+
+                // Obter URL pública do arquivo
+                const { data: urlData } = supabase.storage
+                    .from('arquivos')
+                    .getPublicUrl(arquivo.caminho_storage);
+
+                // Criar modal de visualização
+                const modal = document.createElement('div');
+                modal.className = 'image-viewer-modal';
+                modal.innerHTML = `
+                    <div class="image-viewer-content">
+                        <button class="image-viewer-close" onclick="this.closest('.image-viewer-modal').remove()">&times;</button>
+                        <img src="${urlData.publicUrl}" alt="${arquivo.nome_original}" style="display: block;">
+                        <div style="text-align: center; margin-top: 16px; color: white;">
+                            <div style="font-weight: 600; margin-bottom: 4px;">${arquivo.nome_original}</div>
+                            <div style="font-size: 12px; color: rgba(255,255,255,0.7);">${formatFileSize(arquivo.tamanho_bytes)} • ${new Date(arquivo.created_at).toLocaleDateString('pt-BR')}</div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                // Fechar ao clicar fora da imagem
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.remove();
+                    }
+                });
+
+                // Fechar com ESC
+                const handleEsc = (e) => {
+                    if (e.key === 'Escape') {
+                        modal.remove();
+                        document.removeEventListener('keydown', handleEsc);
+                    }
+                };
+                document.addEventListener('keydown', handleEsc);
+            } catch (error) {
+                console.error('Erro ao visualizar arquivo:', error);
+                alert('Erro ao visualizar arquivo: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Deletar arquivo
+        async function deletarArquivo(arquivoId, projetoId) {
+            if (!confirm('Tem certeza que deseja excluir este arquivo?')) {
+                return;
+            }
+
+            try {
+                // Buscar informações do arquivo
+                const { data: arquivo, error: fetchError } = await supabase
+                    .from('arquivos_projeto')
+                    .select('*')
+                    .eq('id', arquivoId)
+                    .single();
+
+                if (fetchError) throw fetchError;
+
+                // Deletar do storage
+                const { error: storageError } = await supabase.storage
+                    .from('arquivos')
+                    .remove([arquivo.caminho_storage]);
+
+                if (storageError) {
+                    console.warn('Erro ao deletar do storage (continuando):', storageError);
+                }
+
+                // Deletar do banco
+                const { error: dbError } = await supabase
+                    .from('arquivos_projeto')
+                    .delete()
+                    .eq('id', arquivoId);
+
+                if (dbError) throw dbError;
+
+                // Recarregar arquivos
+                await loadArquivos(projetoId);
+            } catch (error) {
+                console.error('Erro ao deletar arquivo:', error);
+                alert('Erro ao deletar arquivo: ' + (error.message || 'Erro desconhecido'));
+            }
         }
 
         // ========== CRUD ORÇAMENTOS ==========
@@ -4306,7 +5954,7 @@
             }
         }
 
-        // Calcular subtotal de um item
+        // Calcular subtotal de um item - COM PRECISÃO
         function calcularItem(itemId) {
             const row = document.getElementById(itemId);
             if (!row) return;
@@ -4315,15 +5963,16 @@
             const valorUnitario = parseFloat(row.querySelector('.item-valor-unitario').value) || 0;
             const descontoPercent = parseFloat(row.querySelector('.item-desconto').value) || 0;
 
-            const subtotal = quantidade * valorUnitario;
-            const descontoValor = subtotal * (descontoPercent / 100);
-            const subtotalFinal = subtotal - descontoValor;
+            // Cálculos precisos com arredondamento correto
+            const subtotal = Math.round((quantidade * valorUnitario) * 100) / 100; // Arredondar para 2 casas
+            const descontoValor = Math.round((subtotal * (descontoPercent / 100)) * 100) / 100; // Arredondar desconto
+            const subtotalFinal = Math.round((subtotal - descontoValor) * 100) / 100; // Arredondar resultado final
 
             row.querySelector('.item-subtotal').textContent = formatCurrency(subtotalFinal);
             calcularTotalOrcamento();
         }
 
-        // Calcular total do orçamento
+        // Calcular total do orçamento - COM PRECISÃO
         function calcularTotalOrcamento() {
             const tbody = document.getElementById('orcamentoItensBody');
             let subtotal = 0;
@@ -4342,10 +5991,11 @@
                 const valorUnitario = parseFloat(valorUnitarioInput.value) || 0;
                 const descontoPercent = parseFloat(descontoInput.value) || 0;
 
-                const itemSubtotal = quantidade * valorUnitario;
-                const descontoValor = itemSubtotal * (descontoPercent / 100);
-                const subtotalItem = itemSubtotal - descontoValor;
-                subtotal += subtotalItem;
+                // Cálculos precisos com arredondamento correto
+                const itemSubtotal = Math.round((quantidade * valorUnitario) * 100) / 100;
+                const descontoValor = Math.round((itemSubtotal * (descontoPercent / 100)) * 100) / 100;
+                const subtotalItem = Math.round((itemSubtotal - descontoValor) * 100) / 100;
+                subtotal = Math.round((subtotal + subtotalItem) * 100) / 100; // Acumular com precisão
                 
                 // Atualizar subtotal do item na tela
                 const subtotalCell = row.querySelector('.item-subtotal');
@@ -4354,8 +6004,12 @@
                 }
             });
 
+            // Arredondar subtotal final
+            subtotal = Math.round(subtotal * 100) / 100;
+            
             const descontoGeral = parseFloat(document.getElementById('orcamentoDescontoGeral')?.value) || 0;
-            const total = subtotal - descontoGeral;
+            const descontoGeralArredondado = Math.round(descontoGeral * 100) / 100;
+            const total = Math.round((subtotal - descontoGeralArredondado) * 100) / 100;
 
             const subtotalEl = document.getElementById('orcamentoSubtotal');
             const descontoGeralEl = document.getElementById('orcamentoDescontoGeralValor');
@@ -4363,7 +6017,7 @@
             const valorHidden = document.getElementById('orcamentoValor');
             
             if (subtotalEl) subtotalEl.textContent = formatCurrency(subtotal);
-            if (descontoGeralEl) descontoGeralEl.textContent = formatCurrency(descontoGeral);
+            if (descontoGeralEl) descontoGeralEl.textContent = formatCurrency(descontoGeralArredondado);
             if (totalEl) totalEl.textContent = formatCurrency(total);
             if (valorHidden) valorHidden.value = total.toFixed(2);
         }
@@ -4387,10 +6041,10 @@
                 const valorUnitario = parseFloat(row.querySelector('.item-valor-unitario')?.value) || 0;
                 const descontoPercent = parseFloat(row.querySelector('.item-desconto')?.value) || 0;
                 
-                // Calcular subtotal corretamente
-                const itemSubtotal = quantidade * valorUnitario;
-                const descontoValor = itemSubtotal * (descontoPercent / 100);
-                const subtotal = itemSubtotal - descontoValor;
+                // Calcular subtotal corretamente - COM PRECISÃO
+                const itemSubtotal = Math.round((quantidade * valorUnitario) * 100) / 100;
+                const descontoValor = Math.round((itemSubtotal * (descontoPercent / 100)) * 100) / 100;
+                const subtotal = Math.round((itemSubtotal - descontoValor) * 100) / 100;
 
                 itens.push({
                     descricao,
@@ -4428,10 +6082,10 @@
                 const valorUnitario = parseFloat(item.valor_unitario) || parseFloat(item.valorUnitario) || parseFloat(item.valor_unit) || 0;
                 const descontoPercent = parseFloat(item.desconto_percent) || parseFloat(item.descontoPercent) || parseFloat(item.desconto) || 0;
                 
-                // Recalcular subtotal baseado nos valores
-                const itemSubtotal = quantidade * valorUnitario;
-                const descontoValor = itemSubtotal * (descontoPercent / 100);
-                const subtotalCalculado = itemSubtotal - descontoValor;
+                // Recalcular subtotal baseado nos valores - COM PRECISÃO
+                const itemSubtotal = Math.round((quantidade * valorUnitario) * 100) / 100;
+                const descontoValor = Math.round((itemSubtotal * (descontoPercent / 100)) * 100) / 100;
+                const subtotalCalculado = Math.round((itemSubtotal - descontoValor) * 100) / 100;
                 
                 const row = document.createElement('tr');
                 row.id = itemId;
@@ -4786,11 +6440,11 @@
                         const valorUnitario = parseFloat(item.valor_unitario || item.valorUnitario || item.valor_unit || 0);
                         const descontoPercent = parseFloat(item.desconto_percent || item.descontoPercent || item.desconto || 0);
                         
-                        // Recalcular subtotal do item
-                        const itemSubtotal = quantidade * valorUnitario;
-                        const descontoValor = itemSubtotal * (descontoPercent / 100);
-                        const subtotalItem = itemSubtotal - descontoValor;
-                        subtotal += subtotalItem;
+                        // Recalcular subtotal do item - COM PRECISÃO
+                        const itemSubtotal = Math.round((quantidade * valorUnitario) * 100) / 100;
+                        const descontoValor = Math.round((itemSubtotal * (descontoPercent / 100)) * 100) / 100;
+                        const subtotalItem = Math.round((itemSubtotal - descontoValor) * 100) / 100;
+                        subtotal = Math.round((subtotal + subtotalItem) * 100) / 100;
                         
                         // Descrição (pode quebrar linha se muito longa)
                         const descLines = doc.splitTextToSize(descricao, 60);
@@ -4823,8 +6477,10 @@
                     }
                     
                     const descontoGeral = parseFloat(orcamento.desconto_geral || 0);
-                    // Calcular total corretamente
-                    const total = subtotal - descontoGeral;
+                    // Calcular total corretamente - COM PRECISÃO
+                    const descontoGeralArredondado = Math.round(descontoGeral * 100) / 100;
+                    const subtotalArredondado = Math.round(subtotal * 100) / 100;
+                    const total = Math.round((subtotalArredondado - descontoGeralArredondado) * 100) / 100;
                     
                     // Subtotal e Total - mesma linha, mesmo estilo, apenas linha de separação
                     // Alinhar mais à esquerda para seguir o alinhamento geral da página
