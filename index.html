@@ -1245,6 +1245,99 @@
             margin-bottom: 8px;
         }
 
+        /* Badges para status financeiro */
+        .badge-warning {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .badge-secondary {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        /* Tabs Financeiro */
+        .financeiro-tab {
+            display: block;
+        }
+
+        /* Botões pequenos para ações */
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin-right: 4px;
+            border-radius: 6px;
+        }
+
+        /* Estilos para tabelas financeiras responsivas */
+        @media (max-width: 768px) {
+            #receitasTable tbody tr,
+            #despesasTable tbody tr {
+                display: block;
+                background: var(--secondary);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                margin-bottom: 12px;
+                padding: 16px;
+            }
+            
+            #receitasTable tbody td,
+            #despesasTable tbody td {
+                display: block;
+                width: 100%;
+                padding: 8px 0;
+                text-align: left !important;
+                border: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            
+            #receitasTable tbody td:last-child,
+            #despesasTable tbody td:last-child {
+                border-bottom: none;
+                padding-top: 12px;
+            }
+            
+            #receitasTable tbody td:before,
+            #despesasTable tbody td:before {
+                content: attr(data-label) ": ";
+                font-weight: 600;
+                color: var(--primary);
+                display: inline-block;
+                margin-right: 8px;
+                min-width: 120px;
+            }
+        }
+
         .btn-action {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -2729,10 +2822,194 @@
             </div>
 
             <div id="financeiroContent" class="page-content" style="display: none;">
-                <h1 class="page-title">Financeiro</h1>
-                <p class="page-subtitle">Controle financeiro</p>
+                <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 class="page-title">Financeiro</h1>
+                        <p class="page-subtitle">Controle de receitas e despesas</p>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="openReceitaModal()">+ Nova Receita</button>
+                        <button class="btn btn-secondary" onclick="openDespesaModal()">+ Nova Despesa</button>
+                        <button class="btn btn-primary" onclick="openCobrancaModal()" style="background: var(--success); border-color: var(--success);">💰 Nova Cobrança</button>
+                    </div>
+                </div>
+
+                <!-- Dashboard Financeiro -->
+                <div class="cards-grid" style="margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Total a Receber</div>
+                                <div class="card-value" id="totalReceber" style="color: var(--success);">R$ 0,00</div>
+                            </div>
+                            <div class="card-icon">💰</div>
+                        </div>
+                        <div class="card-footer">Pendentes</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Total a Pagar</div>
+                                <div class="card-value" id="totalPagar" style="color: var(--danger);">R$ 0,00</div>
+                            </div>
+                            <div class="card-icon">💸</div>
+                        </div>
+                        <div class="card-footer">Pendentes</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Saldo Previsto</div>
+                                <div class="card-value" id="saldoPrevisto">R$ 0,00</div>
+                            </div>
+                            <div class="card-icon">📊</div>
+                        </div>
+                        <div class="card-footer">Receitas - Despesas</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Receitas Recebidas</div>
+                                <div class="card-value" id="receitasRecebidas" style="color: var(--success);">R$ 0,00</div>
+                            </div>
+                            <div class="card-icon">✅</div>
+                        </div>
+                        <div class="card-footer">Este mês</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Despesas Pagas</div>
+                                <div class="card-value" id="despesasPagas" style="color: var(--danger);">R$ 0,00</div>
+                            </div>
+                            <div class="card-icon">💳</div>
+                        </div>
+                        <div class="card-footer">Este mês</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Vencimentos Hoje</div>
+                                <div class="card-value" id="vencimentosHoje">0</div>
+                            </div>
+                            <div class="card-icon">⚠️</div>
+                        </div>
+                        <div class="card-footer">Atenção</div>
+                    </div>
+                </div>
+
+                <!-- Tabs Receitas/Despesas -->
                 <div class="section-card">
-                    <div class="empty-state">Funcionalidade em desenvolvimento</div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                        <button class="btn btn-secondary" id="tabReceitas" onclick="switchFinanceiroTab('receitas')" style="border-radius: 8px 8px 0 0; margin-bottom: -1px; border-bottom: 2px solid var(--primary);">
+                            💰 Receitas
+                        </button>
+                        <button class="btn btn-secondary" id="tabDespesas" onclick="switchFinanceiroTab('despesas')" style="border-radius: 8px 8px 0 0; margin-bottom: -1px;">
+                            💸 Despesas
+                        </button>
+                    </div>
+
+                    <!-- Aba Receitas -->
+                    <div id="receitasTab" class="financeiro-tab">
+                        <div class="search-bar">
+                            <input 
+                                type="text" 
+                                id="receitaSearch" 
+                                class="search-input" 
+                                placeholder="Buscar por descrição, cliente..."
+                                onkeyup="filterReceitas()"
+                            >
+                            <select id="receitaStatusFilter" class="form-input" style="width: 200px;" onchange="filterReceitas()">
+                                <option value="">Todos os status</option>
+                                <option value="pendente">Pendente</option>
+                                <option value="recebido">Recebido</option>
+                                <option value="atrasado">Atrasado</option>
+                                <option value="cancelado">Cancelado</option>
+                            </select>
+                            <select id="receitaClienteFilter" class="form-input" style="width: 200px;" onchange="filterReceitas()">
+                                <option value="">Todos os clientes</option>
+                            </select>
+                        </div>
+
+                        <div class="table-container">
+                            <div id="receitasLoading" class="loading active">
+                                <div class="spinner"></div>
+                                <p>Carregando receitas...</p>
+                            </div>
+                            <table id="receitasTable" style="display: none;">
+                                <thead>
+                                    <tr>
+                                        <th>Descrição</th>
+                                        <th>Cliente</th>
+                                        <th>Valor</th>
+                                        <th>Vencimento</th>
+                                        <th>Recebimento</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="receitasTableBody">
+                                </tbody>
+                            </table>
+                            <div id="receitasEmpty" class="empty-state" style="display: none;">
+                                Nenhuma receita encontrada
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba Despesas -->
+                    <div id="despesasTab" class="financeiro-tab" style="display: none;">
+                        <div class="search-bar">
+                            <input 
+                                type="text" 
+                                id="despesaSearch" 
+                                class="search-input" 
+                                placeholder="Buscar por descrição, categoria, fornecedor..."
+                                onkeyup="filterDespesas()"
+                            >
+                            <select id="despesaStatusFilter" class="form-input" style="width: 200px;" onchange="filterDespesas()">
+                                <option value="">Todos os status</option>
+                                <option value="pendente">Pendente</option>
+                                <option value="pago">Pago</option>
+                                <option value="atrasado">Atrasado</option>
+                                <option value="cancelado">Cancelado</option>
+                            </select>
+                            <select id="despesaCategoriaFilter" class="form-input" style="width: 200px;" onchange="filterDespesas()">
+                                <option value="">Todas as categorias</option>
+                            </select>
+                        </div>
+
+                        <div class="table-container">
+                            <div id="despesasLoading" class="loading active">
+                                <div class="spinner"></div>
+                                <p>Carregando despesas...</p>
+                            </div>
+                            <table id="despesasTable" style="display: none;">
+                                <thead>
+                                    <tr>
+                                        <th>Descrição</th>
+                                        <th>Categoria</th>
+                                        <th>Fornecedor</th>
+                                        <th>Valor</th>
+                                        <th>Vencimento</th>
+                                        <th>Pagamento</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="despesasTableBody">
+                                </tbody>
+                            </table>
+                            <div id="despesasEmpty" class="empty-state" style="display: none;">
+                                Nenhuma despesa encontrada
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -3359,10 +3636,414 @@
         </div>
     </div>
 
+    <!-- Modal Receita -->
+    <div id="receitaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="receitaModalTitle">Nova Receita</h2>
+                <button class="btn-close" onclick="closeReceitaModal()">&times;</button>
+            </div>
+            <form id="receitaForm">
+                <input type="hidden" id="receitaId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Cliente *</label>
+                        <select id="receitaClienteId" class="form-input" required>
+                            <option value="">Selecione um cliente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Projeto (opcional)</label>
+                        <select id="receitaProjetoId" class="form-input">
+                            <option value="">Nenhum</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Orçamento (opcional)</label>
+                        <select id="receitaOrcamentoId" class="form-input">
+                            <option value="">Nenhum</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status *</label>
+                        <select id="receitaStatus" class="form-input" required>
+                            <option value="pendente">Pendente</option>
+                            <option value="recebido">Recebido</option>
+                            <option value="atrasado">Atrasado</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Descrição *</label>
+                    <input type="text" id="receitaDescricao" class="form-input" placeholder="Ex: Pagamento mensalidade Janeiro" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Valor *</label>
+                        <input type="number" id="receitaValor" class="form-input" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Forma de Pagamento</label>
+                        <select id="receitaFormaPagamento" class="form-input">
+                            <option value="">Selecione</option>
+                            <option value="PIX">PIX</option>
+                            <option value="Boleto">Boleto</option>
+                            <option value="Cartão de Crédito">Cartão de Crédito</option>
+                            <option value="Cartão de Débito">Cartão de Débito</option>
+                            <option value="Transferência">Transferência</option>
+                            <option value="Dinheiro">Dinheiro</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Data de Vencimento *</label>
+                        <input type="date" id="receitaDataVencimento" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data de Recebimento</label>
+                        <input type="date" id="receitaDataRecebimento" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Observações</label>
+                    <textarea id="receitaObservacoes" class="form-input" rows="3" placeholder="Observações adicionais..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeReceitaModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Despesa -->
+    <div id="despesaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="despesaModalTitle">Nova Despesa</h2>
+                <button class="btn-close" onclick="closeDespesaModal()">&times;</button>
+            </div>
+            <form id="despesaForm">
+                <input type="hidden" id="despesaId">
+                
+                <div class="form-group">
+                    <label class="form-label">Descrição *</label>
+                    <input type="text" id="despesaDescricao" class="form-input" placeholder="Ex: Pagamento de fornecedor X" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Categoria *</label>
+                        <select id="despesaCategoria" class="form-input" required>
+                            <option value="">Selecione uma categoria</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status *</label>
+                        <select id="despesaStatus" class="form-input" required>
+                            <option value="pendente">Pendente</option>
+                            <option value="pago">Pago</option>
+                            <option value="atrasado">Atrasado</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Fornecedor</label>
+                        <input type="text" id="despesaFornecedor" class="form-input" placeholder="Nome do fornecedor">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Valor *</label>
+                        <input type="number" id="despesaValor" class="form-input" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Forma de Pagamento</label>
+                        <select id="despesaFormaPagamento" class="form-input">
+                            <option value="">Selecione</option>
+                            <option value="PIX">PIX</option>
+                            <option value="Boleto">Boleto</option>
+                            <option value="Cartão de Crédito">Cartão de Crédito</option>
+                            <option value="Cartão de Débito">Cartão de Débito</option>
+                            <option value="Transferência">Transferência</option>
+                            <option value="Dinheiro">Dinheiro</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data de Vencimento *</label>
+                        <input type="date" id="despesaDataVencimento" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Data de Pagamento</label>
+                    <input type="date" id="despesaDataPagamento" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Observações</label>
+                    <textarea id="despesaObservacoes" class="form-input" rows="3" placeholder="Observações adicionais..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeDespesaModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Cobrança -->
+    <div id="cobrancaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="cobrancaModalTitle">Nova Cobrança</h2>
+                <button class="btn-close" onclick="closeCobrancaModal()">&times;</button>
+            </div>
+            <form id="cobrancaForm">
+                <input type="hidden" id="cobrancaId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Cliente *</label>
+                        <select id="cobrancaClienteId" class="form-input" required onchange="loadOrcamentosParaCobranca()">
+                            <option value="">Selecione um cliente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Orçamento (opcional)</label>
+                        <select id="cobrancaOrcamentoId" class="form-input" onchange="preencherDadosCobranca()">
+                            <option value="">Nenhum</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Descrição da Cobrança *</label>
+                    <input type="text" id="cobrancaDescricao" class="form-input" placeholder="Ex: Pagamento mensalidade Janeiro 2024" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Valor *</label>
+                        <input type="number" id="cobrancaValor" class="form-input" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data de Vencimento *</label>
+                        <input type="date" id="cobrancaDataVencimento" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Forma de Pagamento *</label>
+                        <select id="cobrancaFormaPagamento" class="form-input" required>
+                            <option value="">Selecione</option>
+                            <option value="PIX">PIX</option>
+                            <option value="Boleto">Boleto</option>
+                            <option value="Cartão de Crédito">Cartão de Crédito</option>
+                            <option value="Cartão de Débito">Cartão de Débito</option>
+                            <option value="Transferência">Transferência</option>
+                            <option value="Dinheiro">Dinheiro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Cobrança *</label>
+                        <select id="cobrancaTipo" class="form-input" required onchange="atualizarCamposCobranca()">
+                            <option value="unica">Única</option>
+                            <option value="parcelado">Parcelado</option>
+                            <option value="recorrente">Recorrente (Mensalidade)</option>
+                            <option value="manutencao">Taxa de Manutenção</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Campos para Parcelado -->
+                <div id="cobrancaCamposParcelado" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Número de Parcelas *</label>
+                            <input type="number" id="cobrancaNumeroParcelas" class="form-input" min="2" max="60" value="2" placeholder="Ex: 3, 6, 12">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Valor por Parcela</label>
+                            <input type="number" id="cobrancaValorParcela" class="form-input" step="0.01" min="0" readonly style="background: var(--tertiary);">
+                            <small style="color: var(--text-gray); font-size: 11px;">Calculado automaticamente</small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Intervalo entre Parcelas (dias)</label>
+                        <input type="number" id="cobrancaIntervaloParcelas" class="form-input" min="1" value="30" placeholder="Ex: 30 (mensal), 15 (quinzenal)">
+                    </div>
+                </div>
+
+                <!-- Campos para Recorrente -->
+                <div id="cobrancaCamposRecorrente" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Frequência *</label>
+                            <select id="cobrancaFrequencia" class="form-input">
+                                <option value="mensal">Mensal</option>
+                                <option value="trimestral">Trimestral</option>
+                                <option value="semestral">Semestral</option>
+                                <option value="anual">Anual</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Dia do Mês (Vencimento)</label>
+                            <input type="number" id="cobrancaDiaVencimento" class="form-input" min="1" max="31" value="10" placeholder="Ex: 10 (todo dia 10)">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Data de Início *</label>
+                            <input type="date" id="cobrancaDataInicio" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Data de Término (opcional)</label>
+                            <input type="date" id="cobrancaDataTermino" class="form-input">
+                            <small style="color: var(--text-gray); font-size: 11px;">Deixe em branco para cobrança indefinida</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos para Taxa de Manutenção -->
+                <div id="cobrancaCamposManutencao" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Valor da Taxa Mensal *</label>
+                            <input type="number" id="cobrancaValorManutencao" class="form-input" step="0.01" min="0" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Dia do Mês (Vencimento) *</label>
+                            <input type="number" id="cobrancaDiaVencimentoManutencao" class="form-input" min="1" max="31" value="10" placeholder="Ex: 10">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data de Início *</label>
+                        <input type="date" id="cobrancaDataInicioManutencao" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="cobrancaManutencaoAtiva" checked>
+                            <span style="margin-left: 8px;">Ativar cobrança automática mensal</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Instruções de Pagamento</label>
+                    <textarea id="cobrancaInstrucoes" class="form-input" rows="3" placeholder="Instruções para pagamento (ex: Chave PIX, dados bancários, etc.)"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">QR Code PIX (opcional)</label>
+                    
+                    <!-- Opção 1: Upload de QR Code do Banco (RECOMENDADO) -->
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                        <p style="font-size: 12px; color: var(--text); margin: 0 0 8px 0; line-height: 1.5;">
+                            <strong>✅ Opção 1 (Recomendado):</strong> Gere o QR Code PIX no app do seu banco e faça upload aqui.
+                        </p>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <input type="file" id="cobrancaQRCodeFile" accept="image/*" style="display: none;" onchange="previewQRCode()">
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('cobrancaQRCodeFile').click()" style="background: var(--success); border-color: var(--success);">📷 Upload QR Code do Banco</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Opção 2: Integração com Gateway de Pagamento -->
+                    <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                        <p style="font-size: 12px; color: var(--text); margin: 0 0 8px 0; line-height: 1.5;">
+                            <strong>💳 Opção 2 (Integração):</strong> Use uma API de pagamento para gerar QR Code PIX válido automaticamente.
+                        </p>
+                        <div style="margin-top: 8px;">
+                            <select id="cobrancaGatewayPagamento" class="form-input" style="margin-bottom: 8px;" onchange="atualizarCamposGateway()">
+                                <option value="">Selecione um gateway...</option>
+                                <option value="mercadopago">Mercado Pago</option>
+                                <option value="asaas">Asaas</option>
+                                <option value="gerencianet">Gerencianet (Efí)</option>
+                                <option value="pagseguro">PagSeguro</option>
+                                <option value="stripe">Stripe (não suporta PIX no Brasil)</option>
+                            </select>
+                            <div id="camposGateway" style="display: none;">
+                                <input type="text" id="cobrancaApiKey" class="form-input" placeholder="API Key / Access Token" style="margin-bottom: 8px;">
+                                <input type="text" id="cobrancaApiSecret" class="form-input" placeholder="API Secret (se necessário)" style="margin-bottom: 8px;">
+                                <button type="button" class="btn btn-secondary" onclick="gerarQRCodeViaGateway()" style="background: var(--primary); border-color: var(--primary);">🔲 Gerar QR Code via Gateway</button>
+                            </div>
+                            <small style="color: var(--text-gray); font-size: 10px; display: block; margin-top: 8px;">
+                                💡 <strong>Nota:</strong> Você precisará criar uma conta e obter as credenciais da API do gateway escolhido. O Stripe não suporta PIX no Brasil.
+                            </small>
+                        </div>
+                        <span id="cobrancaGatewayStatus" style="font-size: 11px; color: var(--text-gray); display: block; margin-top: 8px;"></span>
+                    </div>
+                    
+                    <!-- Opção 3: Gerar QR Code com Chave PIX (Teste) -->
+                    <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                        <p style="font-size: 12px; color: var(--text); margin: 0 0 8px 0; line-height: 1.5;">
+                            <strong>⚠️ Opção 3 (Teste - Não recomendado):</strong> Informe sua Chave PIX abaixo. <strong>Nota:</strong> Este QR Code pode não funcionar em todos os apps. Use a Opção 1 ou 2 para garantir funcionalidade.
+                        </p>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
+                            <input type="text" id="cobrancaChavePIX" class="form-input" placeholder="Sua Chave PIX (CPF, CNPJ, e-mail, telefone ou chave aleatória)" style="flex: 1; min-width: 200px;">
+                            <button type="button" class="btn btn-secondary" onclick="gerarQRCodePIX()" style="background: var(--warning); border-color: var(--warning);">🔲 Gerar QR Code (Teste)</button>
+                        </div>
+                        <span id="cobrancaQRCodeStatus" style="font-size: 11px; color: var(--text-gray); display: block; margin-top: 8px;"></span>
+                    </div>
+                    
+                    <!-- Preview do QR Code -->
+                    <div id="cobrancaQRCodePreview" style="margin-top: 12px; display: none;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                            <div style="background: white; padding: 16px; border-radius: 8px; border: 2px solid var(--primary); display: flex; justify-content: center; align-items: center;">
+                                <img id="cobrancaQRCodeImage" src="" alt="QR Code" style="width: 180px; height: 180px; max-width: 180px; max-height: 180px; display: block; object-fit: contain;">
+                            </div>
+                            <div style="text-align: center; width: 100%;">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="removerQRCode()">❌ Remover QR Code</button>
+                                <p style="font-size: 11px; color: var(--text-gray); margin-top: 8px; line-height: 1.5;">
+                                    O QR Code será incluído no PDF da cobrança centralizado e em tamanho médio (30x30mm) para melhor visualização.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="cobrancaQRCodeBase64">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Observações</label>
+                    <textarea id="cobrancaObservacoes" class="form-input" rows="3" placeholder="Observações adicionais..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCobrancaModal()">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="gerarPDFCobranca(); return false;" style="background: var(--warning); border-color: var(--warning);">📄 Gerar PDF Cobrança</button>
+                    <button type="button" class="btn btn-primary" onclick="enviarCobrancaWhatsApp(); return false;" style="background: #25D366; border-color: #25D366;">💬 Enviar por WhatsApp</button>
+                    <button type="submit" class="btn btn-primary">Salvar e Criar Receita</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- jsPDF para geração de PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- QRCode.js para geração de QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <!-- Nota: Para QR Code PIX válido, é necessário usar API do banco ou fazer upload do QR Code gerado pelo banco -->
     
     <script>
         // Configuração do Supabase
@@ -3791,53 +4472,57 @@
             item.addEventListener('click', (e) => {
                 e.preventDefault();
                 
-                // Remover active de todos
-                document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-                // Adicionar active no clicado
+                // Remover classe active de todos os itens
+                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                // Adicionar classe active ao item clicado
                 item.classList.add('active');
                 
-                // Esconder todos os conteúdos
-                document.querySelectorAll('.page-content').forEach(c => c.style.display = 'none');
+                // Obter página do data-page
+                const page = item.getAttribute('data-page');
+                if (!page) return;
                 
-                // Mostrar conteúdo correspondente
-                const page = item.dataset.page;
-                const contentId = page + 'Content';
-                const content = document.getElementById(contentId);
+                // Esconder todas as páginas
+                document.querySelectorAll('.page-content').forEach(p => {
+                    p.style.display = 'none';
+                });
                 
-                // Atualizar título do header
-                const headerTitle = document.querySelector('.header-title');
-                if (headerTitle && pageTitles[page]) {
-                    headerTitle.textContent = pageTitles[page];
-                }
-                
-                if (content) {
-                    content.style.display = 'block';
+                // Mostrar página selecionada
+                const pageContent = document.getElementById(page + 'Content');
+                if (pageContent) {
+                    pageContent.style.display = 'block';
                     
-                    // Carregar dados quando abrir a página
-                    if (page === 'clientes') {
+                    // Atualizar título do header
+                    const headerTitle = document.querySelector('.header-title');
+                    if (headerTitle) {
+                        headerTitle.textContent = pageTitles[page] || page;
+                    }
+                    
+                    // Carregar dados da página
+                    if (page === 'dashboard') {
+                        loadDashboardData();
+                    } else if (page === 'clientes') {
                         loadClientes();
                     } else if (page === 'projetos') {
                         loadProjetos();
                     } else if (page === 'orcamentos') {
                         loadOrcamentos();
-                    } else if (page === 'dashboard') {
-                        loadDashboardData(); // Recarregar dashboard (inclui notificações)
+                    } else if (page === 'financeiro') {
+                        loadFinanceiro();
+                    } else if (page === 'plataformas') {
+                        loadPlataformas();
                     }
                 }
-                
-                // Atualizar título do header
-                const titles = {
-                    dashboard: 'Dashboard',
-                    clientes: 'Clientes',
-                    projetos: 'Projetos',
-                    orcamentos: 'Orçamentos',
-                    financeiro: 'Financeiro',
-                    plataformas: 'Plataformas'
-                };
-                document.querySelector('.header-title').textContent = titles[page] || 'Dashboard';
             });
         });
-
+        
+        // Função auxiliar para fechar sidebar no mobile (se necessário)
+        function closeSidebarMobile() {
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('sidebarOverlay').classList.remove('active');
+            }
+        }
+        
         // ========== CRUD CLIENTES ==========
         let allClientes = [];
         let filteredClientes = [];
@@ -7220,7 +7905,7 @@
                 doc.setTextColor(60, 60, 60);
                 doc.text('www.autovizon.com.br', dadosX, 20);
                 doc.text('autovizioncomercial@gmail.com', dadosX, 26);
-                doc.text('(14) 99600-5936', dadosX, 32);
+                doc.text('(14) 99683-3385', dadosX, 32);
                 
                 // Linha divisória abaixo do cabeçalho
                 doc.setDrawColor(200, 200, 200);
@@ -7691,7 +8376,7 @@
                 doc.text('|', margin + 70, contatoY);
                 doc.text('autovizioncomercial@gmail.com', margin + 75, contatoY);
                 doc.text('|', margin + 130, contatoY);
-                doc.text('(14) 99600-5936', margin + 135, contatoY);
+                doc.text('(14) 99683-3385', margin + 135, contatoY);
                 
                 // Salvar PDF
                 const fileName = `Proposta_${orcamento.numero || 'N'}_${clienteNome.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
@@ -8360,7 +9045,7 @@
                 doc.setTextColor(60, 60, 60);
                 doc.text('www.autovizon.com.br', dadosX, 20);
                 doc.text('autovizioncomercial@gmail.com', dadosX, 26);
-                doc.text('(14) 99600-5936', dadosX, 32);
+                doc.text('(14) 99683-3385', dadosX, 32);
                 
                 // Linha divisória abaixo do cabeçalho
                 doc.setDrawColor(200, 200, 200);
@@ -8746,7 +9431,7 @@
                 doc.text('|', margin + 70, contatoY);
                 doc.text('autovizioncomercial@gmail.com', margin + 75, contatoY);
                 doc.text('|', margin + 130, contatoY);
-                doc.text('(14) 99600-5936', margin + 135, contatoY);
+                doc.text('(14) 99683-3385', margin + 135, contatoY);
                 
                 // Salvar PDF
                 const fileName = `Proposta_${orcamento.numero || 'N'}_${clienteNome.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
@@ -8794,6 +9479,12 @@
                             closeProjetoModal();
                         } else if (modalId === 'orcamentoModal') {
                             closeOrcamentoModal();
+                        } else if (modalId === 'receitaModal') {
+                            closeReceitaModal();
+                        } else if (modalId === 'despesaModal') {
+                            closeDespesaModal();
+                        } else if (modalId === 'cobrancaModal') {
+                            closeCobrancaModal();
                         } else {
                             // Para outros modais, usar função genérica
                             closeModal(modal);
@@ -8846,6 +9537,2640 @@
             childList: true,
             subtree: true
         });
+
+        // ========== MÓDULO FINANCEIRO ==========
+        let allReceitas = [];
+        let filteredReceitas = [];
+        let allDespesas = [];
+        let filteredDespesas = [];
+        let currentFinanceiroTab = 'receitas';
+
+        // Carregar módulo financeiro
+        async function loadFinanceiro() {
+            await Promise.all([
+                loadReceitas(),
+                loadDespesas(),
+                loadCategoriasDespesa(),
+                loadClientesForFinanceiro()
+            ]);
+            // Gerar cobranças recorrentes pendentes
+            await gerarProximasCobrancasRecorrentes();
+            updateDashboardFinanceiro();
+        }
+
+        // Alternar entre tabs de Receitas e Despesas
+        function switchFinanceiroTab(tab) {
+            currentFinanceiroTab = tab;
+            
+            // Atualizar visual dos botões
+            document.getElementById('tabReceitas').style.borderBottom = tab === 'receitas' ? '2px solid var(--primary)' : 'none';
+            document.getElementById('tabDespesas').style.borderBottom = tab === 'despesas' ? '2px solid var(--primary)' : 'none';
+            
+            // Mostrar/ocultar tabs
+            document.getElementById('receitasTab').style.display = tab === 'receitas' ? 'block' : 'none';
+            document.getElementById('despesasTab').style.display = tab === 'despesas' ? 'block' : 'none';
+        }
+
+        // ========== RECEITAS ==========
+        
+        // Carregar receitas
+        async function loadReceitas() {
+            const loading = document.getElementById('receitasLoading');
+            const table = document.getElementById('receitasTable');
+            const empty = document.getElementById('receitasEmpty');
+            const tbody = document.getElementById('receitasTableBody');
+            
+            try {
+                if (loading) loading.classList.add('active');
+                if (table) table.style.display = 'none';
+                if (empty) empty.style.display = 'none';
+                
+                const { data, error } = await supabase
+                    .from('receitas')
+                    .select('*, cliente:clientes(*), projeto:projetos(*), orcamento:orcamentos(*)')
+                    .order('data_vencimento', { ascending: false });
+                
+                if (error) throw error;
+                
+                allReceitas = data || [];
+                filteredReceitas = [...allReceitas];
+                
+                // Atualizar status baseado em vencimento
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+                
+                allReceitas = allReceitas.map(receita => {
+                    if (receita.status === 'pendente') {
+                        const vencimento = new Date(receita.data_vencimento);
+                        vencimento.setHours(0, 0, 0, 0);
+                        if (vencimento < hoje) {
+                            receita.status = 'atrasado';
+                            // Atualizar no banco
+                            supabase.from('receitas').update({ status: 'atrasado' }).eq('id', receita.id);
+                        }
+                    }
+                    return receita;
+                });
+                
+                renderReceitas();
+                
+                if (loading) loading.classList.remove('active');
+                if (tbody && filteredReceitas.length > 0) {
+                    if (table) table.style.display = 'table';
+                } else {
+                    if (empty) empty.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar receitas:', error);
+                if (loading) loading.classList.remove('active');
+                if (empty) empty.style.display = 'block';
+                if (empty) empty.textContent = 'Erro ao carregar receitas: ' + (error.message || 'Erro desconhecido');
+            }
+        }
+
+        // Renderizar receitas
+        function renderReceitas() {
+            const tbody = document.getElementById('receitasTableBody');
+            if (!tbody) return;
+            
+            if (filteredReceitas.length === 0) {
+                tbody.innerHTML = '';
+                return;
+            }
+            
+            tbody.innerHTML = filteredReceitas.map(receita => {
+                const cliente = receita.cliente || {};
+                const clienteNome = cliente.nome || cliente.empresa || 'Cliente não encontrado';
+                const statusMap = {
+                    'pendente': { label: 'Pendente', class: 'badge-warning' },
+                    'recebido': { label: 'Recebido', class: 'badge-success' },
+                    'atrasado': { label: 'Atrasado', class: 'badge-danger' },
+                    'cancelado': { label: 'Cancelado', class: 'badge-secondary' }
+                };
+                const status = statusMap[receita.status] || { label: receita.status, class: 'badge-secondary' };
+                
+                // Badge para tipo de cobrança
+                let tipoBadge = '';
+                if (receita.tipo_cobranca === 'parcelado') {
+                    tipoBadge = `<span class="badge badge-secondary" style="font-size: 10px; margin-left: 4px;">Parcela ${receita.parcela_numero || '?'}/${receita.parcela_total || '?'}</span>`;
+                } else if (receita.tipo_cobranca === 'recorrente') {
+                    tipoBadge = `<span class="badge badge-secondary" style="font-size: 10px; margin-left: 4px;">Recorrente</span>`;
+                } else if (receita.tipo_cobranca === 'manutencao') {
+                    tipoBadge = `<span class="badge badge-secondary" style="font-size: 10px; margin-left: 4px;">Manutenção</span>`;
+                }
+                
+                return `
+                    <tr>
+                        <td data-label="Descrição">
+                            ${(receita.descricao || '-').replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                            ${tipoBadge}
+                        </td>
+                        <td data-label="Cliente">${clienteNome.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+                        <td data-label="Valor">${formatCurrency(receita.valor || 0)}</td>
+                        <td data-label="Vencimento">${formatDate(receita.data_vencimento)}</td>
+                        <td data-label="Recebimento">${receita.data_recebimento ? formatDate(receita.data_recebimento) : '-'}</td>
+                        <td data-label="Status"><span class="badge ${status.class}">${status.label}</span></td>
+                        <td data-label="Ações">
+                            <button class="btn btn-sm btn-primary" onclick="viewReceita('${receita.id}')">Ver</button>
+                            <button class="btn btn-sm btn-secondary" onclick="editReceita('${receita.id}')">Editar</button>
+                            ${receita.status === 'recebido' ? `<button class="btn btn-sm btn-success" onclick="gerarComprovantePagamento('${receita.id}')" style="background: var(--success); border-color: var(--success);">📄 Comprovante</button>` : ''}
+                            <button class="btn btn-sm btn-danger" onclick="deleteReceita('${receita.id}')">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filtrar receitas
+        function filterReceitas() {
+            const search = document.getElementById('receitaSearch')?.value.toLowerCase() || '';
+            const statusFilter = document.getElementById('receitaStatusFilter')?.value || '';
+            const clienteFilter = document.getElementById('receitaClienteFilter')?.value || '';
+            
+            filteredReceitas = allReceitas.filter(receita => {
+                const matchSearch = !search || 
+                    (receita.descricao && receita.descricao.toLowerCase().includes(search)) ||
+                    (receita.cliente && (receita.cliente.nome || '').toLowerCase().includes(search)) ||
+                    (receita.cliente && (receita.cliente.empresa || '').toLowerCase().includes(search));
+                
+                const matchStatus = !statusFilter || receita.status === statusFilter;
+                const matchCliente = !clienteFilter || receita.cliente_id === clienteFilter;
+                
+                return matchSearch && matchStatus && matchCliente;
+            });
+            
+            renderReceitas();
+            
+            // Atualizar empty state
+            const table = document.getElementById('receitasTable');
+            const empty = document.getElementById('receitasEmpty');
+            if (filteredReceitas.length === 0) {
+                if (table) table.style.display = 'none';
+                if (empty) empty.style.display = 'block';
+            } else {
+                if (table) table.style.display = 'table';
+                if (empty) empty.style.display = 'none';
+            }
+        }
+
+        // Abrir modal de receita (novo)
+        async function openReceitaModal() {
+            document.getElementById('receitaModalTitle').textContent = 'Nova Receita';
+            document.getElementById('receitaForm').reset();
+            document.getElementById('receitaId').value = '';
+            
+            // Preencher data de vencimento com hoje + 30 dias
+            const hoje = new Date();
+            hoje.setDate(hoje.getDate() + 30);
+            document.getElementById('receitaDataVencimento').value = hoje.toISOString().split('T')[0];
+            
+            // Carregar selects
+            await loadClientesForReceitaSelect();
+            await loadProjetosForReceitaSelect();
+            await loadOrcamentosForReceitaSelect();
+            
+            const modal = document.getElementById('receitaModal');
+            openModal(modal);
+        }
+
+        // Fechar modal de receita
+        function closeReceitaModal() {
+            const modal = document.getElementById('receitaModal');
+            closeModal(modal);
+        }
+
+        // Editar receita
+        async function editReceita(id) {
+            const receita = allReceitas.find(r => r.id === id);
+            if (!receita) return;
+            
+            document.getElementById('receitaModalTitle').textContent = 'Editar Receita';
+            document.getElementById('receitaId').value = receita.id;
+            document.getElementById('receitaDescricao').value = receita.descricao || '';
+            document.getElementById('receitaValor').value = receita.valor || '';
+            document.getElementById('receitaStatus').value = receita.status || 'pendente';
+            document.getElementById('receitaFormaPagamento').value = receita.forma_pagamento || '';
+            document.getElementById('receitaDataVencimento').value = receita.data_vencimento ? receita.data_vencimento.split('T')[0] : '';
+            document.getElementById('receitaDataRecebimento').value = receita.data_recebimento ? receita.data_recebimento.split('T')[0] : '';
+            document.getElementById('receitaObservacoes').value = receita.observacoes || '';
+            
+            // Carregar selects
+            await loadClientesForReceitaSelect();
+            await loadProjetosForReceitaSelect();
+            await loadOrcamentosForReceitaSelect();
+            
+            // Selecionar valores
+            document.getElementById('receitaClienteId').value = receita.cliente_id || '';
+            document.getElementById('receitaProjetoId').value = receita.projeto_id || '';
+            document.getElementById('receitaOrcamentoId').value = receita.orcamento_id || '';
+            
+            const modal = document.getElementById('receitaModal');
+            openModal(modal);
+        }
+
+        // Ver receita (detalhes)
+        function viewReceita(id) {
+            const receita = allReceitas.find(r => r.id === id);
+            if (!receita) return;
+            
+            // Por enquanto, apenas editar
+            editReceita(id);
+        }
+
+        // Excluir receita
+        async function deleteReceita(id) {
+            if (!confirm('Tem certeza que deseja excluir esta receita?')) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('receitas')
+                    .delete()
+                    .eq('id', id);
+                
+                if (error) throw error;
+                
+                alert('Receita excluída com sucesso!');
+                await loadReceitas();
+                updateDashboardFinanceiro();
+            } catch (error) {
+                console.error('Erro ao excluir receita:', error);
+                alert('Erro ao excluir receita: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Salvar receita (criar ou atualizar)
+        document.getElementById('receitaForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('receitaId').value;
+            const receitaData = {
+                cliente_id: document.getElementById('receitaClienteId').value,
+                projeto_id: document.getElementById('receitaProjetoId').value || null,
+                orcamento_id: document.getElementById('receitaOrcamentoId').value || null,
+                descricao: document.getElementById('receitaDescricao').value.trim(),
+                valor: parseFloat(document.getElementById('receitaValor').value) || 0,
+                data_vencimento: document.getElementById('receitaDataVencimento').value,
+                data_recebimento: document.getElementById('receitaDataRecebimento').value || null,
+                status: document.getElementById('receitaStatus').value,
+                forma_pagamento: document.getElementById('receitaFormaPagamento').value || null,
+                observacoes: document.getElementById('receitaObservacoes').value.trim() || null
+            };
+            
+            // Se recebido, atualizar data_recebimento se não estiver preenchida
+            if (receitaData.status === 'recebido' && !receitaData.data_recebimento) {
+                receitaData.data_recebimento = new Date().toISOString().split('T')[0];
+            }
+            
+            try {
+                if (id) {
+                    // Atualizar
+                    const { error } = await supabase
+                        .from('receitas')
+                        .update(receitaData)
+                        .eq('id', id);
+                    
+                    if (error) throw error;
+                    alert('Receita atualizada com sucesso!');
+                } else {
+                    // Criar
+                    const { error } = await supabase
+                        .from('receitas')
+                        .insert([receitaData]);
+                    
+                    if (error) throw error;
+                    alert('Receita criada com sucesso!');
+                }
+                
+                closeReceitaModal();
+                await loadReceitas();
+                updateDashboardFinanceiro();
+            } catch (error) {
+                console.error('Erro ao salvar receita:', error);
+                alert('Erro ao salvar receita: ' + (error.message || 'Erro desconhecido'));
+            }
+        });
+
+        // Carregar clientes para select de receita
+        async function loadClientesForReceitaSelect() {
+            try {
+                const { data, error } = await supabase
+                    .from('clientes')
+                    .select('id, nome, empresa')
+                    .eq('status', 'ativo')
+                    .order('nome', { ascending: true });
+                
+                if (error) throw error;
+                
+                const select = document.getElementById('receitaClienteId');
+                if (!select) return;
+                
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">Selecione um cliente</option>';
+                
+                (data || []).forEach(cliente => {
+                    const option = document.createElement('option');
+                    option.value = cliente.id;
+                    option.textContent = cliente.empresa ? `${cliente.nome} - ${cliente.empresa}` : cliente.nome;
+                    select.appendChild(option);
+                });
+                
+                if (currentValue) select.value = currentValue;
+            } catch (error) {
+                console.error('Erro ao carregar clientes:', error);
+            }
+        }
+
+        // Carregar clientes para filtro de receita
+        async function loadClientesForFinanceiro() {
+            try {
+                const { data, error } = await supabase
+                    .from('clientes')
+                    .select('id, nome, empresa')
+                    .eq('status', 'ativo')
+                    .order('nome', { ascending: true });
+                
+                if (error) throw error;
+                
+                const select = document.getElementById('receitaClienteFilter');
+                if (!select) return;
+                
+                select.innerHTML = '<option value="">Todos os clientes</option>';
+                
+                (data || []).forEach(cliente => {
+                    const option = document.createElement('option');
+                    option.value = cliente.id;
+                    option.textContent = cliente.empresa ? `${cliente.nome} - ${cliente.empresa}` : cliente.nome;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar clientes:', error);
+            }
+        }
+
+        // Carregar projetos para select de receita
+        async function loadProjetosForReceitaSelect() {
+            try {
+                const { data, error } = await supabase
+                    .from('projetos')
+                    .select('id, nome')
+                    .order('nome', { ascending: true });
+                
+                if (error) throw error;
+                
+                const select = document.getElementById('receitaProjetoId');
+                if (!select) return;
+                
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">Nenhum</option>';
+                
+                (data || []).forEach(projeto => {
+                    const option = document.createElement('option');
+                    option.value = projeto.id;
+                    option.textContent = projeto.nome;
+                    select.appendChild(option);
+                });
+                
+                if (currentValue) select.value = currentValue;
+            } catch (error) {
+                console.error('Erro ao carregar projetos:', error);
+            }
+        }
+
+        // Carregar orçamentos para select de receita
+        async function loadOrcamentosForReceitaSelect() {
+            try {
+                const { data, error } = await supabase
+                    .from('orcamentos')
+                    .select('id, numero, data')
+                    .order('numero', { ascending: false });
+                
+                if (error) throw error;
+                
+                const select = document.getElementById('receitaOrcamentoId');
+                if (!select) return;
+                
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">Nenhum</option>';
+                
+                (data || []).forEach(orcamento => {
+                    const option = document.createElement('option');
+                    option.value = orcamento.id;
+                    option.textContent = `Orçamento ${String(orcamento.numero || 'N/A').padStart(4, '0')} - ${formatDate(orcamento.data)}`;
+                    select.appendChild(option);
+                });
+                
+                if (currentValue) select.value = currentValue;
+            } catch (error) {
+                console.error('Erro ao carregar orçamentos:', error);
+            }
+        }
+
+        // ========== DESPESAS ==========
+        
+        // Carregar despesas
+        async function loadDespesas() {
+            const loading = document.getElementById('despesasLoading');
+            const table = document.getElementById('despesasTable');
+            const empty = document.getElementById('despesasEmpty');
+            const tbody = document.getElementById('despesasTableBody');
+            
+            try {
+                if (loading) loading.classList.add('active');
+                if (table) table.style.display = 'none';
+                if (empty) empty.style.display = 'none';
+                
+                const { data, error } = await supabase
+                    .from('despesas')
+                    .select('*')
+                    .order('data_vencimento', { ascending: false });
+                
+                if (error) throw error;
+                
+                allDespesas = data || [];
+                filteredDespesas = [...allDespesas];
+                
+                // Atualizar status baseado em vencimento
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+                
+                allDespesas = allDespesas.map(despesa => {
+                    if (despesa.status === 'pendente') {
+                        const vencimento = new Date(despesa.data_vencimento);
+                        vencimento.setHours(0, 0, 0, 0);
+                        if (vencimento < hoje) {
+                            despesa.status = 'atrasado';
+                            // Atualizar no banco
+                            supabase.from('despesas').update({ status: 'atrasado' }).eq('id', despesa.id);
+                        }
+                    }
+                    return despesa;
+                });
+                
+                renderDespesas();
+                
+                if (loading) loading.classList.remove('active');
+                if (tbody && filteredDespesas.length > 0) {
+                    if (table) table.style.display = 'table';
+                } else {
+                    if (empty) empty.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar despesas:', error);
+                if (loading) loading.classList.remove('active');
+                if (empty) empty.style.display = 'block';
+                if (empty) empty.textContent = 'Erro ao carregar despesas: ' + (error.message || 'Erro desconhecido');
+            }
+        }
+
+        // Renderizar despesas
+        function renderDespesas() {
+            const tbody = document.getElementById('despesasTableBody');
+            if (!tbody) return;
+            
+            if (filteredDespesas.length === 0) {
+                tbody.innerHTML = '';
+                return;
+            }
+            
+            tbody.innerHTML = filteredDespesas.map(despesa => {
+                const statusMap = {
+                    'pendente': { label: 'Pendente', class: 'badge-warning' },
+                    'pago': { label: 'Pago', class: 'badge-success' },
+                    'atrasado': { label: 'Atrasado', class: 'badge-danger' },
+                    'cancelado': { label: 'Cancelado', class: 'badge-secondary' }
+                };
+                const status = statusMap[despesa.status] || { label: despesa.status, class: 'badge-secondary' };
+                
+                return `
+                    <tr>
+                        <td data-label="Descrição">${(despesa.descricao || '-').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+                        <td data-label="Categoria">${(despesa.categoria || '-').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+                        <td data-label="Fornecedor">${(despesa.fornecedor || '-').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+                        <td data-label="Valor">${formatCurrency(despesa.valor || 0)}</td>
+                        <td data-label="Vencimento">${formatDate(despesa.data_vencimento)}</td>
+                        <td data-label="Pagamento">${despesa.data_pagamento ? formatDate(despesa.data_pagamento) : '-'}</td>
+                        <td data-label="Status"><span class="badge ${status.class}">${status.label}</span></td>
+                        <td data-label="Ações">
+                            <button class="btn btn-sm btn-primary" onclick="viewDespesa('${despesa.id}')">Ver</button>
+                            <button class="btn btn-sm btn-secondary" onclick="editDespesa('${despesa.id}')">Editar</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteDespesa('${despesa.id}')">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filtrar despesas
+        function filterDespesas() {
+            const search = document.getElementById('despesaSearch')?.value.toLowerCase() || '';
+            const statusFilter = document.getElementById('despesaStatusFilter')?.value || '';
+            const categoriaFilter = document.getElementById('despesaCategoriaFilter')?.value || '';
+            
+            filteredDespesas = allDespesas.filter(despesa => {
+                const matchSearch = !search || 
+                    (despesa.descricao && despesa.descricao.toLowerCase().includes(search)) ||
+                    (despesa.categoria && despesa.categoria.toLowerCase().includes(search)) ||
+                    (despesa.fornecedor && despesa.fornecedor.toLowerCase().includes(search));
+                
+                const matchStatus = !statusFilter || despesa.status === statusFilter;
+                const matchCategoria = !categoriaFilter || despesa.categoria === categoriaFilter;
+                
+                return matchSearch && matchStatus && matchCategoria;
+            });
+            
+            renderDespesas();
+            
+            // Atualizar empty state
+            const table = document.getElementById('despesasTable');
+            const empty = document.getElementById('despesasEmpty');
+            if (filteredDespesas.length === 0) {
+                if (table) table.style.display = 'none';
+                if (empty) empty.style.display = 'block';
+            } else {
+                if (table) table.style.display = 'table';
+                if (empty) empty.style.display = 'none';
+            }
+        }
+
+        // Abrir modal de despesa (novo)
+        async function openDespesaModal() {
+            document.getElementById('despesaModalTitle').textContent = 'Nova Despesa';
+            document.getElementById('despesaForm').reset();
+            document.getElementById('despesaId').value = '';
+            
+            // Preencher data de vencimento com hoje + 30 dias
+            const hoje = new Date();
+            hoje.setDate(hoje.getDate() + 30);
+            document.getElementById('despesaDataVencimento').value = hoje.toISOString().split('T')[0];
+            
+            // Carregar categorias
+            await loadCategoriasDespesaSelect();
+            
+            const modal = document.getElementById('despesaModal');
+            openModal(modal);
+        }
+
+        // Fechar modal de despesa
+        function closeDespesaModal() {
+            const modal = document.getElementById('despesaModal');
+            closeModal(modal);
+        }
+
+        // Editar despesa
+        async function editDespesa(id) {
+            const despesa = allDespesas.find(d => d.id === id);
+            if (!despesa) return;
+            
+            document.getElementById('despesaModalTitle').textContent = 'Editar Despesa';
+            document.getElementById('despesaId').value = despesa.id;
+            document.getElementById('despesaDescricao').value = despesa.descricao || '';
+            document.getElementById('despesaCategoria').value = despesa.categoria || '';
+            document.getElementById('despesaFornecedor').value = despesa.fornecedor || '';
+            document.getElementById('despesaValor').value = despesa.valor || '';
+            document.getElementById('despesaStatus').value = despesa.status || 'pendente';
+            document.getElementById('despesaFormaPagamento').value = despesa.forma_pagamento || '';
+            document.getElementById('despesaDataVencimento').value = despesa.data_vencimento ? despesa.data_vencimento.split('T')[0] : '';
+            document.getElementById('despesaDataPagamento').value = despesa.data_pagamento ? despesa.data_pagamento.split('T')[0] : '';
+            document.getElementById('despesaObservacoes').value = despesa.observacoes || '';
+            
+            // Carregar categorias
+            await loadCategoriasDespesaSelect();
+            
+            const modal = document.getElementById('despesaModal');
+            openModal(modal);
+        }
+
+        // Ver despesa (detalhes)
+        function viewDespesa(id) {
+            const despesa = allDespesas.find(d => d.id === id);
+            if (!despesa) return;
+            
+            // Por enquanto, apenas editar
+            editDespesa(id);
+        }
+
+        // Excluir despesa
+        async function deleteDespesa(id) {
+            if (!confirm('Tem certeza que deseja excluir esta despesa?')) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('despesas')
+                    .delete()
+                    .eq('id', id);
+                
+                if (error) throw error;
+                
+                alert('Despesa excluída com sucesso!');
+                await loadDespesas();
+                updateDashboardFinanceiro();
+            } catch (error) {
+                console.error('Erro ao excluir despesa:', error);
+                alert('Erro ao excluir despesa: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Salvar despesa (criar ou atualizar)
+        document.getElementById('despesaForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('despesaId').value;
+            const despesaData = {
+                descricao: document.getElementById('despesaDescricao').value.trim(),
+                categoria: document.getElementById('despesaCategoria').value || null,
+                fornecedor: document.getElementById('despesaFornecedor').value.trim() || null,
+                valor: parseFloat(document.getElementById('despesaValor').value) || 0,
+                data_vencimento: document.getElementById('despesaDataVencimento').value,
+                data_pagamento: document.getElementById('despesaDataPagamento').value || null,
+                status: document.getElementById('despesaStatus').value,
+                forma_pagamento: document.getElementById('despesaFormaPagamento').value || null,
+                observacoes: document.getElementById('despesaObservacoes').value.trim() || null
+            };
+            
+            // Se pago, atualizar data_pagamento se não estiver preenchida
+            if (despesaData.status === 'pago' && !despesaData.data_pagamento) {
+                despesaData.data_pagamento = new Date().toISOString().split('T')[0];
+            }
+            
+            try {
+                if (id) {
+                    // Atualizar
+                    const { error } = await supabase
+                        .from('despesas')
+                        .update(despesaData)
+                        .eq('id', id);
+                    
+                    if (error) throw error;
+                    alert('Despesa atualizada com sucesso!');
+                } else {
+                    // Criar
+                    const { error } = await supabase
+                        .from('despesas')
+                        .insert([despesaData]);
+                    
+                    if (error) throw error;
+                    alert('Despesa criada com sucesso!');
+                }
+                
+                closeDespesaModal();
+                await loadDespesas();
+                updateDashboardFinanceiro();
+            } catch (error) {
+                console.error('Erro ao salvar despesa:', error);
+                alert('Erro ao salvar despesa: ' + (error.message || 'Erro desconhecido'));
+            }
+        });
+
+        // Carregar categorias de despesa
+        async function loadCategoriasDespesa() {
+            try {
+                const { data, error } = await supabase
+                    .from('categorias_despesa')
+                    .select('*')
+                    .eq('ativo', true)
+                    .order('nome', { ascending: true });
+                
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Erro ao carregar categorias:', error);
+                return [];
+            }
+        }
+
+        // Carregar categorias para select de despesa
+        async function loadCategoriasDespesaSelect() {
+            try {
+                const categorias = await loadCategoriasDespesa();
+                
+                const select = document.getElementById('despesaCategoria');
+                if (!select) return;
+                
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">Selecione uma categoria</option>';
+                
+                categorias.forEach(categoria => {
+                    const option = document.createElement('option');
+                    option.value = categoria.nome;
+                    option.textContent = categoria.nome;
+                    select.appendChild(option);
+                });
+                
+                if (currentValue) select.value = currentValue;
+                
+                // Carregar também no filtro
+                const filterSelect = document.getElementById('despesaCategoriaFilter');
+                if (filterSelect) {
+                    filterSelect.innerHTML = '<option value="">Todas as categorias</option>';
+                    categorias.forEach(categoria => {
+                        const option = document.createElement('option');
+                        option.value = categoria.nome;
+                        option.textContent = categoria.nome;
+                        filterSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Erro ao carregar categorias:', error);
+            }
+        }
+
+        // Gerar próximas cobranças recorrentes (executar diariamente ou quando necessário)
+        async function gerarProximasCobrancasRecorrentes() {
+            try {
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+                
+                // Buscar cobranças recorrentes ativas que precisam gerar próxima cobrança
+                const { data: cobrancasRecorrentes, error } = await supabase
+                    .from('receitas')
+                    .select('*')
+                    .in('tipo_cobranca', ['recorrente', 'manutencao'])
+                    .eq('ativa', true)
+                    .lte('data_vencimento', hoje.toISOString().split('T')[0])
+                    .order('data_vencimento', { ascending: true });
+                
+                if (error) throw error;
+                
+                if (!cobrancasRecorrentes || cobrancasRecorrentes.length === 0) {
+                    return; // Nenhuma cobrança para gerar
+                }
+                
+                const novasCobrancas = [];
+                
+                for (const cobranca of cobrancasRecorrentes) {
+                    // Verificar se já existe próxima cobrança gerada
+                    const { data: proximaCobranca } = await supabase
+                        .from('receitas')
+                        .select('id')
+                        .eq('cobranca_original_id', cobranca.id)
+                        .gt('data_vencimento', hoje.toISOString().split('T')[0])
+                        .maybeSingle();
+                    
+                    if (proximaCobranca) {
+                        continue; // Já existe próxima cobrança
+                    }
+                    
+                    // Verificar se está dentro do período (se houver data_termino)
+                    if (cobranca.data_termino) {
+                        const dataTermino = new Date(cobranca.data_termino);
+                        if (hoje > dataTermino) {
+                            // Desativar cobrança recorrente
+                            await supabase
+                                .from('receitas')
+                                .update({ ativa: false })
+                                .eq('id', cobranca.id);
+                            continue;
+                        }
+                    }
+                    
+                    // Calcular próxima data de vencimento
+                    let proximaDataVencimento = new Date(cobranca.data_vencimento);
+                    
+                    if (cobranca.tipo_cobranca === 'manutencao' || cobranca.frequencia === 'mensal') {
+                        proximaDataVencimento.setMonth(proximaDataVencimento.getMonth() + 1);
+                    } else if (cobranca.frequencia === 'trimestral') {
+                        proximaDataVencimento.setMonth(proximaDataVencimento.getMonth() + 3);
+                    } else if (cobranca.frequencia === 'semestral') {
+                        proximaDataVencimento.setMonth(proximaDataVencimento.getMonth() + 6);
+                    } else if (cobranca.frequencia === 'anual') {
+                        proximaDataVencimento.setFullYear(proximaDataVencimento.getFullYear() + 1);
+                    }
+                    
+                    // Ajustar para o dia de vencimento correto
+                    if (cobranca.dia_vencimento) {
+                        proximaDataVencimento.setDate(cobranca.dia_vencimento);
+                    }
+                    
+                    // Criar nova cobrança
+                    novasCobrancas.push({
+                        cliente_id: cobranca.cliente_id,
+                        orcamento_id: cobranca.orcamento_id,
+                        descricao: cobranca.descricao,
+                        valor: cobranca.valor,
+                        data_vencimento: proximaDataVencimento.toISOString().split('T')[0],
+                        status: 'pendente',
+                        forma_pagamento: cobranca.forma_pagamento,
+                        tipo_cobranca: cobranca.tipo_cobranca,
+                        frequencia: cobranca.frequencia,
+                        dia_vencimento: cobranca.dia_vencimento,
+                        data_inicio: cobranca.data_inicio,
+                        data_termino: cobranca.data_termino,
+                        ativa: cobranca.ativa,
+                        cobranca_original_id: cobranca.cobranca_original_id || cobranca.id,
+                        observacoes: cobranca.observacoes
+                    });
+                }
+                
+                // Inserir novas cobranças
+                if (novasCobrancas.length > 0) {
+                    const { error: insertError } = await supabase
+                        .from('receitas')
+                        .insert(novasCobrancas);
+                    
+                    if (insertError) throw insertError;
+                    
+                    console.log(`${novasCobrancas.length} cobrança(s) recorrente(s) gerada(s) automaticamente.`);
+                }
+            } catch (error) {
+                console.error('Erro ao gerar cobranças recorrentes:', error);
+            }
+        }
+
+        // Executar geração de cobranças recorrentes ao carregar o módulo financeiro
+        // e também periodicamente (a cada 1 hora)
+        setInterval(gerarProximasCobrancasRecorrentes, 60 * 60 * 1000); // 1 hora
+
+        // Atualizar dashboard financeiro
+        async function updateDashboardFinanceiro() {
+            try {
+                // Calcular totais
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+                const mesAtual = hoje.getMonth();
+                const anoAtual = hoje.getFullYear();
+                
+                // Receitas
+                let totalReceber = 0;
+                let receitasRecebidas = 0;
+                
+                allReceitas.forEach(receita => {
+                    const valor = parseFloat(receita.valor) || 0;
+                    const dataReceb = receita.data_recebimento ? new Date(receita.data_recebimento) : null;
+                    
+                    if (receita.status === 'pendente' || receita.status === 'atrasado') {
+                        totalReceber += valor;
+                    }
+                    
+                    if (receita.status === 'recebido' && dataReceb) {
+                        if (dataReceb.getMonth() === mesAtual && dataReceb.getFullYear() === anoAtual) {
+                            receitasRecebidas += valor;
+                        }
+                    }
+                });
+                
+                // Despesas
+                let totalPagar = 0;
+                let despesasPagas = 0;
+                
+                allDespesas.forEach(despesa => {
+                    const valor = parseFloat(despesa.valor) || 0;
+                    const dataPag = despesa.data_pagamento ? new Date(despesa.data_pagamento) : null;
+                    
+                    if (despesa.status === 'pendente' || despesa.status === 'atrasado') {
+                        totalPagar += valor;
+                    }
+                    
+                    if (despesa.status === 'pago' && dataPag) {
+                        if (dataPag.getMonth() === mesAtual && dataPag.getFullYear() === anoAtual) {
+                            despesasPagas += valor;
+                        }
+                    }
+                });
+                
+                // Saldo previsto
+                const saldoPrevisto = totalReceber - totalPagar;
+                
+                // Vencimentos hoje
+                const vencimentosHoje = [...allReceitas, ...allDespesas].filter(item => {
+                    const vencimento = new Date(item.data_vencimento);
+                    vencimento.setHours(0, 0, 0, 0);
+                    return vencimento.getTime() === hoje.getTime() && 
+                           (item.status === 'pendente' || item.status === 'atrasado');
+                }).length;
+                
+                // Atualizar UI
+                const totalReceberEl = document.getElementById('totalReceber');
+                const totalPagarEl = document.getElementById('totalPagar');
+                const saldoPrevistoEl = document.getElementById('saldoPrevisto');
+                const receitasRecebidasEl = document.getElementById('receitasRecebidas');
+                const despesasPagasEl = document.getElementById('despesasPagas');
+                const vencimentosHojeEl = document.getElementById('vencimentosHoje');
+                
+                if (totalReceberEl) totalReceberEl.textContent = formatCurrency(totalReceber);
+                if (totalPagarEl) totalPagarEl.textContent = formatCurrency(totalPagar);
+                if (saldoPrevistoEl) {
+                    saldoPrevistoEl.textContent = formatCurrency(saldoPrevisto);
+                    saldoPrevistoEl.style.color = saldoPrevisto >= 0 ? 'var(--success)' : 'var(--danger)';
+                }
+                if (receitasRecebidasEl) receitasRecebidasEl.textContent = formatCurrency(receitasRecebidas);
+                if (despesasPagasEl) despesasPagasEl.textContent = formatCurrency(despesasPagas);
+                if (vencimentosHojeEl) vencimentosHojeEl.textContent = vencimentosHoje;
+            } catch (error) {
+                console.error('Erro ao atualizar dashboard financeiro:', error);
+            }
+        }
+
+        // ========== COBRANÇAS ==========
+        
+        // Abrir modal de cobrança (novo)
+        async function openCobrancaModal() {
+            document.getElementById('cobrancaModalTitle').textContent = 'Nova Cobrança';
+            document.getElementById('cobrancaForm').reset();
+            document.getElementById('cobrancaId').value = '';
+            
+            // Limpar QR Code
+            removerQRCode();
+            
+            // Preencher data de vencimento com hoje + 30 dias
+            const hoje = new Date();
+            hoje.setDate(hoje.getDate() + 30);
+            document.getElementById('cobrancaDataVencimento').value = hoje.toISOString().split('T')[0];
+            
+            // Preencher data de início com hoje
+            document.getElementById('cobrancaDataInicio').value = hoje.toISOString().split('T')[0];
+            document.getElementById('cobrancaDataInicioManutencao').value = hoje.toISOString().split('T')[0];
+            
+            // Resetar campos de parcelado/recorrente
+            atualizarCamposCobranca();
+            
+            // Carregar clientes
+            await loadClientesForCobrancaSelect();
+            
+            const modal = document.getElementById('cobrancaModal');
+            openModal(modal);
+        }
+
+        // Atualizar campos baseado no tipo de cobrança
+        function atualizarCamposCobranca() {
+            const tipo = document.getElementById('cobrancaTipo').value;
+            
+            // Esconder todos os campos específicos
+            document.getElementById('cobrancaCamposParcelado').style.display = 'none';
+            document.getElementById('cobrancaCamposRecorrente').style.display = 'none';
+            document.getElementById('cobrancaCamposManutencao').style.display = 'none';
+            
+            // Mostrar campos específicos baseado no tipo
+            if (tipo === 'parcelado') {
+                document.getElementById('cobrancaCamposParcelado').style.display = 'block';
+                calcularValorParcela();
+            } else if (tipo === 'recorrente') {
+                document.getElementById('cobrancaCamposRecorrente').style.display = 'block';
+            } else if (tipo === 'manutencao') {
+                document.getElementById('cobrancaCamposManutencao').style.display = 'block';
+            }
+        }
+
+        // Calcular valor da parcela
+        function calcularValorParcela() {
+            const valorTotal = parseFloat(document.getElementById('cobrancaValor').value) || 0;
+            const numeroParcelas = parseInt(document.getElementById('cobrancaNumeroParcelas').value) || 1;
+            
+            if (valorTotal > 0 && numeroParcelas > 0) {
+                const valorParcela = valorTotal / numeroParcelas;
+                document.getElementById('cobrancaValorParcela').value = valorParcela.toFixed(2);
+            } else {
+                document.getElementById('cobrancaValorParcela').value = '';
+            }
+        }
+
+        // Adicionar listeners para calcular parcela
+        document.addEventListener('DOMContentLoaded', function() {
+            const valorInput = document.getElementById('cobrancaValor');
+            const parcelasInput = document.getElementById('cobrancaNumeroParcelas');
+            
+            if (valorInput) {
+                valorInput.addEventListener('input', function() {
+                    if (document.getElementById('cobrancaTipo').value === 'parcelado') {
+                        calcularValorParcela();
+                    }
+                });
+            }
+            
+            if (parcelasInput) {
+                parcelasInput.addEventListener('input', function() {
+                    if (document.getElementById('cobrancaTipo').value === 'parcelado') {
+                        calcularValorParcela();
+                    }
+                });
+            }
+        });
+
+        // Fechar modal de cobrança
+        function closeCobrancaModal() {
+            const modal = document.getElementById('cobrancaModal');
+            closeModal(modal);
+        }
+
+        // Carregar clientes para select de cobrança
+        async function loadClientesForCobrancaSelect() {
+            try {
+                const { data, error } = await supabase
+                    .from('clientes')
+                    .select('id, nome, empresa')
+                    .eq('status', 'ativo')
+                    .order('nome', { ascending: true });
+                
+                if (error) throw error;
+                
+                const select = document.getElementById('cobrancaClienteId');
+                if (!select) return;
+                
+                select.innerHTML = '<option value="">Selecione um cliente</option>';
+                
+                (data || []).forEach(cliente => {
+                    const option = document.createElement('option');
+                    option.value = cliente.id;
+                    option.textContent = cliente.empresa ? `${cliente.nome} - ${cliente.empresa}` : cliente.nome;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar clientes:', error);
+            }
+        }
+
+        // Carregar orçamentos para cobrança
+        async function loadOrcamentosParaCobranca() {
+            const clienteId = document.getElementById('cobrancaClienteId').value;
+            if (!clienteId) {
+                document.getElementById('cobrancaOrcamentoId').innerHTML = '<option value="">Nenhum</option>';
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase
+                    .from('orcamentos')
+                    .select('id, numero, data, valor, status')
+                    .eq('cliente_id', clienteId)
+                    .in('status', ['aprovado', 'enviado'])
+                    .order('numero', { ascending: false });
+                
+                if (error) throw error;
+                
+                const select = document.getElementById('cobrancaOrcamentoId');
+                if (!select) return;
+                
+                select.innerHTML = '<option value="">Nenhum</option>';
+                
+                (data || []).forEach(orcamento => {
+                    const option = document.createElement('option');
+                    option.value = orcamento.id;
+                    option.textContent = `Orçamento ${String(orcamento.numero || 'N/A').padStart(4, '0')} - ${formatCurrency(orcamento.valor || 0)}`;
+                    option.dataset.valor = orcamento.valor || 0;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar orçamentos:', error);
+            }
+        }
+
+        // Preencher dados da cobrança baseado no orçamento
+        async function preencherDadosCobranca() {
+            const orcamentoId = document.getElementById('cobrancaOrcamentoId').value;
+            if (!orcamentoId) return;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('orcamentos')
+                    .select('*, cliente:clientes(*)')
+                    .eq('id', orcamentoId)
+                    .single();
+                
+                if (error) throw error;
+                
+                if (data) {
+                    // Preencher descrição
+                    const descricao = `Pagamento - Orçamento ${String(data.numero || 'N/A').padStart(4, '0')}`;
+                    document.getElementById('cobrancaDescricao').value = descricao;
+                    
+                    // Preencher valor
+                    document.getElementById('cobrancaValor').value = data.valor || '';
+                    
+                    // Preencher forma de pagamento se existir
+                    if (data.forma_pagamento) {
+                        const formas = data.forma_pagamento.split(',').map(f => f.trim());
+                        if (formas.length > 0) {
+                            document.getElementById('cobrancaFormaPagamento').value = formas[0];
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar orçamento:', error);
+            }
+        }
+
+        // Preview QR Code
+        function previewQRCode() {
+            const fileInput = document.getElementById('cobrancaQRCodeFile');
+            const preview = document.getElementById('cobrancaQRCodePreview');
+            const image = document.getElementById('cobrancaQRCodeImage');
+            const status = document.getElementById('cobrancaQRCodeStatus');
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                
+                // Verificar se é uma imagem
+                if (!file.type.startsWith('image/')) {
+                    alert('Por favor, selecione um arquivo de imagem.');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64 = e.target.result;
+                    image.src = base64;
+                    document.getElementById('cobrancaQRCodeBase64').value = base64;
+                    preview.style.display = 'block';
+                    status.textContent = 'QR Code carregado com sucesso!';
+                    status.style.color = 'var(--success)';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Remover QR Code
+        function removerQRCode() {
+            document.getElementById('cobrancaQRCodeFile').value = '';
+            document.getElementById('cobrancaQRCodeBase64').value = '';
+            document.getElementById('cobrancaQRCodePreview').style.display = 'none';
+            document.getElementById('cobrancaQRCodeImage').src = '';
+            document.getElementById('cobrancaQRCodeStatus').textContent = '';
+            document.getElementById('cobrancaChavePIX').value = '';
+            document.getElementById('cobrancaGatewayStatus').textContent = '';
+            document.getElementById('cobrancaGatewayPagamento').value = '';
+            document.getElementById('cobrancaApiKey').value = '';
+            document.getElementById('cobrancaApiSecret').value = '';
+            document.getElementById('camposGateway').style.display = 'none';
+        }
+
+        // Atualizar campos do gateway de pagamento
+        function atualizarCamposGateway() {
+            const gateway = document.getElementById('cobrancaGatewayPagamento').value;
+            const camposDiv = document.getElementById('camposGateway');
+            
+            if (gateway) {
+                camposDiv.style.display = 'block';
+                // Limpar campos anteriores
+                document.getElementById('cobrancaApiKey').value = '';
+                document.getElementById('cobrancaApiSecret').value = '';
+            } else {
+                camposDiv.style.display = 'none';
+            }
+        }
+
+        // Gerar QR Code via Gateway de Pagamento
+        async function gerarQRCodeViaGateway() {
+            const gateway = document.getElementById('cobrancaGatewayPagamento').value;
+            const apiKey = document.getElementById('cobrancaApiKey').value.trim();
+            const apiSecret = document.getElementById('cobrancaApiSecret').value.trim();
+            const valor = document.getElementById('cobrancaValor').value;
+            const clienteId = document.getElementById('cobrancaClienteId').value;
+            const descricao = document.getElementById('cobrancaDescricao').value || 'Cobrança';
+            
+            if (!gateway) {
+                alert('Por favor, selecione um gateway de pagamento.');
+                return;
+            }
+            
+            if (!apiKey) {
+                alert('Por favor, informe a API Key do gateway.');
+                return;
+            }
+            
+            if (!valor || parseFloat(valor) <= 0) {
+                alert('Por favor, informe o valor da cobrança.');
+                return;
+            }
+            
+            const statusEl = document.getElementById('cobrancaGatewayStatus');
+            statusEl.textContent = 'Gerando QR Code via gateway...';
+            statusEl.style.color = 'var(--warning)';
+            
+            try {
+                // Buscar dados do cliente
+                let nomeCliente = 'Cliente';
+                if (clienteId) {
+                    const { data: cliente, error } = await supabase
+                        .from('clientes')
+                        .select('nome, empresa')
+                        .eq('id', clienteId)
+                        .single();
+                    
+                    if (!error && cliente) {
+                        nomeCliente = cliente.empresa || cliente.nome || 'Cliente';
+                    }
+                }
+                
+                // IMPORTANTE: Para usar gateways de pagamento, você precisa:
+                // 1. Criar uma conta no gateway escolhido
+                // 2. Obter as credenciais da API (API Key, API Secret, etc.)
+                // 3. Implementar a chamada à API do gateway (requer backend/server)
+                // 4. O gateway retornará o QR Code PIX válido
+                
+                // Exemplo de estrutura para integração (requer backend):
+                /*
+                const response = await fetch('/api/gerar-qrcode-pix', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        gateway: gateway,
+                        apiKey: apiKey,
+                        apiSecret: apiSecret,
+                        valor: parseFloat(valor),
+                        descricao: descricao,
+                        cliente: nomeCliente
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.qrCode) {
+                    // Usar o QR Code retornado
+                    document.getElementById('cobrancaQRCodeBase64').value = data.qrCode;
+                    document.getElementById('cobrancaQRCodeImage').src = data.qrCode;
+                    document.getElementById('cobrancaQRCodePreview').style.display = 'block';
+                    statusEl.textContent = 'QR Code gerado com sucesso via ' + gateway + '!';
+                    statusEl.style.color = 'var(--success)';
+                }
+                */
+                
+                // Por enquanto, mostrar instruções
+                alert(`Para usar ${gateway}, você precisa:\n\n1. Criar uma conta no ${gateway}\n2. Obter suas credenciais de API\n3. Implementar um backend que faça a chamada à API do gateway\n4. O backend retornará o QR Code PIX válido\n\nPor enquanto, use a Opção 1 (Upload) ou Opção 3 (Chave PIX) para testes.`);
+                
+                statusEl.textContent = 'Integração com gateway requer backend. Use Upload ou Chave PIX para testes.';
+                statusEl.style.color = 'var(--text-gray)';
+                
+            } catch (error) {
+                console.error('Erro ao gerar QR Code via gateway:', error);
+                statusEl.textContent = 'Erro ao gerar QR Code. Verifique suas credenciais.';
+                statusEl.style.color = 'var(--danger)';
+            }
+        }
+
+        // Gerar QR Code PIX (formato EMV válido)
+        async function gerarQRCodePIX() {
+            const chavePIX = document.getElementById('cobrancaChavePIX').value.trim();
+            const valor = document.getElementById('cobrancaValor').value;
+            const clienteId = document.getElementById('cobrancaClienteId').value;
+            const descricao = document.getElementById('cobrancaDescricao').value || 'Cobrança';
+            
+            if (!chavePIX) {
+                alert('Por favor, informe a Chave PIX para gerar o QR Code.');
+                return;
+            }
+            
+            if (!valor || parseFloat(valor) <= 0) {
+                alert('Por favor, informe o valor da cobrança para gerar o QR Code PIX.');
+                return;
+            }
+            
+            try {
+                // Buscar dados do cliente para o nome
+                let nomeCliente = 'AUTOVIZION';
+                if (clienteId) {
+                    const { data: cliente, error } = await supabase
+                        .from('clientes')
+                        .select('nome, empresa')
+                        .eq('id', clienteId)
+                        .single();
+                    
+                    if (!error && cliente) {
+                        nomeCliente = cliente.empresa || cliente.nome || 'AUTOVIZION';
+                    }
+                }
+                
+                // IMPORTANTE: Para gerar QR Code PIX válido, você precisa:
+                // 1. Usar API do seu banco (Itaú, Banco do Brasil, etc.) que gera QR Code PIX dinâmico
+                // 2. OU fazer upload do QR Code gerado pelo banco
+                // 3. OU usar serviço de terceiros que gera QR Code PIX válido
+                
+                // Gerar código EMV PIX (formato simplificado - pode não funcionar em todos os apps)
+                // O formato EMV PIX completo requer validação e certificação do Banco Central
+                const valorFormatado = parseFloat(valor).toFixed(2);
+                const nomeFormatado = nomeCliente.substring(0, 25).toUpperCase();
+                const descricaoFormatada = descricao.substring(0, 25).toUpperCase();
+                
+                // Formato EMV PIX básico (não totalmente válido sem certificação)
+                // Para QR Code PIX válido, use a API do seu banco ou faça upload
+                const emvPix = gerarCodigoEMVPIX(chavePIX, valorFormatado, nomeFormatado, descricaoFormatada);
+                
+                // Gerar QR Code com o código EMV
+                let qrCodeBase64 = '';
+                
+                if (typeof QRCode !== 'undefined') {
+                    // Usar biblioteca QRCode.js
+                    const canvas = document.createElement('canvas');
+                    await QRCode.toCanvas(canvas, emvPix, {
+                        width: 200, // Tamanho menor (200x200 pixels)
+                        margin: 2,
+                        color: {
+                            dark: '#000000',
+                            light: '#FFFFFF'
+                        },
+                        errorCorrectionLevel: 'M'
+                    });
+                    
+                    qrCodeBase64 = canvas.toDataURL('image/png');
+                } else {
+                    // Fallback: usar API pública
+                    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(emvPix)}&format=png&ecc=M`;
+                    const response = await fetch(qrCodeUrl);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        qrCodeBase64 = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        });
+                    } else {
+                        throw new Error('Erro ao gerar QR Code');
+                    }
+                }
+                
+                // Atualizar UI
+                document.getElementById('cobrancaQRCodeImage').src = qrCodeBase64;
+                document.getElementById('cobrancaQRCodeBase64').value = qrCodeBase64;
+                document.getElementById('cobrancaQRCodePreview').style.display = 'block';
+                document.getElementById('cobrancaQRCodeStatus').innerHTML = '⚠️ QR Code gerado (formato de teste). <strong>Importante:</strong> Este QR Code pode não funcionar em todos os apps. Para QR Code PIX válido, use Upload do banco ou integração com gateway de pagamento.';
+                document.getElementById('cobrancaQRCodeStatus').style.color = 'var(--warning)';
+                
+            } catch (error) {
+                console.error('Erro ao gerar QR Code PIX:', error);
+                alert('Erro ao gerar QR Code PIX. Por favor, faça upload de uma imagem do QR Code gerado pelo seu banco.');
+            }
+        }
+
+        // Gerar código EMV PIX (formato simplificado - pode não ser totalmente válido)
+        function gerarCodigoEMVPIX(chave, valor, nome, descricao) {
+            // Formato EMV PIX básico
+            // ATENÇÃO: Este é um formato simplificado. Para QR Code PIX válido e certificado,
+            // você DEVE usar a API do seu banco ou serviço certificado pelo Banco Central.
+            
+            const payload = [];
+            
+            // Payload Format Indicator (00)
+            payload.push('000201');
+            
+            // Merchant Account Information (26) - PIX
+            let pixData = '0014br.gov.bcb.pix';
+            pixData += String(chave.length).padStart(2, '0') + chave;
+            payload.push('26' + String(pixData.length).padStart(2, '0') + pixData);
+            
+            // Merchant Category Code (52) - 0000 = não especificado
+            payload.push('52040000');
+            
+            // Transaction Currency (53) - 986 = BRL
+            payload.push('5303986');
+            
+            // Transaction Amount (54) - valor
+            payload.push('54' + String(valor.length).padStart(2, '0') + valor);
+            
+            // Country Code (58) - BR
+            payload.push('5802BR');
+            
+            // Merchant Name (59) - nome do recebedor
+            payload.push('59' + String(nome.length).padStart(2, '0') + nome);
+            
+            // Merchant City (60) - cidade
+            payload.push('60' + String('SAO PAULO'.length).padStart(2, '0') + 'SAO PAULO');
+            
+            // Additional Data Field Template (62) - descrição
+            if (descricao) {
+                const descricaoData = '05' + String(descricao.length).padStart(2, '0') + descricao;
+                payload.push('62' + String(descricaoData.length).padStart(2, '0') + descricaoData);
+            }
+            
+            // CRC16 (63) - checksum
+            const payloadString = payload.join('');
+            const crc = calcularCRC16(payloadString + '6304');
+            payload.push('6304' + crc);
+            
+            return payload.join('');
+        }
+
+        // Calcular CRC16 para PIX
+        function calcularCRC16(data) {
+            const polynomial = 0x1021;
+            let crc = 0xFFFF;
+            
+            for (let i = 0; i < data.length; i++) {
+                crc ^= (data.charCodeAt(i) << 8);
+                for (let j = 0; j < 8; j++) {
+                    if (crc & 0x8000) {
+                        crc = (crc << 1) ^ polynomial;
+                    } else {
+                        crc <<= 1;
+                    }
+                }
+            }
+            
+            crc &= 0xFFFF;
+            return crc.toString(16).toUpperCase().padStart(4, '0');
+        }
+
+        // Enviar cobrança por WhatsApp
+        async function enviarCobrancaWhatsApp() {
+            try {
+                const clienteId = document.getElementById('cobrancaClienteId').value;
+                const descricao = document.getElementById('cobrancaDescricao').value;
+                const valor = document.getElementById('cobrancaValor').value;
+                const dataVencimento = document.getElementById('cobrancaDataVencimento').value;
+                const formaPagamento = document.getElementById('cobrancaFormaPagamento').value;
+                const instrucoes = document.getElementById('cobrancaInstrucoes').value;
+                
+                if (!clienteId || !descricao || !valor || !dataVencimento) {
+                    alert('Preencha todos os campos obrigatórios antes de enviar por WhatsApp.');
+                    return;
+                }
+                
+                // Buscar dados do cliente
+                const { data: cliente, error: clienteError } = await supabase
+                    .from('clientes')
+                    .select('*')
+                    .eq('id', clienteId)
+                    .single();
+                
+                if (clienteError) throw clienteError;
+                
+                if (!cliente.telefone && !cliente.whatsapp) {
+                    alert('Cliente não possui telefone cadastrado para envio por WhatsApp.');
+                    return;
+                }
+                
+                const telefone = cliente.whatsapp || cliente.telefone;
+                // Remover caracteres não numéricos
+                const telefoneLimpo = telefone.replace(/\D/g, '');
+                
+                // Formatar mensagem
+                const formatDate = (dateStr) => {
+                    if (!dateStr) return '-';
+                    try {
+                        const date = new Date(dateStr);
+                        return date.toLocaleDateString('pt-BR');
+                    } catch {
+                        return dateStr;
+                    }
+                };
+                
+                const formatCurrency = (value) => {
+                    if (!value && value !== 0) return 'R$ 0,00';
+                    return new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }).format(value);
+                };
+                
+                let mensagem = `Olá ${cliente.nome || cliente.empresa || 'Cliente'}!\n\n`;
+                mensagem += `📋 *COBRANÇA*\n\n`;
+                mensagem += `📝 Descrição: ${descricao}\n`;
+                mensagem += `💰 Valor: ${formatCurrency(parseFloat(valor))}\n`;
+                mensagem += `📅 Vencimento: ${formatDate(dataVencimento)}\n`;
+                mensagem += `💳 Forma de Pagamento: ${formaPagamento || 'Não especificada'}\n\n`;
+                
+                if (instrucoes) {
+                    mensagem += `📌 Instruções de Pagamento:\n${instrucoes}\n\n`;
+                }
+                
+                mensagem += `Agradecemos a atenção!\n\n`;
+                mensagem += `*AUTOVIZION*`;
+                
+                // Gerar PDF primeiro (opcional - para anexar)
+                // Por enquanto, apenas enviar mensagem
+                
+                // Abrir WhatsApp
+                const url = `https://wa.me/55${telefoneLimpo}?text=${encodeURIComponent(mensagem)}`;
+                window.open(url, '_blank');
+                
+                alert('WhatsApp aberto! Você pode enviar a mensagem e anexar o PDF da cobrança se necessário.');
+            } catch (error) {
+                console.error('Erro ao enviar cobrança por WhatsApp:', error);
+                alert('Erro ao enviar cobrança por WhatsApp: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Gerar PDF de cobrança
+        async function gerarPDFCobranca() {
+            try {
+                // Verificar se jsPDF está disponível
+                if (!window.jspdf) {
+                    alert('Biblioteca de PDF não carregada. Por favor, recarregue a página.');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Obter dados do formulário
+                const clienteId = document.getElementById('cobrancaClienteId').value;
+                const descricao = document.getElementById('cobrancaDescricao').value;
+                const valor = parseFloat(document.getElementById('cobrancaValor').value) || 0;
+                const dataVencimento = document.getElementById('cobrancaDataVencimento').value;
+                const formaPagamento = document.getElementById('cobrancaFormaPagamento').value;
+                const instrucoes = document.getElementById('cobrancaInstrucoes').value;
+                const observacoes = document.getElementById('cobrancaObservacoes').value;
+                
+                if (!clienteId || !descricao || !valor || !dataVencimento) {
+                    alert('Preencha todos os campos obrigatórios antes de gerar o PDF.');
+                    return;
+                }
+                
+                // Buscar dados do cliente
+                const { data: cliente, error: clienteError } = await supabase
+                    .from('clientes')
+                    .select('*')
+                    .eq('id', clienteId)
+                    .single();
+                
+                if (clienteError) throw clienteError;
+                
+                // Função auxiliar para formatar moeda
+                const formatCurrencyPDF = (value) => {
+                    if (!value && value !== 0) return 'R$ 0,00';
+                    return new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }).format(value);
+                };
+                
+                // Função auxiliar para formatar data
+                const formatDatePDF = (dateStr) => {
+                    if (!dateStr) return '-';
+                    try {
+                        const date = new Date(dateStr);
+                        return date.toLocaleDateString('pt-BR');
+                    } catch {
+                        return dateStr;
+                    }
+                };
+                
+                // Configurações
+                const margin = 20;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                let y = margin;
+                
+                // ========== CABEÇALHO - DADOS DA EMPRESA ==========
+                let logoLoaded = false;
+                
+                try {
+                    const logoUrl = 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/LOGO%203D%20SEM%20FUNDO%20(1).png';
+                    const response = await fetch(logoUrl);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const reader = new FileReader();
+                        
+                        await new Promise((resolve, reject) => {
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        });
+                        
+                        const logoData = reader.result;
+                        doc.addImage(logoData, 'PNG', margin, 5, 60, 25);
+                        logoLoaded = true;
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar logo:', e);
+                }
+                
+                if (!logoLoaded) {
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(0, 0, pageWidth, 50, 'F');
+                    
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(28);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('AUTOVIZION', margin, 30);
+                    
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'normal');
+                    doc.text('Soluções em Marketing Digital e Tecnologia', margin, 38);
+                }
+                
+                // Dados da empresa no cabeçalho
+                const dadosX = pageWidth - margin - 60;
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(0, 0, 0);
+                doc.text('AUTOVIZION', dadosX, 12);
+                
+                doc.setFontSize(8);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(60, 60, 60);
+                doc.text('www.autovizon.com.br', dadosX, 20);
+                doc.text('autovizioncomercial@gmail.com', dadosX, 26);
+                doc.text('(14) 99683-3385', dadosX, 32);
+                
+                // Linha divisória
+                doc.setDrawColor(200, 200, 200);
+                doc.line(margin, 35, pageWidth - margin, 35);
+                
+                y = 45;
+                
+                // ========== TÍTULO DO DOCUMENTO ==========
+                doc.setFillColor(255, 102, 0);
+                const headerRectY = y - 5;
+                const headerRectHeight = 20;
+                doc.rect(margin, headerRectY, pageWidth - (margin * 2), headerRectHeight, 'F');
+                
+                // Título "COBRANÇA" à esquerda
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(22);
+                doc.setFont(undefined, 'bold');
+                doc.text('COBRANÇA', margin + 5, y + 8);
+                
+                // Datas alinhadas à direita (dentro do cabeçalho laranja)
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'normal');
+                const dataHoje = formatDatePDF(new Date().toISOString());
+                const dataVenc = formatDatePDF(dataVencimento);
+                const dataTexto = `Data: ${dataHoje}`;
+                const vencimentoTexto = `Vencimento: ${dataVenc}`;
+                
+                // Calcular largura dos textos (após configurar fonte)
+                const dataWidth = doc.getTextWidth(dataTexto);
+                const vencimentoWidth = doc.getTextWidth(vencimentoTexto);
+                const maxWidth = Math.max(dataWidth, vencimentoWidth);
+                
+                // Posição X: alinhado à direita com margem
+                const rightPadding = 10;
+                const dataX = pageWidth - margin - maxWidth - rightPadding;
+                
+                // Posição Y: centralizar verticalmente no cabeçalho
+                // Cabeçalho: altura 20, começa em headerRectY (y - 5)
+                // Centro vertical: headerRectY + (headerRectHeight / 2) = (y - 5) + 10 = y + 5
+                const headerCenterY = headerRectY + (headerRectHeight / 2);
+                const lineHeight = 5;
+                
+                // Primeira linha (Data) - um pouco acima do centro
+                doc.text(dataTexto, dataX, headerCenterY - (lineHeight / 2) - 0.5);
+                // Segunda linha (Vencimento) - um pouco abaixo do centro
+                doc.text(vencimentoTexto, dataX, headerCenterY + (lineHeight / 2) + 0.5);
+                
+                y += 25;
+                
+                // ========== DADOS DO CLIENTE ==========
+                doc.setFillColor(255, 102, 0);
+                doc.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
+                
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('DADOS DO CLIENTE', margin + 3, y + 6);
+                y += 12;
+                
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Cliente: ${cliente.nome || cliente.empresa || 'Cliente não encontrado'}`, margin, y);
+                y += 6;
+                if (cliente.empresa && cliente.empresa !== cliente.nome) {
+                    doc.text(`Empresa: ${cliente.empresa}`, margin, y);
+                    y += 6;
+                }
+                if (cliente.cpf_cnpj) {
+                    doc.text(`CPF/CNPJ: ${cliente.cpf_cnpj}`, margin, y);
+                    y += 6;
+                }
+                if (cliente.endereco) {
+                    let enderecoCompleto = cliente.endereco;
+                    if (cliente.cidade) enderecoCompleto += `, ${cliente.cidade}`;
+                    if (cliente.estado) enderecoCompleto += ` - ${cliente.estado}`;
+                    doc.text(`Endereço: ${enderecoCompleto}`, margin, y);
+                    y += 6;
+                }
+                if (cliente.telefone) {
+                    doc.text(`Telefone: ${cliente.telefone}`, margin, y);
+                    y += 6;
+                }
+                if (cliente.email) {
+                    doc.text(`E-mail: ${cliente.email}`, margin, y);
+                    y += 6;
+                }
+                
+                y += 10;
+                
+                // ========== DADOS DA COBRANÇA ==========
+                doc.setFillColor(255, 102, 0);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('DADOS DA COBRANÇA', margin + 3, y + 4);
+                y += 12;
+                
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                
+                doc.text(`Descrição: ${descricao}`, margin, y);
+                y += 8;
+                
+                doc.setFont(undefined, 'bold');
+                doc.setFontSize(14);
+                doc.text(`Valor: ${formatCurrencyPDF(valor)}`, margin, y);
+                y += 10;
+                
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                doc.text(`Forma de Pagamento: ${formaPagamento || 'Não especificada'}`, margin, y);
+                y += 8;
+                doc.text(`Data de Vencimento: ${formatDatePDF(dataVencimento)}`, margin, y);
+                y += 10;
+                
+                // ========== INSTRUÇÕES DE PAGAMENTO ==========
+                if (instrucoes || document.getElementById('cobrancaQRCodeBase64').value) {
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('INSTRUÇÕES DE PAGAMENTO', margin + 3, y + 4);
+                    y += 12;
+                    
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(0, 0, 0);
+                    
+                    if (instrucoes) {
+                        const instrucoesLines = doc.splitTextToSize(instrucoes, pageWidth - (margin * 2));
+                        doc.text(instrucoesLines, margin, y);
+                        y += instrucoesLines.length * 5 + 5;
+                    }
+                    
+                    // Adicionar QR Code se existir
+                    const qrCodeBase64 = document.getElementById('cobrancaQRCodeBase64')?.value;
+                    if (qrCodeBase64) {
+                        try {
+                            // Verificar se há espaço na página
+                            if (y > pageHeight - 80) {
+                                doc.addPage();
+                                y = margin + 10;
+                            }
+                            
+                            // Adicionar título do QR Code
+                            doc.setFontSize(11);
+                            doc.setFont(undefined, 'bold');
+                            doc.setTextColor(0, 0, 0);
+                            
+                            // Centralizar título
+                            const tituloTexto = 'QR Code PIX:';
+                            const tituloWidth = doc.getTextWidth(tituloTexto);
+                            const tituloX = (pageWidth - tituloWidth) / 2;
+                            doc.text(tituloTexto, tituloX, y);
+                            y += 10;
+                            
+                            // Adicionar QR Code centralizado (30x30mm - tamanho médio)
+                            // Converter mm para pontos (1mm = 2.83465 pontos)
+                            const qrSizeMM = 30; // 30mm (aproximadamente 85 pontos)
+                            const qrSizePoints = qrSizeMM * 2.83465;
+                            
+                            // Centralizar QR Code horizontalmente
+                            const qrX = (pageWidth - qrSizePoints) / 2;
+                            
+                            // Adicionar QR Code centralizado
+                            try {
+                                doc.addImage(qrCodeBase64, 'PNG', qrX, y, qrSizePoints, qrSizePoints);
+                                y += qrSizePoints + 10;
+                                
+                                // Adicionar texto abaixo do QR Code (opcional)
+                                doc.setFontSize(8);
+                                doc.setFont(undefined, 'normal');
+                                doc.setTextColor(100, 100, 100);
+                                const textoAjuda = 'Escaneie o QR Code com o app do seu banco';
+                                const textoWidth = doc.getTextWidth(textoAjuda);
+                                const textoX = (pageWidth - textoWidth) / 2;
+                                doc.text(textoAjuda, textoX, y);
+                                y += 8;
+                            } catch (e) {
+                                console.error('Erro ao adicionar imagem QR Code:', e);
+                                // Se falhar, apenas adicionar texto
+                                doc.setFontSize(9);
+                                doc.setFont(undefined, 'normal');
+                                const erroTexto = 'QR Code PIX disponível (erro ao renderizar imagem)';
+                                const erroWidth = doc.getTextWidth(erroTexto);
+                                const erroX = (pageWidth - erroWidth) / 2;
+                                doc.text(erroTexto, erroX, y);
+                                y += 8;
+                            }
+                        } catch (e) {
+                            console.error('Erro ao adicionar QR Code ao PDF:', e);
+                            // Continuar mesmo se houver erro
+                        }
+                    }
+                }
+                
+                // ========== OBSERVAÇÕES ==========
+                if (observacoes) {
+                    if (y > pageHeight - 40) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+                    
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('OBSERVAÇÕES', margin + 3, y + 4);
+                    y += 12;
+                    
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(60, 60, 60);
+                    const observacoesLines = doc.splitTextToSize(observacoes, pageWidth - (margin * 2));
+                    doc.text(observacoesLines, margin, y);
+                    y += observacoesLines.length * 4 + 5;
+                }
+                
+                // ========== RODAPÉ ==========
+                const contatoY = pageHeight - 8;
+                doc.setFontSize(7);
+                doc.setTextColor(128, 128, 128);
+                doc.setFont(undefined, 'normal');
+                doc.text('AUTOVIZION', margin, contatoY);
+                doc.text('|', margin + 25, contatoY);
+                doc.text('www.autovizon.com.br', margin + 30, contatoY);
+                doc.text('|', margin + 70, contatoY);
+                doc.text('autovizioncomercial@gmail.com', margin + 75, contatoY);
+                doc.text('|', margin + 130, contatoY);
+                doc.text('(14) 99683-3385', margin + 135, contatoY);
+                
+                // Salvar PDF
+                const clienteNome = cliente.nome || cliente.empresa || 'Cliente';
+                const dataFormatada = formatDatePDF(dataVencimento).replace(/\//g, '_');
+                const fileName = `Cobranca_${clienteNome.replace(/[^a-zA-Z0-9]/g, '_')}_${dataFormatada}.pdf`;
+                doc.save(fileName);
+                
+                // Mostrar mensagem de sucesso
+                alert('PDF de cobrança gerado com sucesso!');
+            } catch (error) {
+                console.error('Erro ao gerar PDF de cobrança:', error);
+                alert('Erro ao gerar PDF de cobrança: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Gerar Comprovante de Pagamento
+        async function gerarComprovantePagamento(receitaId) {
+            try {
+                // Verificar se jsPDF está disponível
+                if (!window.jspdf) {
+                    alert('Biblioteca de PDF não carregada. Por favor, recarregue a página.');
+                    return;
+                }
+
+                // Buscar dados da receita
+                const { data: receita, error: receitaError } = await supabase
+                    .from('receitas')
+                    .select('*, cliente:clientes(*), projeto:projetos(*), orcamento:orcamentos(*)')
+                    .eq('id', receitaId)
+                    .single();
+
+                if (receitaError) throw receitaError;
+
+                if (!receita) {
+                    alert('Receita não encontrada.');
+                    return;
+                }
+
+                // Verificar se está recebida
+                if (receita.status !== 'recebido') {
+                    alert('Apenas receitas recebidas podem ter comprovante de pagamento gerado.');
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                const cliente = receita.cliente || {};
+                const projeto = receita.projeto || {};
+                const orcamento = receita.orcamento || {};
+
+                // Função auxiliar para formatar moeda
+                const formatCurrencyPDF = (value) => {
+                    if (!value && value !== 0) return 'R$ 0,00';
+                    return new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }).format(value);
+                };
+
+                // Função auxiliar para formatar data
+                const formatDatePDF = (dateStr) => {
+                    if (!dateStr) return '-';
+                    try {
+                        const date = new Date(dateStr);
+                        return date.toLocaleDateString('pt-BR');
+                    } catch {
+                        return dateStr;
+                    }
+                };
+
+                // Configurações
+                const margin = 20;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                let y = margin;
+
+                // ========== CABEÇALHO - DADOS DA EMPRESA ==========
+                let logoLoaded = false;
+
+                try {
+                    const logoUrl = 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/LOGO%203D%20SEM%20FUNDO%20(1).png';
+                    const response = await fetch(logoUrl);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const reader = new FileReader();
+                        
+                        await new Promise((resolve, reject) => {
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        });
+                        
+                        const logoData = reader.result;
+                        doc.addImage(logoData, 'PNG', margin, 5, 60, 25);
+                        logoLoaded = true;
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar logo:', e);
+                }
+
+                if (!logoLoaded) {
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(0, 0, pageWidth, 50, 'F');
+                    
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(28);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('AUTOVIZION', margin, 30);
+                    
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'normal');
+                    doc.text('Soluções em Marketing Digital e Tecnologia', margin, 38);
+                }
+
+                // Dados da empresa no cabeçalho
+                const dadosX = pageWidth - margin - 60;
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(0, 0, 0);
+                doc.text('AUTOVIZION', dadosX, 12);
+
+                doc.setFontSize(8);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(60, 60, 60);
+                doc.text('www.autovizon.com.br', dadosX, 20);
+                doc.text('autovizioncomercial@gmail.com', dadosX, 26);
+                doc.text('(14) 99683-3385', dadosX, 32);
+
+                // Linha divisória
+                doc.setDrawColor(200, 200, 200);
+                doc.line(margin, 35, pageWidth - margin, 35);
+
+                y = 45;
+
+                // ========== TÍTULO DO DOCUMENTO ==========
+                doc.setFillColor(16, 185, 129); // Verde para comprovante
+                const headerRectY = y - 5;
+                const headerRectHeight = 20;
+                doc.rect(margin, headerRectY, pageWidth - (margin * 2), headerRectHeight, 'F');
+
+                // Título "COMPROVANTE DE PAGAMENTO" centralizado
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(18);
+                doc.setFont(undefined, 'bold');
+                const tituloTexto = 'COMPROVANTE DE PAGAMENTO';
+                const tituloWidth = doc.getTextWidth(tituloTexto);
+                const tituloX = (pageWidth - tituloWidth) / 2;
+                doc.text(tituloTexto, tituloX, y + 8);
+
+                // Data do comprovante alinhada à direita
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'normal');
+                const dataComprovante = formatDatePDF(new Date().toISOString());
+                const dataTexto = `Data do Comprovante: ${dataComprovante}`;
+                const dataWidth = doc.getTextWidth(dataTexto);
+                const rightPadding = 10;
+                const dataX = pageWidth - margin - dataWidth - rightPadding;
+                const headerCenterY = headerRectY + (headerRectHeight / 2);
+                doc.text(dataTexto, dataX, headerCenterY + 6);
+
+                y += 25;
+
+                // ========== DADOS DO CLIENTE ==========
+                doc.setFillColor(255, 102, 0);
+                doc.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
+
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('DADOS DO CLIENTE', margin + 3, y + 6);
+                y += 12;
+
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                doc.text(`Cliente: ${cliente.nome || cliente.empresa || 'Cliente não encontrado'}`, margin, y);
+                y += 6;
+                if (cliente.empresa && cliente.empresa !== cliente.nome) {
+                    doc.text(`Empresa: ${cliente.empresa}`, margin, y);
+                    y += 6;
+                }
+                if (cliente.cpf_cnpj) {
+                    doc.text(`CPF/CNPJ: ${cliente.cpf_cnpj}`, margin, y);
+                    y += 6;
+                }
+                if (cliente.endereco) {
+                    let enderecoCompleto = cliente.endereco;
+                    if (cliente.cidade) enderecoCompleto += `, ${cliente.cidade}`;
+                    if (cliente.estado) enderecoCompleto += ` - ${cliente.estado}`;
+                    doc.text(`Endereço: ${enderecoCompleto}`, margin, y);
+                    y += 6;
+                }
+                if (cliente.telefone) {
+                    doc.text(`Telefone: ${cliente.telefone}`, margin, y);
+                    y += 6;
+                }
+                if (cliente.email) {
+                    doc.text(`E-mail: ${cliente.email}`, margin, y);
+                    y += 6;
+                }
+
+                y += 10;
+
+                // ========== DADOS DO PAGAMENTO ==========
+                doc.setFillColor(16, 185, 129); // Verde
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('DADOS DO PAGAMENTO', margin + 3, y + 4);
+                y += 12;
+
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+
+                doc.text(`Descrição: ${receita.descricao || '-'}`, margin, y);
+                y += 8;
+
+                // Valor destacado
+                doc.setFont(undefined, 'bold');
+                doc.setFontSize(16);
+                doc.setTextColor(16, 185, 129); // Verde para valor
+                doc.text(`Valor Recebido: ${formatCurrencyPDF(receita.valor || 0)}`, margin, y);
+                y += 12;
+
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+
+                doc.text(`Forma de Pagamento: ${receita.forma_pagamento || 'Não especificada'}`, margin, y);
+                y += 8;
+
+                doc.text(`Data de Vencimento: ${formatDatePDF(receita.data_vencimento)}`, margin, y);
+                y += 8;
+
+                if (receita.data_recebimento) {
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(16, 185, 129);
+                    doc.text(`Data de Recebimento: ${formatDatePDF(receita.data_recebimento)}`, margin, y);
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    y += 8;
+                }
+
+                // Informações adicionais
+                if (projeto.nome) {
+                    doc.text(`Projeto: ${projeto.nome}`, margin, y);
+                    y += 6;
+                }
+
+                if (orcamento.numero) {
+                    doc.text(`Orçamento: ${String(orcamento.numero).padStart(4, '0')}`, margin, y);
+                    y += 6;
+                }
+
+                // Tipo de cobrança
+                if (receita.tipo_cobranca === 'parcelado') {
+                    doc.text(`Parcela: ${receita.parcela_numero || '?'} de ${receita.parcela_total || '?'}`, margin, y);
+                    y += 6;
+                } else if (receita.tipo_cobranca === 'recorrente') {
+                    doc.text(`Tipo: Cobrança Recorrente`, margin, y);
+                    y += 6;
+                } else if (receita.tipo_cobranca === 'manutencao') {
+                    doc.text(`Tipo: Taxa de Manutenção`, margin, y);
+                    y += 6;
+                }
+
+                y += 10;
+
+                // ========== OBSERVAÇÕES ==========
+                if (receita.observacoes) {
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('OBSERVAÇÕES', margin + 3, y + 4);
+                    y += 12;
+
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(0, 0, 0);
+                    const obsLines = doc.splitTextToSize(receita.observacoes, pageWidth - (margin * 2));
+                    doc.text(obsLines, margin, y);
+                    y += obsLines.length * 5 + 5;
+                }
+
+                // ========== ASSINATURA DIGITAL ==========
+                // Verificar se há espaço suficiente antes do rodapé
+                if (y < pageHeight - 80) {
+                    y += 20;
+                    
+                    // Carregar e adicionar assinatura digital
+                    try {
+                        const assinaturaUrl = 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/White%20Minimalist%20Handwritten%20Signature%20Typography%20Logo%20(1).png';
+                        const response = await fetch(assinaturaUrl);
+                        
+                        if (response.ok) {
+                            const blob = await response.blob();
+                            const reader = new FileReader();
+                            
+                            const assinaturaData = await new Promise((resolve, reject) => {
+                                reader.onload = () => resolve(reader.result);
+                                reader.onerror = reject;
+                                reader.readAsDataURL(blob);
+                            });
+                            
+                            // Tamanho da assinatura (ajustar conforme necessário)
+                            const assinaturaWidth = 60; // largura em mm
+                            const assinaturaHeight = 20; // altura em mm
+                            
+                            // Converter mm para pontos (1mm = 2.83465 pontos)
+                            const assinaturaWidthPoints = assinaturaWidth * 2.83465;
+                            const assinaturaHeightPoints = assinaturaHeight * 2.83465;
+                            
+                            // Centralizar assinatura horizontalmente
+                            const assinaturaX = (pageWidth - assinaturaWidthPoints) / 2;
+                            
+                            // Adicionar assinatura centralizada
+                            doc.addImage(assinaturaData, 'PNG', assinaturaX, y, assinaturaWidthPoints, assinaturaHeightPoints);
+                            
+                            y += assinaturaHeightPoints + 5;
+                            
+                            // Adicionar linha para assinatura abaixo da imagem
+                            doc.setDrawColor(100, 100, 100);
+                            doc.setLineWidth(0.5);
+                            const linhaAssinaturaWidth = 80; // largura em mm
+                            const linhaAssinaturaWidthPoints = linhaAssinaturaWidth * 2.83465;
+                            const linhaAssinaturaX = (pageWidth - linhaAssinaturaWidthPoints) / 2; // Centralizar linha
+                            doc.line(linhaAssinaturaX, y, linhaAssinaturaX + linhaAssinaturaWidthPoints, y);
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao carregar assinatura digital:', e);
+                        // Se não conseguir carregar, apenas deixar espaço para assinatura manual
+                        y += 10;
+                        doc.setFontSize(10);
+                        doc.setFont(undefined, 'normal');
+                        doc.setTextColor(100, 100, 100);
+                        const textoAssinatura = 'Assinatura Digital';
+                        const textoWidth = doc.getTextWidth(textoAssinatura);
+                        const textoX = (pageWidth - textoWidth) / 2;
+                        doc.text(textoAssinatura, textoX, y);
+                        
+                        y += 5;
+                        // Linha para assinatura
+                        doc.setDrawColor(100, 100, 100);
+                        doc.setLineWidth(0.5);
+                        const linhaAssinaturaWidth = 80;
+                        const linhaAssinaturaWidthPoints = linhaAssinaturaWidth * 2.83465;
+                        const linhaAssinaturaX = (pageWidth - linhaAssinaturaWidthPoints) / 2;
+                        doc.line(linhaAssinaturaX, y, linhaAssinaturaX + linhaAssinaturaWidthPoints, y);
+                    }
+                }
+
+                // ========== RODAPÉ ==========
+                y = pageHeight - 40;
+                doc.setDrawColor(200, 200, 200);
+                doc.line(margin, y, pageWidth - margin, y);
+                y += 5;
+
+                doc.setFontSize(8);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(100, 100, 100);
+                doc.text('Este documento comprova o recebimento do pagamento descrito acima.', margin, y);
+                y += 5;
+                doc.text('Documento gerado automaticamente pelo Sistema de Gestão AUTOVIZION.', margin, y);
+
+                // Rodapé com dados de contato
+                const contatoY = pageHeight - 8;
+                doc.setFontSize(7);
+                doc.setTextColor(128, 128, 128);
+                doc.text('AUTOVIZION', margin, contatoY);
+                doc.text('|', margin + 25, contatoY);
+                doc.text('www.autovizon.com.br', margin + 30, contatoY);
+                doc.text('|', margin + 70, contatoY);
+                doc.text('autovizioncomercial@gmail.com', margin + 75, contatoY);
+                doc.text('|', margin + 130, contatoY);
+                doc.text('(14) 99683-3385', margin + 135, contatoY);
+
+                // Gerar e baixar PDF
+                const clienteNome = cliente.nome || cliente.empresa || 'Cliente';
+                const fileName = `Comprovante_Pagamento_${clienteNome.replace(/[^a-zA-Z0-9]/g, '_')}_${receitaId.substring(0, 8)}_${new Date().toISOString().split('T')[0].replace(/-/g, '')}.pdf`;
+                doc.save(fileName);
+
+                alert('Comprovante de pagamento gerado com sucesso!');
+            } catch (error) {
+                console.error('Erro ao gerar comprovante de pagamento:', error);
+                alert('Erro ao gerar comprovante de pagamento: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Salvar cobrança (criar receita(s))
+        document.getElementById('cobrancaForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const clienteId = document.getElementById('cobrancaClienteId').value;
+            const orcamentoId = document.getElementById('cobrancaOrcamentoId').value || null;
+            const descricao = document.getElementById('cobrancaDescricao').value.trim();
+            const valor = parseFloat(document.getElementById('cobrancaValor').value) || 0;
+            const dataVencimento = document.getElementById('cobrancaDataVencimento').value;
+            const formaPagamento = document.getElementById('cobrancaFormaPagamento').value || null;
+            const tipo = document.getElementById('cobrancaTipo').value || 'unica';
+            const instrucoes = document.getElementById('cobrancaInstrucoes').value.trim() || null;
+            const observacoes = document.getElementById('cobrancaObservacoes').value.trim() || null;
+            
+            try {
+                const receitasParaCriar = [];
+                
+                if (tipo === 'unica') {
+                    // Cobrança única - criar apenas uma receita
+                    receitasParaCriar.push({
+                        cliente_id: clienteId,
+                        orcamento_id: orcamentoId,
+                        descricao: descricao,
+                        valor: valor,
+                        data_vencimento: dataVencimento,
+                        status: 'pendente',
+                        forma_pagamento: formaPagamento,
+                        tipo_cobranca: 'unica',
+                        observacoes: observacoes ? (instrucoes ? `Instruções: ${instrucoes}\n\n${observacoes}` : observacoes) : (instrucoes ? `Instruções: ${instrucoes}` : null)
+                    });
+                } else if (tipo === 'parcelado') {
+                    // Cobrança parcelada - criar múltiplas receitas
+                    const numeroParcelas = parseInt(document.getElementById('cobrancaNumeroParcelas').value) || 1;
+                    const intervaloDias = parseInt(document.getElementById('cobrancaIntervaloParcelas').value) || 30;
+                    const valorParcela = valor / numeroParcelas;
+                    
+                    let dataVencimentoParcela = new Date(dataVencimento);
+                    
+                    for (let i = 1; i <= numeroParcelas; i++) {
+                        receitasParaCriar.push({
+                            cliente_id: clienteId,
+                            orcamento_id: orcamentoId,
+                            descricao: `${descricao} - Parcela ${i}/${numeroParcelas}`,
+                            valor: Math.round(valorParcela * 100) / 100, // Arredondar para 2 casas decimais
+                            data_vencimento: dataVencimentoParcela.toISOString().split('T')[0],
+                            status: 'pendente',
+                            forma_pagamento: formaPagamento,
+                            tipo_cobranca: 'parcelado',
+                            parcela_numero: i,
+                            parcela_total: numeroParcelas,
+                            observacoes: observacoes ? (instrucoes ? `Instruções: ${instrucoes}\n\n${observacoes}` : observacoes) : (instrucoes ? `Instruções: ${instrucoes}` : null)
+                        });
+                        
+                        // Próxima parcela
+                        dataVencimentoParcela.setDate(dataVencimentoParcela.getDate() + intervaloDias);
+                    }
+                } else if (tipo === 'recorrente') {
+                    // Cobrança recorrente - criar primeira receita e salvar configuração
+                    const frequencia = document.getElementById('cobrancaFrequencia').value;
+                    const diaVencimento = parseInt(document.getElementById('cobrancaDiaVencimento').value) || 10;
+                    const dataInicio = document.getElementById('cobrancaDataInicio').value;
+                    const dataTermino = document.getElementById('cobrancaDataTermino').value || null;
+                    
+                    // Calcular primeira data de vencimento
+                    let primeiraDataVencimento = new Date(dataInicio);
+                    primeiraDataVencimento.setDate(diaVencimento);
+                    if (primeiraDataVencimento < new Date(dataInicio)) {
+                        primeiraDataVencimento.setMonth(primeiraDataVencimento.getMonth() + 1);
+                    }
+                    
+                    receitasParaCriar.push({
+                        cliente_id: clienteId,
+                        orcamento_id: orcamentoId,
+                        descricao: descricao,
+                        valor: valor,
+                        data_vencimento: primeiraDataVencimento.toISOString().split('T')[0],
+                        status: 'pendente',
+                        forma_pagamento: formaPagamento,
+                        tipo_cobranca: 'recorrente',
+                        frequencia: frequencia,
+                        dia_vencimento: diaVencimento,
+                        data_inicio: dataInicio,
+                        data_termino: dataTermino,
+                        observacoes: observacoes ? (instrucoes ? `Instruções: ${instrucoes}\n\n${observacoes}` : observacoes) : (instrucoes ? `Instruções: ${instrucoes}` : null)
+                    });
+                } else if (tipo === 'manutencao') {
+                    // Taxa de manutenção - criar primeira receita e salvar configuração
+                    const valorManutencao = parseFloat(document.getElementById('cobrancaValorManutencao').value) || valor;
+                    const diaVencimento = parseInt(document.getElementById('cobrancaDiaVencimentoManutencao').value) || 10;
+                    const dataInicio = document.getElementById('cobrancaDataInicioManutencao').value;
+                    const ativa = document.getElementById('cobrancaManutencaoAtiva').checked;
+                    
+                    // Calcular primeira data de vencimento
+                    let primeiraDataVencimento = new Date(dataInicio);
+                    primeiraDataVencimento.setDate(diaVencimento);
+                    if (primeiraDataVencimento < new Date(dataInicio)) {
+                        primeiraDataVencimento.setMonth(primeiraDataVencimento.getMonth() + 1);
+                    }
+                    
+                    receitasParaCriar.push({
+                        cliente_id: clienteId,
+                        orcamento_id: orcamentoId,
+                        descricao: descricao || 'Taxa de Manutenção Mensal',
+                        valor: valorManutencao,
+                        data_vencimento: primeiraDataVencimento.toISOString().split('T')[0],
+                        status: 'pendente',
+                        forma_pagamento: formaPagamento,
+                        tipo_cobranca: 'manutencao',
+                        dia_vencimento: diaVencimento,
+                        data_inicio: dataInicio,
+                        ativa: ativa,
+                        observacoes: observacoes ? (instrucoes ? `Instruções: ${instrucoes}\n\n${observacoes}` : observacoes) : (instrucoes ? `Instruções: ${instrucoes}` : null)
+                    });
+                }
+                
+                // Inserir todas as receitas
+                if (receitasParaCriar.length > 0) {
+                    const { error } = await supabase
+                        .from('receitas')
+                        .insert(receitasParaCriar);
+                    
+                    if (error) throw error;
+                    
+                    const mensagem = tipo === 'parcelado' 
+                        ? `${receitasParaCriar.length} parcelas criadas com sucesso!`
+                        : tipo === 'recorrente' || tipo === 'manutencao'
+                        ? 'Cobrança recorrente criada com sucesso! As próximas cobranças serão geradas automaticamente.'
+                        : 'Cobrança criada com sucesso!';
+                    
+                    alert(mensagem);
+                    closeCobrancaModal();
+                    await loadReceitas();
+                    updateDashboardFinanceiro();
+                }
+            } catch (error) {
+                console.error('Erro ao salvar cobrança:', error);
+                alert('Erro ao salvar cobrança: ' + (error.message || 'Erro desconhecido'));
+            }
+        });
+
+        // Gerar comprovante de pagamento
+        async function gerarComprovantePagamento(receitaId) {
+            try {
+                // Verificar se jsPDF está disponível
+                if (!window.jspdf) {
+                    alert('Biblioteca de PDF não carregada. Por favor, recarregue a página.');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Buscar receita
+                const { data: receita, error: receitaError } = await supabase
+                    .from('receitas')
+                    .select('*, cliente:clientes(*), orcamento:orcamentos(*), projeto:projetos(*)')
+                    .eq('id', receitaId)
+                    .single();
+                
+                if (receitaError) throw receitaError;
+                
+                if (receita.status !== 'recebido') {
+                    alert('Apenas receitas recebidas podem gerar comprovante de pagamento.');
+                    return;
+                }
+                
+                // Função auxiliar para formatar moeda
+                const formatCurrencyPDF = (value) => {
+                    if (!value && value !== 0) return 'R$ 0,00';
+                    return new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }).format(value);
+                };
+                
+                // Função auxiliar para formatar data
+                const formatDatePDF = (dateStr) => {
+                    if (!dateStr) return '-';
+                    try {
+                        const date = new Date(dateStr);
+                        return date.toLocaleDateString('pt-BR');
+                    } catch {
+                        return dateStr;
+                    }
+                };
+                
+                // Configurações
+                const margin = 20;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                let y = margin;
+                
+                // ========== CABEÇALHO - DADOS DA EMPRESA ==========
+                let logoLoaded = false;
+                
+                try {
+                    const logoUrl = 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/LOGO%203D%20SEM%20FUNDO%20(1).png';
+                    const response = await fetch(logoUrl);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const reader = new FileReader();
+                        
+                        await new Promise((resolve, reject) => {
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        });
+                        
+                        const logoData = reader.result;
+                        doc.addImage(logoData, 'PNG', margin, 5, 60, 25);
+                        logoLoaded = true;
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar logo:', e);
+                }
+                
+                if (!logoLoaded) {
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(0, 0, pageWidth, 50, 'F');
+                    
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(28);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('AUTOVIZION', margin, 30);
+                    
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'normal');
+                    doc.text('Soluções em Marketing Digital e Tecnologia', margin, 38);
+                }
+                
+                // Dados da empresa no cabeçalho
+                const dadosX = pageWidth - margin - 60;
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(0, 0, 0);
+                doc.text('AUTOVIZION', dadosX, 12);
+                
+                doc.setFontSize(8);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(60, 60, 60);
+                doc.text('www.autovizon.com.br', dadosX, 20);
+                doc.text('autovizioncomercial@gmail.com', dadosX, 26);
+                doc.text('(14) 99683-3385', dadosX, 32);
+                
+                // Linha divisória
+                doc.setDrawColor(200, 200, 200);
+                doc.line(margin, 35, pageWidth - margin, 35);
+                
+                y = 45;
+                
+                // ========== TÍTULO DO DOCUMENTO ==========
+                doc.setFillColor(10, 185, 129);
+                doc.rect(margin, y - 5, pageWidth - (margin * 2), 20, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(22);
+                doc.setFont(undefined, 'bold');
+                doc.text('COMPROVANTE DE PAGAMENTO', margin + 5, y + 8);
+                
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Data: ${formatDatePDF(new Date().toISOString())}`, pageWidth - margin - 30, y + 2);
+                
+                y += 25;
+                
+                // ========== DADOS DO CLIENTE ==========
+                const cliente = receita.cliente || {};
+                doc.setFillColor(255, 102, 0);
+                doc.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
+                
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('DADOS DO CLIENTE', margin + 3, y + 6);
+                y += 12;
+                
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Cliente: ${cliente.nome || cliente.empresa || 'Cliente não encontrado'}`, margin, y);
+                y += 6;
+                if (cliente.empresa && cliente.empresa !== cliente.nome) {
+                    doc.text(`Empresa: ${cliente.empresa}`, margin, y);
+                    y += 6;
+                }
+                if (cliente.cpf_cnpj) {
+                    doc.text(`CPF/CNPJ: ${cliente.cpf_cnpj}`, margin, y);
+                    y += 6;
+                }
+                if (cliente.endereco) {
+                    let enderecoCompleto = cliente.endereco;
+                    if (cliente.cidade) enderecoCompleto += `, ${cliente.cidade}`;
+                    if (cliente.estado) enderecoCompleto += ` - ${cliente.estado}`;
+                    doc.text(`Endereço: ${enderecoCompleto}`, margin, y);
+                    y += 6;
+                }
+                
+                y += 10;
+                
+                // ========== DADOS DO PAGAMENTO ==========
+                doc.setFillColor(10, 185, 129);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('DADOS DO PAGAMENTO', margin + 3, y + 4);
+                y += 12;
+                
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                
+                doc.text(`Descrição: ${receita.descricao || '-'}`, margin, y);
+                y += 8;
+                
+                doc.setFont(undefined, 'bold');
+                doc.setFontSize(16);
+                doc.setTextColor(10, 185, 129);
+                doc.text(`Valor Pago: ${formatCurrencyPDF(receita.valor || 0)}`, margin, y);
+                y += 10;
+                
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Forma de Pagamento: ${receita.forma_pagamento || 'Não especificada'}`, margin, y);
+                y += 8;
+                doc.text(`Data de Recebimento: ${formatDatePDF(receita.data_recebimento)}`, margin, y);
+                y += 8;
+                doc.text(`Data de Vencimento: ${formatDatePDF(receita.data_vencimento)}`, margin, y);
+                y += 10;
+                
+                // ========== OBSERVAÇÕES ==========
+                if (receita.observacoes) {
+                    if (y > pageHeight - 40) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+                    
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('OBSERVAÇÕES', margin + 3, y + 4);
+                    y += 12;
+                    
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(60, 60, 60);
+                    const observacoesLines = doc.splitTextToSize(receita.observacoes, pageWidth - (margin * 2));
+                    doc.text(observacoesLines, margin, y);
+                    y += observacoesLines.length * 4 + 5;
+                }
+                
+                // ========== RODAPÉ ==========
+                const contatoY = pageHeight - 8;
+                doc.setFontSize(7);
+                doc.setTextColor(128, 128, 128);
+                doc.setFont(undefined, 'normal');
+                doc.text('AUTOVIZION', margin, contatoY);
+                doc.text('|', margin + 25, contatoY);
+                doc.text('www.autovizon.com.br', margin + 30, contatoY);
+                doc.text('|', margin + 70, contatoY);
+                doc.text('autovizioncomercial@gmail.com', margin + 75, contatoY);
+                doc.text('|', margin + 130, contatoY);
+                doc.text('(14) 99683-3385', margin + 135, contatoY);
+                
+                // Salvar PDF
+                const clienteNome = cliente.nome || cliente.empresa || 'Cliente';
+                const dataFormatada = formatDatePDF(receita.data_recebimento).replace(/\//g, '_');
+                const fileName = `Comprovante_Pagamento_${clienteNome.replace(/[^a-zA-Z0-9]/g, '_')}_${dataFormatada}.pdf`;
+                doc.save(fileName);
+                
+                // Mostrar mensagem de sucesso
+                alert('Comprovante de pagamento gerado com sucesso!');
+            } catch (error) {
+                console.error('Erro ao gerar comprovante de pagamento:', error);
+                alert('Erro ao gerar comprovante de pagamento: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // ========== PLATAFORMAS (PLACEHOLDER) ==========
+        
+        async function loadPlataformas() {
+            // TODO: Implementar
+            console.log('Módulo Plataformas ainda não implementado');
+        }
 
         // Verificar autenticação ao carregar
         aplicarConfiguracaoPlataforma();
