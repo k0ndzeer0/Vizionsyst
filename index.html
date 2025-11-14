@@ -1023,6 +1023,126 @@
             transform: scale(1.1);
         }
 
+        /* Notificações de Prazos */
+        .notification-badge {
+            background: var(--danger);
+            color: white;
+            border-radius: 12px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .menu-badge {
+            background: var(--danger);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .notification-card {
+            background: var(--secondary);
+            border-left: 4px solid;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .notification-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(4px);
+        }
+
+        .notification-card.atrasado {
+            border-left-color: var(--danger);
+        }
+
+        .notification-card.proximo {
+            border-left-color: var(--warning);
+        }
+
+        .notification-card.sem-data {
+            border-left-color: var(--text-gray);
+        }
+
+        .notification-card.urgente {
+            border-left-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .notification-status {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .notification-status.atrasado {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .notification-status.proximo {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--warning);
+        }
+
+        .notification-status.sem-data {
+            background: rgba(156, 163, 175, 0.2);
+            color: var(--text-gray);
+        }
+
+        .notification-status.urgente {
+            background: rgba(239, 68, 68, 0.3);
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .notification-info {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-top: 8px;
+        }
+
+        .notification-days {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .notification-days.atrasado {
+            color: var(--danger);
+        }
+
+        .notification-days.proximo {
+            color: var(--warning);
+        }
+
+        .notification-days.urgente {
+            color: var(--danger);
+        }
+
         .arquivo-empty {
             text-align: center;
             padding: 40px;
@@ -1761,10 +1881,10 @@
                 <span>📄</span>
                 <span>Orçamentos</span>
             </a>
-            <a href="#" class="menu-item" data-page="projetos" onclick="closeSidebarMobile()">
-                <span>📁</span>
-                <span>Projetos</span>
-            </a>
+        <a href="#" class="menu-item" data-page="projetos" onclick="closeSidebarMobile()">
+            <span>📁</span>
+            <span>Projetos</span>
+        </a>
             <a href="#" class="menu-item" data-page="financeiro" onclick="closeSidebarMobile()">
                 <span>💰</span>
                 <span>Financeiro</span>
@@ -1850,6 +1970,16 @@
                 <div class="section-card">
                     <h2 class="section-title">Orçamentos Aguardando</h2>
                     <div class="empty-state">Nenhum orçamento aguardando aprovação</div>
+                </div>
+
+                <div class="section-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h2 class="section-title">⚠️ Projetos que Precisam de Atenção</h2>
+                        <span id="notificacoesCount" class="notification-badge" style="display: none;">0</span>
+                    </div>
+                    <div id="notificacoesProjetos">
+                        <div class="empty-state">Carregando notificações...</div>
+                    </div>
                 </div>
             </div>
 
@@ -1942,6 +2072,9 @@
                             <option value="concluido">Concluído</option>
                             <option value="cancelado">Cancelado</option>
                         </select>
+                        <button type="button" class="btn btn-secondary" id="filterAlertasBtn" onclick="toggleFilterAlertas()" style="white-space: nowrap;">
+                            ⚠️ Ver Alertas
+                        </button>
                     </div>
 
                     <!-- Visualização Tabela -->
@@ -2714,11 +2847,27 @@
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button type="button" class="btn btn-secondary" onclick="closeOrcamentoDetailsModal()">Fechar</button>
                     <button type="button" class="btn btn-primary" id="downloadPDFBtn" style="background: var(--danger); border-color: var(--danger);">📄 Baixar PDF</button>
+                    <button type="button" class="btn btn-primary" id="gerarLinkPublicoBtn" style="background: var(--primary); border-color: var(--primary);">🔗 Gerar Link Público</button>
+                    <button type="button" class="btn btn-primary" id="copiarLinkBtn" style="background: var(--tertiary); border-color: var(--tertiary); display: none;">📋 Copiar Link</button>
+                    <button type="button" class="btn btn-primary" id="enviarWhatsAppBtn" style="background: #25D366; border-color: #25D366; display: none;">💬 Enviar por WhatsApp</button>
                     <button type="button" class="btn btn-primary" id="aprovarOrcamentoBtn" style="background: var(--success); border-color: var(--success); display: none;">✓ Aprovar</button>
                     <button type="button" class="btn btn-primary" id="recusarOrcamentoBtn" style="background: var(--danger); border-color: var(--danger); display: none;">✗ Recusar</button>
                     <button type="button" class="btn btn-primary" id="criarProjetoBtn" style="background: var(--primary); border-color: var(--primary); display: none;">📁 Criar Projeto</button>
                     <button type="button" class="btn btn-primary" id="editOrcamentoFromDetailsBtn" onclick="">Editar</button>
                     <button type="button" class="btn btn-danger" id="deleteOrcamentoFromDetailsBtn" onclick="">Excluir</button>
+                </div>
+            </div>
+            <!-- Área para exibir link público -->
+            <div id="linkPublicoContainer" style="display: none; margin-top: 16px; padding: 16px; background: var(--tertiary); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label style="font-weight: 600; color: var(--text);">Link Público:</label>
+                    <span id="linkStatusBadge" class="badge badge-aprovado" style="font-size: 11px;">Ativo</span>
+                </div>
+                <input type="text" id="linkPublicoInput" readonly style="width: 100%; padding: 8px; background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; color: var(--text); font-size: 12px; margin-bottom: 8px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-secondary" onclick="copiarLinkPublico()" style="padding: 6px 12px; font-size: 12px;">📋 Copiar Link</button>
+                    <button type="button" class="btn btn-primary" onclick="enviarLinkPorWhatsApp()" style="padding: 6px 12px; font-size: 12px; background: #25D366; border-color: #25D366;">💬 Enviar por WhatsApp</button>
+                    <button type="button" class="btn btn-secondary" onclick="desativarLinkPublico()" style="padding: 6px 12px; font-size: 12px; background: var(--danger); border-color: var(--danger);">🚫 Desativar Link</button>
                 </div>
             </div>
         </div>
@@ -2924,9 +3073,213 @@
                 document.getElementById('projetosAtivos').textContent = projetos?.length || 0;
                 document.getElementById('pagamentosPendentes').textContent = formatCurrency(pagamentosPendentes);
                 document.getElementById('pagamentosVencidos').textContent = formatCurrency(pagamentosVencidos);
+
+                // Carregar notificações de prazos
+                await loadNotificacoesPrazos();
             } catch (error) {
                 console.error('Erro ao carregar dados:', error);
             }
+        }
+
+        // ========== NOTIFICAÇÕES DE PRAZOS ==========
+        
+        // Calcular dias até o prazo ou dias de atraso
+        function calcularDiasPrazo(dataPrevista) {
+            if (!dataPrevista) return null;
+            
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            
+            const prazo = new Date(dataPrevista);
+            prazo.setHours(0, 0, 0, 0);
+            
+            const diffTime = prazo - hoje;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            return diffDays;
+        }
+
+        // Classificar projeto por prazo
+        function classificarProjetoPorPrazo(projeto) {
+            // Projetos com prioridade urgente sempre aparecem
+            if (projeto.prioridade === 'urgente') {
+                if (!projeto.data_prevista) {
+                    return { tipo: 'urgente', dias: null, label: 'Prioridade Urgente' };
+                }
+                const dias = calcularDiasPrazo(projeto.data_prevista);
+                if (dias < 0) {
+                    return { tipo: 'atrasado', dias: Math.abs(dias), label: `⚠️ URGENTE - Data de entrega venceu há ${Math.abs(dias)} dia(s)` };
+                } else if (dias === 0) {
+                    return { tipo: 'urgente', dias: 0, label: '⚠️ URGENTE - Data de entrega vence hoje!' };
+                } else {
+                    return { tipo: 'urgente', dias: dias, label: `⚠️ URGENTE - Data de entrega vence em ${dias} dia(s)` };
+                }
+            }
+
+            // Projetos sem data definida
+            if (!projeto.data_prevista) {
+                return { tipo: 'sem-data', dias: null, label: 'Sem data de entrega definida' };
+            }
+
+            const dias = calcularDiasPrazo(projeto.data_prevista);
+            
+            if (dias < 0) {
+                return { tipo: 'atrasado', dias: Math.abs(dias), label: `Data de entrega venceu há ${Math.abs(dias)} dia(s)` };
+            } else if (dias === 0) {
+                return { tipo: 'proximo', dias: 0, label: 'Data de entrega vence hoje!' };
+            } else if (dias <= 3) {
+                return { tipo: 'proximo', dias: dias, label: `Data de entrega vence em ${dias} dia(s)` };
+            } else if (dias <= 7) {
+                return { tipo: 'proximo', dias: dias, label: `Data de entrega vence em ${dias} dias` };
+            }
+            
+            return null; // Não precisa de notificação
+        }
+
+        // Carregar notificações de prazos
+        async function loadNotificacoesPrazos() {
+            try {
+                // Buscar projetos de forma mais simples e segura
+                let projetos = [];
+
+                // Primeiro, buscar projetos sem relação (mais simples)
+                const { data: projetosData, error: projetosError } = await supabase
+                    .from('projetos')
+                    .select('*')
+                    .neq('status', 'concluido')
+                    .neq('status', 'cancelado');
+
+                if (projetosError) {
+                    console.error('Erro ao buscar projetos:', projetosError);
+                    throw projetosError;
+                }
+
+                projetos = projetosData || [];
+
+                // Buscar clientes separadamente se houver projetos
+                if (projetos.length > 0) {
+                    const clienteIds = [...new Set(projetos.map(p => p.cliente_id).filter(Boolean))];
+                    if (clienteIds.length > 0) {
+                        const { data: clientes, error: clientesError } = await supabase
+                            .from('clientes')
+                            .select('id, nome, empresa')
+                            .in('id', clienteIds);
+                        
+                        if (!clientesError && clientes) {
+                            const clientesMap = {};
+                            clientes.forEach(c => {
+                                clientesMap[c.id] = c;
+                            });
+                            
+                            projetos = projetos.map(p => ({
+                                ...p,
+                                cliente: clientesMap[p.cliente_id] || null
+                            }));
+                        }
+                    }
+                }
+
+                const projetosComAlerta = [];
+
+                projetos.forEach(projeto => {
+                    try {
+                        const classificacao = classificarProjetoPorPrazo(projeto);
+                        if (classificacao) {
+                            projetosComAlerta.push({
+                                ...projeto,
+                                alerta: classificacao
+                            });
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao classificar projeto:', projeto.id, e);
+                    }
+                });
+
+                // Ordenar: urgentes primeiro, depois atrasados, depois próximos, depois sem data
+                projetosComAlerta.sort((a, b) => {
+                    const ordem = { 'urgente': 0, 'atrasado': 1, 'proximo': 2, 'sem-data': 3 };
+                    return (ordem[a.alerta.tipo] || 99) - (ordem[b.alerta.tipo] || 99);
+                });
+
+                // Renderizar notificações
+                renderNotificacoes(projetosComAlerta);
+            } catch (error) {
+                // Expandir objeto de erro para ver todos os detalhes
+                console.error('=== ERRO AO CARREGAR NOTIFICAÇÕES ===');
+                console.error('Erro completo:', JSON.stringify(error, null, 2));
+                console.error('Mensagem:', error?.message);
+                console.error('Código:', error?.code);
+                console.error('Detalhes:', error?.details);
+                console.error('Hint:', error?.hint);
+                console.error('Stack:', error?.stack);
+                console.error('Objeto completo:', error);
+                
+                const container = document.getElementById('notificacoesProjetos');
+                if (container) {
+                    let errorMsg = 'Erro ao carregar notificações';
+                    if (error?.message) {
+                        errorMsg += ': ' + error.message;
+                    } else if (error?.details) {
+                        errorMsg += ': ' + error.details;
+                    } else if (error?.hint) {
+                        errorMsg += ': ' + error.hint;
+                    } else {
+                        errorMsg += '. Verifique o console para mais detalhes.';
+                    }
+                    container.innerHTML = '<div class="empty-state">' + errorMsg + '</div>';
+                }
+            }
+        }
+
+        // Renderizar notificações
+        function renderNotificacoes(projetos) {
+            const container = document.getElementById('notificacoesProjetos');
+            const countBadge = document.getElementById('notificacoesCount');
+
+            if (!container) return;
+
+            if (!projetos || projetos.length === 0) {
+                container.innerHTML = '<div class="empty-state">✅ Nenhum projeto precisa de atenção no momento</div>';
+                if (countBadge) countBadge.style.display = 'none';
+                return;
+            }
+
+            if (countBadge) {
+                countBadge.textContent = projetos.length;
+                countBadge.style.display = 'inline-block';
+            }
+
+            let html = '';
+            projetos.forEach(projeto => {
+                const cliente = projeto.cliente || {};
+                const clienteNome = cliente.nome || cliente.empresa || 'Cliente não encontrado';
+                const alerta = projeto.alerta;
+
+                html += `
+                    <div class="notification-card ${alerta.tipo}" onclick="viewProjetoDetails('${projeto.id}')">
+                        <div class="notification-header">
+                            <div class="notification-title">${projeto.nome || 'Sem nome'}</div>
+                            <span class="notification-status ${alerta.tipo}">${alerta.label}</span>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 8px;">
+                            👤 ${clienteNome}
+                        </div>
+                        <div class="notification-info">
+                            <span>📅 Prazo: ${projeto.data_prevista ? formatDate(projeto.data_prevista) : 'Não definido'}</span>
+                            <span>📊 Status: ${projeto.status === 'em_andamento' ? 'Em Andamento' : 
+                                          projeto.status === 'planejamento' ? 'Planejamento' :
+                                          projeto.status === 'pausado' ? 'Pausado' : projeto.status}</span>
+                        </div>
+                        ${alerta.dias !== null ? `
+                            <div class="notification-days ${alerta.tipo}" style="margin-top: 8px; font-size: 13px;">
+                                ${alerta.tipo === 'atrasado' ? '⚠️' : '⏰'} ${alerta.label}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
         }
 
         // Formatar moeda
@@ -2981,6 +3334,8 @@
                         loadProjetos();
                     } else if (page === 'orcamentos') {
                         loadOrcamentos();
+                    } else if (page === 'dashboard') {
+                        loadDashboardData(); // Recarregar dashboard (inclui notificações)
                     }
                 }
                 
@@ -3928,6 +4283,25 @@
             }).join('');
         }
 
+        // Variável para controlar filtro de alertas
+        let filterAlertasAtivo = false;
+
+        // Toggle filtro de alertas
+        function toggleFilterAlertas() {
+            filterAlertasAtivo = !filterAlertasAtivo;
+            const btn = document.getElementById('filterAlertasBtn');
+            if (btn) {
+                if (filterAlertasAtivo) {
+                    btn.textContent = '✅ Ver Todos';
+                    btn.style.background = 'var(--primary)';
+                } else {
+                    btn.textContent = '⚠️ Ver Alertas';
+                    btn.style.background = 'var(--tertiary)';
+                }
+            }
+            filterProjetos();
+        }
+
         // Filtrar projetos
         function filterProjetos() {
             const search = document.getElementById('projetoSearch').value.toLowerCase();
@@ -3943,7 +4317,14 @@
                 
                 const matchStatus = !statusFilter || projeto.status === statusFilter;
                 
-                return matchSearch && matchStatus;
+                // Filtro de alertas
+                let matchAlertas = true;
+                if (filterAlertasAtivo) {
+                    const classificacao = classificarProjetoPorPrazo(projeto);
+                    matchAlertas = classificacao !== null;
+                }
+                
+                return matchSearch && matchStatus && matchAlertas;
             });
 
             renderProjetos();
@@ -5047,31 +5428,15 @@
             empty.style.display = 'none';
 
             try {
-                // Buscar orçamentos
+                // Buscar orçamentos (incluindo novos campos de link público e assinatura)
                 const { data: orcamentosData, error: orcamentosError } = await supabase
                     .from('orcamentos')
-                    .select('*')
+                    .select('*, cliente:clientes(*)')
                     .order('created_at', { ascending: false });
 
                 if (orcamentosError) throw orcamentosError;
 
-                // Buscar clientes
-                let clientesMap = {};
-                try {
-                    const { data: clientesData, error: clientesError } = await supabase
-                        .from('clientes')
-                        .select('id, nome, empresa');
-
-                    if (!clientesError && clientesData) {
-                        clientesData.forEach(cliente => {
-                            clientesMap[cliente.id] = cliente;
-                        });
-                    }
-                } catch (e) {
-                    console.warn('Erro ao carregar clientes para orçamentos:', e);
-                }
-
-                // Combinar dados e fazer parse dos itens
+                // Combinar dados e fazer parse dos itens (cliente já vem na relação)
                 allOrcamentos = (orcamentosData || []).map(orcamento => {
                     // Fazer parse dos itens se vier como string
                     let itens = orcamento.itens || [];
@@ -5089,8 +5454,8 @@
                     
                     return {
                         ...orcamento,
-                        itens: itens,
-                        cliente: clientesMap[orcamento.cliente_id] || null
+                        itens: itens
+                        // cliente já vem na relação do Supabase
                     };
                 });
 
@@ -5678,6 +6043,23 @@
             const aprovarBtn = document.getElementById('aprovarOrcamentoBtn');
             const recusarBtn = document.getElementById('recusarOrcamentoBtn');
             const criarProjetoBtn = document.getElementById('criarProjetoBtn');
+            const gerarLinkBtn = document.getElementById('gerarLinkPublicoBtn');
+            const linkContainer = document.getElementById('linkPublicoContainer');
+            const linkInput = document.getElementById('linkPublicoInput');
+            
+            // Configurar botão de gerar link
+            gerarLinkBtn.onclick = () => gerarLinkPublico(id);
+            
+            // Verificar se já existe link público
+            if (orcamento.token_publico && orcamento.acesso_publico) {
+                const linkPublico = window.location.origin + window.location.pathname + '?proposta=' + orcamento.token_publico;
+                linkInput.value = linkPublico;
+                linkContainer.style.display = 'block';
+                gerarLinkBtn.style.display = 'none';
+            } else {
+                linkContainer.style.display = 'none';
+                gerarLinkBtn.style.display = 'inline-block';
+            }
             
             if (orcamento.status === 'enviado') {
                 aprovarBtn.style.display = 'inline-block';
@@ -6759,6 +7141,112 @@
             }
         }
 
+        // ========== GERENCIAMENTO DE LINK PÚBLICO ==========
+        
+        // Gerar link público para proposta
+        async function gerarLinkPublico(orcamentoId) {
+            try {
+                // Gerar token único (64 caracteres hexadecimal)
+                const token = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+                
+                // Criar link público
+                const linkPublico = window.location.origin + window.location.pathname + '?proposta=' + token;
+                
+                // Salvar token e link no banco
+                const { data, error } = await supabase
+                    .from('orcamentos')
+                    .update({
+                        token_publico: token,
+                        link_publico: linkPublico,
+                        acesso_publico: true
+                    })
+                    .eq('id', orcamentoId)
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                // Atualizar UI
+                document.getElementById('linkPublicoInput').value = linkPublico;
+                document.getElementById('linkPublicoContainer').style.display = 'block';
+                document.getElementById('gerarLinkPublicoBtn').style.display = 'none';
+                
+                // Recarregar orçamentos para atualizar dados
+                await loadOrcamentos();
+                
+                alert('Link público gerado com sucesso!');
+            } catch (error) {
+                console.error('Erro ao gerar link público:', error);
+                alert('Erro ao gerar link público: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+        
+        // Copiar link público
+        function copiarLinkPublico() {
+            const linkInput = document.getElementById('linkPublicoInput');
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999); // Para mobile
+            document.execCommand('copy');
+            alert('Link copiado para a área de transferência!');
+        }
+        
+        // Enviar link por WhatsApp
+        function enviarLinkPorWhatsApp() {
+            const linkPublico = document.getElementById('linkPublicoInput').value;
+            const orcamento = allOrcamentos.find(o => o.id === document.getElementById('orcamentoDetailsModal').dataset.orcamentoId);
+            const clienteNome = orcamento?.cliente?.nome || orcamento?.cliente?.empresa || 'Cliente';
+            
+            // Buscar telefone do cliente ou usar telefone padrão
+            const telefoneCliente = orcamento?.cliente?.whatsapp || orcamento?.cliente?.telefone || '5514996005936';
+            // Remover caracteres não numéricos
+            const telefoneLimpo = telefoneCliente.replace(/\D/g, '');
+            // Garantir formato internacional (55 para Brasil)
+            const telefoneFormatado = telefoneLimpo.startsWith('55') ? telefoneLimpo : '55' + telefoneLimpo;
+            
+            // Mensagem pré-formatada
+            const mensagem = `Olá ${clienteNome}! 👋\n\nSegue sua proposta comercial:\n${linkPublico}\n\nAguardo sua resposta! 😊`;
+            
+            // Criar link do WhatsApp
+            const whatsappLink = `https://wa.me/${telefoneFormatado}?text=${encodeURIComponent(mensagem)}`;
+            
+            // Abrir WhatsApp
+            window.open(whatsappLink, '_blank');
+        }
+        
+        // Desativar link público
+        async function desativarLinkPublico() {
+            if (!confirm('Tem certeza que deseja desativar o link público? O cliente não conseguirá mais acessar a proposta por este link.')) {
+                return;
+            }
+            
+            try {
+                const orcamentoId = document.getElementById('orcamentoDetailsModal').dataset.orcamentoId;
+                
+                const { error } = await supabase
+                    .from('orcamentos')
+                    .update({
+                        acesso_publico: false
+                    })
+                    .eq('id', orcamentoId);
+                
+                if (error) throw error;
+                
+                // Atualizar UI
+                document.getElementById('linkPublicoContainer').style.display = 'none';
+                document.getElementById('gerarLinkPublicoBtn').style.display = 'inline-block';
+                
+                // Recarregar orçamentos
+                await loadOrcamentos();
+                
+                alert('Link público desativado com sucesso!');
+            } catch (error) {
+                console.error('Erro ao desativar link público:', error);
+                alert('Erro ao desativar link público: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+        
         // Funções para menu mobile
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -6791,7 +7279,7 @@
             nome: 'Vizion Hub',  // Nome da plataforma
             emoji: '',  // Emoji ao lado do nome (deixar vazio para não exibir)
             logoUrl: 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/LOGO%203D%20SEM%20FUNDO%20(1).png',  // Logo na página de login
-            sidebarLogoUrl: 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/VizionHUB.png',  // Logo no sidebar
+            sidebarLogoUrl: 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/Design%20sem%20nome%20(32).png',  // Logo no sidebar
         };
 
         // Aplicar configurações
@@ -6847,9 +7335,882 @@
             }
         }
 
+        // Verificar se é acesso público (proposta pública)
+        async function verificarAcessoPublico() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('proposta');
+            
+            if (token) {
+                // Buscar orçamento por token
+                try {
+                    // Primeiro buscar orçamento sem relação (mais simples)
+                    const { data: orcamentoData, error: orcamentoError } = await supabase
+                        .from('orcamentos')
+                        .select('*')
+                        .eq('token_publico', token)
+                        .eq('acesso_publico', true)
+                        .single();
+                    
+                    if (orcamentoError) throw orcamentoError;
+                    
+                    if (orcamentoData) {
+                        // Buscar cliente separadamente
+                        let cliente = null;
+                        if (orcamentoData.cliente_id) {
+                            try {
+                                const { data: clienteData, error: clienteError } = await supabase
+                                    .from('clientes')
+                                    .select('*')
+                                    .eq('id', orcamentoData.cliente_id)
+                                    .single();
+                                
+                                if (!clienteError && clienteData) {
+                                    cliente = clienteData;
+                                }
+                            } catch (e) {
+                                console.warn('Erro ao buscar cliente:', e);
+                            }
+                        }
+                        
+                        // Combinar dados
+                        const orcamentoCompleto = {
+                            ...orcamentoData,
+                            cliente: cliente
+                        };
+                        
+                        // Mostrar página pública da proposta
+                        mostrarPropostaPublica(orcamentoCompleto);
+                        return true;
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar proposta pública:', error);
+                    alert('Link inválido ou expirado. Entre em contato com o vendedor.');
+                    window.location.href = window.location.pathname;
+                    return false;
+                }
+            }
+            
+            return false;
+        }
+        
+        // Mostrar proposta pública
+        function mostrarPropostaPublica(orcamento) {
+            console.log('=== DEBUG PROPOSTA PÚBLICA ===');
+            console.log('Orçamento completo:', JSON.stringify(orcamento, null, 2));
+            console.log('Cliente:', orcamento.cliente);
+            console.log('Cliente ID:', orcamento.cliente_id);
+            console.log('Itens (bruto):', orcamento.itens);
+            console.log('Tipo de itens:', typeof orcamento.itens);
+            
+            // Esconder dashboard e login
+            if (document.getElementById('loginPage')) {
+                document.getElementById('loginPage').style.display = 'none';
+            }
+            if (document.getElementById('dashboardPage')) {
+                document.getElementById('dashboardPage').style.display = 'none';
+            }
+            
+            // Criar página pública se não existir
+            let publicPage = document.getElementById('propostaPublicaPage');
+            if (!publicPage) {
+                publicPage = document.createElement('div');
+                publicPage.id = 'propostaPublicaPage';
+                publicPage.style.cssText = 'min-height: 100vh; background: #f5f5f5; padding: 40px 20px; font-family: Arial, sans-serif;';
+                document.body.appendChild(publicPage);
+            }
+            
+            publicPage.style.display = 'block';
+            
+            // Buscar itens do orçamento (pode vir como string JSON ou array)
+            let itens = orcamento.itens || [];
+            console.log('Itens brutos:', itens);
+            console.log('Tipo de itens:', typeof itens);
+            console.log('É array?', Array.isArray(itens));
+            
+            // Se for null ou undefined, usar array vazio
+            if (!itens) {
+                itens = [];
+            }
+            
+            // Se for string, tentar fazer parse
+            if (typeof itens === 'string') {
+                console.log('Itens é string, tentando fazer parse...');
+                try {
+                    const itensTrimmed = itens.trim();
+                    if (itensTrimmed.length > 0) {
+                        if (itensTrimmed.startsWith('[') || itensTrimmed.startsWith('{')) {
+                            itens = JSON.parse(itensTrimmed);
+                            console.log('Parse bem-sucedido:', itens);
+                        } else {
+                            console.warn('String não é JSON válido:', itensTrimmed.substring(0, 50));
+                            itens = [];
+                        }
+                    } else {
+                        console.warn('String vazia');
+                        itens = [];
+                    }
+                } catch (e) {
+                    console.error('Erro ao fazer parse dos itens:', e);
+                    console.error('String que falhou:', itens.substring(0, 100));
+                    itens = [];
+                }
+            }
+            
+            // Garantir que é array
+            if (!Array.isArray(itens)) {
+                console.log('Não é array, tentando converter...');
+                if (itens && typeof itens === 'object') {
+                    // Se for objeto único, transformar em array
+                    console.log('Convertendo objeto único para array');
+                    itens = [itens];
+                } else {
+                    console.warn('Não é objeto válido, usando array vazio');
+                    itens = [];
+                }
+            }
+            
+            console.log('Itens processados (final):', itens);
+            console.log('Quantidade de itens:', itens.length);
+            
+            // Recalcular subtotais dos itens se necessário
+            itens = itens.map(item => {
+                const quantidade = parseFloat(item.quantidade) || 1;
+                const valorUnitario = parseFloat(item.valor_unitario) || 0;
+                const descontoPercent = parseFloat(item.desconto_percent) || 0;
+                
+                const subtotal = Math.round((quantidade * valorUnitario) * 100) / 100;
+                const descontoValor = Math.round((subtotal * (descontoPercent / 100)) * 100) / 100;
+                const subtotalFinal = Math.round((subtotal - descontoValor) * 100) / 100;
+                
+                return {
+                    ...item,
+                    quantidade: quantidade,
+                    valor_unitario: valorUnitario,
+                    desconto_percent: descontoPercent,
+                    subtotal: item.subtotal || subtotalFinal
+                };
+            });
+            
+            // Calcular total se não existir
+            let total = parseFloat(orcamento.valor) || 0;
+            if (total === 0 && itens.length > 0) {
+                total = itens.reduce((sum, item) => sum + (parseFloat(item.subtotal) || 0), 0);
+                total = Math.round(total * 100) / 100;
+            }
+            
+            // Formatar moeda
+            const formatCurrency = (value) => {
+                if (!value && value !== 0) return 'R$ 0,00';
+                const num = parseFloat(value) || 0;
+                return new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(num);
+            };
+            
+            // Formatar data
+            const formatDate = (dateStr) => {
+                if (!dateStr) return '-';
+                try {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('pt-BR');
+                } catch {
+                    return dateStr;
+                }
+            };
+            
+            // Extrair dados do cliente (pode vir como objeto ou aninhado)
+            let cliente = orcamento.cliente || null;
+            
+            // Se cliente não vier na relação, tentar buscar pelo cliente_id
+            if (!cliente && orcamento.cliente_id) {
+                // Cliente já foi buscado na função verificarAcessoPublico
+                // Mas vamos garantir que temos os dados
+                cliente = orcamento.cliente || {};
+            }
+            
+            if (typeof cliente === 'string') {
+                try {
+                    cliente = JSON.parse(cliente);
+                } catch (e) {
+                    cliente = {};
+                }
+            }
+            
+            // Garantir que cliente é um objeto
+            if (!cliente || typeof cliente !== 'object') {
+                cliente = {};
+            }
+            
+            console.log('Cliente processado:', cliente);
+            console.log('Cliente ID no orçamento:', orcamento.cliente_id);
+            console.log('Cliente tem nome?', !!cliente.nome);
+            console.log('Cliente tem empresa?', !!cliente.empresa);
+            
+            const clienteNome = cliente.nome || cliente.empresa || (orcamento.cliente_id ? 'Cliente ID: ' + orcamento.cliente_id : 'Cliente não informado');
+            const clienteEmail = cliente.email || '';
+            const clienteTelefone = cliente.telefone || cliente.whatsapp || '';
+            const clienteCpfCnpj = cliente.cpf_cnpj || '';
+            const clienteEndereco = cliente.endereco || '';
+            const clienteCidade = cliente.cidade || '';
+            const clienteEstado = cliente.estado || '';
+            
+            console.log('Dados do cliente para exibição:');
+            console.log('- Nome:', clienteNome);
+            console.log('- Email:', clienteEmail);
+            console.log('- Telefone:', clienteTelefone);
+            
+            // Extrair observações (remover condições comerciais se existir)
+            let observacoes = orcamento.observacoes || '';
+            if (observacoes.includes('=== CONDIÇÕES COMERCIAIS ===')) {
+                const partes = observacoes.split('=== CONDIÇÕES COMERCIAIS ===');
+                observacoes = partes[0].trim();
+            }
+            
+            // Renderizar proposta
+            publicPage.innerHTML = `
+                <div style="max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="text-align: right; margin-bottom: 20px; color: #666; font-size: 14px;">
+                        N° ${String(orcamento.numero || 'N/A').padStart(4, '0')} - ${formatDate(orcamento.data)}
+                    </div>
+                    
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <h1 style="color: #FF6600; font-size: 28px; margin-bottom: 10px; font-weight: bold;">PROPOSTA COMERCIAL</h1>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <div style="background: #FF6600; color: white; padding: 10px; font-weight: bold; font-size: 16px; margin-bottom: 15px;">
+                            Dados do Cliente
+                        </div>
+                        <div style="padding: 15px 10px; background: #fafafa; border-radius: 4px;">
+                            ${clienteNome && clienteNome !== 'Cliente não informado' ? `<p style="margin: 8px 0; color: #333;"><strong>Cliente:</strong> ${clienteNome.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>` : '<p style="margin: 8px 0; color: #999; font-style: italic;">Cliente não informado</p>'}
+                            ${clienteEmail ? `<p style="margin: 8px 0; color: #333;"><strong>Email:</strong> ${clienteEmail.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>` : ''}
+                            ${clienteTelefone ? `<p style="margin: 8px 0; color: #333;"><strong>Telefone:</strong> ${clienteTelefone.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>` : ''}
+                            ${clienteCpfCnpj ? `<p style="margin: 8px 0; color: #333;"><strong>CPF/CNPJ:</strong> ${clienteCpfCnpj.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>` : ''}
+                            ${clienteEndereco ? `<p style="margin: 8px 0; color: #333;"><strong>Endereço:</strong> ${clienteEndereco.replace(/</g, '&lt;').replace(/>/g, '&gt;')}${clienteCidade ? ', ' + clienteCidade.replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''}${clienteEstado ? ' - ' + clienteEstado.replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''}</p>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <div style="background: #FF6600; color: white; padding: 10px; font-weight: bold; font-size: 16px; margin-bottom: 15px;">
+                            Itens do Orçamento
+                        </div>
+                        ${itens.length > 0 ? `
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; background: white;">
+                                <thead>
+                                    <tr style="background: #FF6600; color: white;">
+                                        <th style="padding: 12px; text-align: left; font-weight: bold; border: none;">Descrição</th>
+                                        <th style="padding: 12px; text-align: center; font-weight: bold; border: none; width: 80px;">Qtd</th>
+                                        <th style="padding: 12px; text-align: right; font-weight: bold; border: none; width: 120px;">Valor Unit.</th>
+                                        <th style="padding: 12px; text-align: right; font-weight: bold; border: none; width: 120px;">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itens.map((item, index) => `
+                                        <tr style="border-bottom: 1px solid #e5e5e5; ${index % 2 === 0 ? 'background: #fafafa;' : 'background: white;'}">
+                                            <td style="padding: 12px; color: #333;">${(item.descricao || '-').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+                                            <td style="padding: 12px; text-align: center; color: #333;">${item.quantidade || 1}</td>
+                                            <td style="padding: 12px; text-align: right; color: #333;">${formatCurrency(item.valor_unitario || 0)}</td>
+                                            <td style="padding: 12px; text-align: right; color: #333; font-weight: 600;">${formatCurrency(item.subtotal || 0)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background: #f5f5f5; font-weight: bold; border-top: 2px solid #FF6600;">
+                                        <td colspan="3" style="padding: 15px; text-align: right; font-size: 16px; color: #333;">Total:</td>
+                                        <td style="padding: 15px; text-align: right; color: #FF6600; font-size: 20px; font-weight: bold;">${formatCurrency(total)}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        ` : `
+                            <div style="padding: 40px; text-align: center; background: #fafafa; border-radius: 4px; border: 1px dashed #ddd;">
+                                <p style="color: #999; font-style: italic; margin: 0;">Nenhum item adicionado ao orçamento.</p>
+                            </div>
+                        `}
+                    </div>
+                    
+                    ${observacoes ? `
+                        <div style="margin-bottom: 30px;">
+                            <div style="background: #FF6600; color: white; padding: 10px; font-weight: bold; font-size: 16px; margin-bottom: 15px;">
+                                Observações
+                            </div>
+                            <div style="padding: 0 10px;">
+                                <p style="white-space: pre-wrap; line-height: 1.6;">${observacoes.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #FF6600; text-align: center;">
+                        <button onclick="gerarPDFOrcamentoPublico('${orcamento.id}')" style="background: #FF6600; color: white; border: none; padding: 12px 24px; border-radius: 4px; font-size: 16px; cursor: pointer; margin-right: 10px; font-weight: bold;">
+                            📄 Baixar PDF
+                        </button>
+                        ${!orcamento.assinado ? `
+                            <button onclick="abrirAssinatura('${orcamento.id}')" style="background: #10B981; color: white; border: none; padding: 12px 24px; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold;">
+                                ✍️ Assinar Proposta
+                            </button>
+                        ` : `
+                            <div style="margin-top: 20px; padding: 15px; background: #d4edda; border-radius: 4px; color: #155724; font-weight: bold;">
+                                ✅ Proposta assinada em ${formatDate(orcamento.data_assinatura || orcamento.updated_at)}
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Gerar PDF da proposta pública
+        async function gerarPDFOrcamentoPublico(orcamentoId) {
+            try {
+                // Buscar orçamento completo
+                const { data: orcamentoData, error: orcamentoError } = await supabase
+                    .from('orcamentos')
+                    .select('*')
+                    .eq('id', orcamentoId)
+                    .single();
+                
+                if (orcamentoError) throw orcamentoError;
+                if (!orcamentoData) {
+                    alert('Orçamento não encontrado');
+                    return;
+                }
+                
+                // Buscar cliente separadamente
+                let clienteCompleto = {};
+                if (orcamentoData.cliente_id) {
+                    try {
+                        const { data: clienteData, error: clienteError } = await supabase
+                            .from('clientes')
+                            .select('*')
+                            .eq('id', orcamentoData.cliente_id)
+                            .single();
+                        
+                        if (!clienteError && clienteData) {
+                            clienteCompleto = clienteData;
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao buscar cliente para PDF:', e);
+                    }
+                }
+                
+                // Combinar dados
+                const orcamento = {
+                    ...orcamentoData,
+                    cliente: clienteCompleto
+                };
+                
+                // Chamar função de gerar PDF com orçamento
+                await gerarPDFOrcamentoDireto(orcamento);
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                alert('Erro ao gerar PDF: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+        
+        // Gerar PDF diretamente a partir de um orçamento (sem depender do modal)
+        async function gerarPDFOrcamentoDireto(orcamento) {
+            try {
+                // Verificar se jsPDF está disponível
+                if (!window.jspdf) {
+                    alert('Biblioteca de PDF não carregada. Por favor, recarregue a página.');
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Função auxiliar para formatar moeda no PDF
+                const formatCurrencyPDF = (value) => {
+                    if (!value && value !== 0) return 'R$ 0,00';
+                    return new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }).format(value);
+                };
+
+                // Função auxiliar para formatar data no PDF
+                const formatDatePDF = (dateStr) => {
+                    if (!dateStr) return '-';
+                    try {
+                        const date = new Date(dateStr);
+                        return date.toLocaleDateString('pt-BR');
+                    } catch {
+                        return dateStr;
+                    }
+                };
+
+                // Configurações
+                const margin = 20;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                let y = margin;
+
+                // ========== CABEÇALHO - DADOS DA EMPRESA ==========
+                let logoLoaded = false;
+                
+                // Tentar adicionar logo
+                try {
+                    const logoUrl = 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/LOGO%203D%20SEM%20FUNDO%20(1).png';
+                    
+                    // Usar fetch para obter a imagem como base64
+                    const response = await fetch(logoUrl);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const reader = new FileReader();
+                        
+                        await new Promise((resolve, reject) => {
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        });
+                        
+                        const logoData = reader.result;
+                        // Adicionar logo (ajustar tamanho conforme necessário)
+                        doc.addImage(logoData, 'PNG', margin, 5, 60, 25);
+                        logoLoaded = true;
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar logo:', e);
+                }
+                
+                // Se logo não carregou, usar texto
+                if (!logoLoaded) {
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(0, 0, pageWidth, 50, 'F');
+                    
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(28);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('AUTOVIZION', margin, 30);
+                    
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'normal');
+                    doc.text('Soluções em Marketing Digital e Tecnologia', margin, 38);
+                }
+                
+                // Dados da empresa no cabeçalho (lado direito) - Melhor formatado
+                const dadosX = pageWidth - margin - 60;
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(0, 0, 0);
+                doc.text('AUTOVIZION', dadosX, 12);
+                
+                doc.setFontSize(8);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(60, 60, 60);
+                doc.text('www.autovizon.com.br', dadosX, 20);
+                doc.text('autovizioncomercial@gmail.com', dadosX, 26);
+                doc.text('(14) 99600-5936', dadosX, 32);
+                
+                // Linha divisória abaixo do cabeçalho
+                doc.setDrawColor(200, 200, 200);
+                doc.line(margin, 35, pageWidth - margin, 35);
+                
+                y = 45;
+
+                // ========== TÍTULO DO DOCUMENTO ==========
+                // Fundo colorido para o título
+                doc.setFillColor(255, 102, 0);
+                doc.rect(margin, y - 5, pageWidth - (margin * 2), 20, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(22);
+                doc.setFont(undefined, 'bold');
+                doc.text('PROPOSTA COMERCIAL', margin + 5, y + 8);
+                
+                // Número e data à direita (sobre o fundo)
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Nº ${orcamento.numero || 'N/A'}`, pageWidth - margin - 30, y + 2);
+                doc.text(`Data: ${formatDatePDF(orcamento.data)}`, pageWidth - margin - 30, y + 9);
+                
+                y += 20;
+
+                // ========== DADOS DO CLIENTE ==========
+                // Definir variáveis do cliente primeiro
+                const clienteNome = orcamento.cliente?.nome || orcamento.cliente?.empresa || 'Cliente não encontrado';
+                const clienteEmpresa = orcamento.cliente?.empresa || '';
+                const clienteCpfCnpj = orcamento.cliente?.cpf_cnpj || '';
+                const clienteEndereco = orcamento.cliente?.endereco || '';
+                const clienteCidade = orcamento.cliente?.cidade || '';
+                const clienteEstado = orcamento.cliente?.estado || '';
+                const clienteCep = orcamento.cliente?.cep || '';
+                const clienteTelefone = orcamento.cliente?.telefone || '';
+                const clienteEmail = orcamento.cliente?.email || '';
+
+                // ========== INTRODUÇÃO ==========
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(60, 60, 60);
+                const introText = `Prezado(a) ${clienteNome},`;
+                doc.text(introText, margin, y);
+                y += 8;
+                
+                const apresentacao = `É com grande entusiasmo que finalizamos a análise de suas necessidades e desenvolvemos uma proposta comercial estratégica. Nosso foco é apresentar soluções concretas que impulsionarão seus resultados e atenderão, com excelência, aos seus objetivos específicos.`;
+                const apresentacaoLines = doc.splitTextToSize(apresentacao, pageWidth - (margin * 2));
+                doc.text(apresentacaoLines, margin, y);
+                y += apresentacaoLines.length * 5 + 10;
+
+                // ========== DADOS DO CLIENTE ==========
+                // Fundo com cor laranja suave
+                doc.setFillColor(255, 102, 0);
+                doc.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
+                
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('DADOS DO CLIENTE', margin + 3, y + 6);
+                y += 12;
+                
+                doc.setTextColor(0, 0, 0);
+                
+                doc.text(`Cliente: ${clienteNome}`, margin, y);
+                y += 6;
+                if (clienteEmpresa && clienteEmpresa !== clienteNome) {
+                    doc.text(`Empresa: ${clienteEmpresa}`, margin, y);
+                    y += 6;
+                }
+                if (clienteCpfCnpj) {
+                    doc.text(`CPF/CNPJ: ${clienteCpfCnpj}`, margin, y);
+                    y += 6;
+                }
+                if (clienteEndereco) {
+                    let enderecoCompleto = clienteEndereco;
+                    if (clienteCidade) enderecoCompleto += `, ${clienteCidade}`;
+                    if (clienteEstado) enderecoCompleto += ` - ${clienteEstado}`;
+                    if (clienteCep) enderecoCompleto += ` - CEP: ${clienteCep}`;
+                    doc.text(`Endereço: ${enderecoCompleto}`, margin, y);
+                    y += 6;
+                }
+                if (clienteTelefone) {
+                    doc.text(`Telefone: ${clienteTelefone}`, margin, y);
+                    y += 6;
+                }
+                if (clienteEmail) {
+                    doc.text(`E-mail: ${clienteEmail}`, margin, y);
+                    y += 6;
+                }
+                
+                y += 10;
+
+                // ========== ITENS DO ORÇAMENTO ==========
+                // Fundo com cor laranja suave
+                doc.setFillColor(255, 102, 0);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('ITENS DO ORÇAMENTO', margin + 3, y + 4);
+                y += 12;
+                
+                doc.setTextColor(0, 0, 0);
+
+                // Fazer parse dos itens se necessário
+                let itens = orcamento.itens || [];
+                if (typeof itens === 'string') {
+                    try {
+                        itens = JSON.parse(itens);
+                    } catch (e) {
+                        console.error('Erro ao fazer parse dos itens no PDF:', e);
+                        itens = [];
+                    }
+                }
+                if (!Array.isArray(itens)) {
+                    itens = [];
+                }
+                
+                if (itens.length > 0) {
+                    // Definir posições das colunas de forma clara
+                    const colDescricao = margin + 2;
+                    const colQtd = margin + 65;
+                    const colValorUnit = margin + 85;
+                    const colDesconto = margin + 120;
+                    
+                    // Cabeçalho da tabela com cor destacada
+                    doc.setFillColor(45, 45, 45);
+                    doc.rect(margin, y - 5, pageWidth - (margin * 2), 8, 'F');
+                    
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('Descrição', colDescricao, y);
+                    doc.text('Qtd', colQtd, y);
+                    doc.text('Valor Unit.', colValorUnit, y);
+                    doc.text('Desconto', colDesconto, y);
+                    y += 8;
+
+                    let subtotal = 0;
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    
+                    itens.forEach((item, index) => {
+                        // Verificar se precisa de nova página (deixar espaço para pelo menos 3 linhas + totais)
+                        if (y > pageHeight - 80) {
+                            doc.addPage();
+                            y = margin + 10;
+                        }
+                        
+                        // Linha alternada (opcional)
+                        if (index % 2 === 0) {
+                            doc.setFillColor(250, 250, 250);
+                            doc.rect(margin, y - 3, pageWidth - (margin * 2), 6, 'F');
+                        }
+                        
+                        // Acessar campos com fallback para diferentes nomes
+                        const descricao = item.descricao || item.desc || '-';
+                        const quantidade = parseFloat(item.quantidade || item.qtd || 0);
+                        const valorUnitario = parseFloat(item.valor_unitario || item.valorUnitario || item.valor_unit || 0);
+                        const descontoPercent = parseFloat(item.desconto_percent || item.descontoPercent || item.desconto || 0);
+                        
+                        // Recalcular subtotal do item - COM PRECISÃO
+                        const itemSubtotal = Math.round((quantidade * valorUnitario) * 100) / 100;
+                        const descontoValor = Math.round((itemSubtotal * (descontoPercent / 100)) * 100) / 100;
+                        const subtotalItem = Math.round((itemSubtotal - descontoValor) * 100) / 100;
+                        subtotal = Math.round((subtotal + subtotalItem) * 100) / 100;
+                        
+                        // Descrição (pode quebrar linha se muito longa)
+                        const descLines = doc.splitTextToSize(descricao, 60);
+                        const firstLineY = y;
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(descLines, colDescricao, firstLineY);
+                        
+                        // Quantidade
+                        doc.text(quantidade.toString(), colQtd, firstLineY);
+                        
+                        // Valor unitário
+                        doc.text(formatCurrencyPDF(valorUnitario), colValorUnit, firstLineY);
+                        
+                        // Desconto
+                        doc.text(descontoPercent + '%', colDesconto, firstLineY);
+                        
+                        y += Math.max(6, descLines.length * 6);
+                    });
+
+                    y += 5;
+                    doc.setDrawColor(200, 200, 200);
+                    doc.line(margin, y, pageWidth - margin, y);
+                    y += 10;
+
+                    // ========== TOTAIS ==========
+                    // Verificar se há espaço para os totais (subtotal + desconto + total + linha = ~30px)
+                    if (y > pageHeight - 50) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+                    
+                    const descontoGeral = parseFloat(orcamento.desconto_geral || 0);
+                    // Calcular total corretamente - COM PRECISÃO
+                    const descontoGeralArredondado = Math.round(descontoGeral * 100) / 100;
+                    const subtotalArredondado = Math.round(subtotal * 100) / 100;
+                    const total = Math.round((subtotalArredondado - descontoGeralArredondado) * 100) / 100;
+                    
+                    // Subtotal e Total - mesma linha, mesmo estilo, apenas linha de separação
+                    // Alinhar mais à esquerda para seguir o alinhamento geral da página
+                    const labelX = margin + 10; // Posição do label (alinhado à esquerda, seguindo o alinhamento geral)
+                    const valueX = labelX + 100; // Posição do valor (espaçamento fixo após o label, mais à esquerda)
+                    
+                    // Subtotal - texto preto, tamanho normal
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Subtotal:', labelX, y);
+                    doc.text(formatCurrencyPDF(subtotal), valueX, y);
+                    y += 7;
+
+                    if (descontoGeral > 0) {
+                        doc.setTextColor(200, 0, 0);
+                        doc.text('Desconto Geral:', labelX, y);
+                        doc.text(formatCurrencyPDF(descontoGeral), valueX, y);
+                        y += 7;
+                    }
+
+                    // Linha laranja para separar (apenas uma listra)
+                    doc.setDrawColor(255, 102, 0);
+                    doc.setLineWidth(1);
+                    doc.line(labelX - 10, y, valueX + 50, y);
+                    y += 8;
+
+                    // TOTAL - mesmo estilo do subtotal, seguindo as mesmas linhas
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'bold'); // Negrito para destacar
+                    doc.setTextColor(0, 0, 0); // Texto preto, igual ao subtotal
+                    doc.text('TOTAL:', labelX, y);
+                    // Valor também preto, negrito - alinhado à esquerda, mesmo estilo do subtotal
+                    const totalText = formatCurrencyPDF(total);
+                    doc.text(totalText, valueX, y);
+                    y += 15;
+                } else {
+                    doc.setFontSize(10);
+                    doc.setTextColor(128, 128, 128);
+                    doc.text('Nenhum item cadastrado', margin, y);
+                    y += 10;
+                }
+                
+                y += 10;
+
+                // ========== CONDIÇÕES COMERCIAIS ==========
+                const observacoes = orcamento.observacoes || '';
+                let condicoesPagamento = '';
+                let formaPagamento = '';
+                let prazoEntrega = '';
+                
+                if (observacoes.includes('=== CONDIÇÕES COMERCIAIS ===')) {
+                    const partes = observacoes.split('=== CONDIÇÕES COMERCIAIS ===');
+                    const condicoesTexto = partes[1] || '';
+                    
+                    const matchCondicoes = condicoesTexto.match(/Condições de Pagamento:\s*(.+?)(?:\n|$)/i);
+                    if (matchCondicoes) condicoesPagamento = matchCondicoes[1].trim();
+                    
+                    const matchForma = condicoesTexto.match(/Forma de Pagamento:\s*(.+?)(?:\n|$)/i);
+                    if (matchForma) formaPagamento = matchForma[1].trim();
+                    
+                    const matchPrazo = condicoesTexto.match(/Prazo de Entrega:\s*(.+?)(?:\n|$)/i);
+                    if (matchPrazo) prazoEntrega = matchPrazo[1].trim();
+                }
+                
+                if (condicoesPagamento || formaPagamento || prazoEntrega) {
+                    // Verificar se precisa de nova página
+                    if (y > pageHeight - 60) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+                    
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('CONDIÇÕES COMERCIAIS', margin + 3, y + 4);
+                    y += 12;
+                    
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(0, 0, 0);
+                    
+                    if (condicoesPagamento) {
+                        doc.text(`Condições de Pagamento: ${condicoesPagamento}`, margin, y);
+                        y += 6;
+                    }
+                    if (formaPagamento) {
+                        doc.text(`Forma de Pagamento: ${formaPagamento}`, margin, y);
+                        y += 6;
+                    }
+                    if (prazoEntrega) {
+                        doc.text(`Prazo de Entrega: ${prazoEntrega}`, margin, y);
+                        y += 6;
+                    }
+                    
+                    y += 5;
+                }
+                
+                // ========== OBSERVAÇÕES ==========
+                let observacoesParaPDF = observacoes;
+                if (observacoesParaPDF.includes('=== CONDIÇÕES COMERCIAIS ===')) {
+                    const partes = observacoesParaPDF.split('=== CONDIÇÕES COMERCIAIS ===');
+                    observacoesParaPDF = partes[0].trim();
+                }
+                
+                if (observacoesParaPDF) {
+                    // Verificar se precisa de nova página
+                    if (y > pageHeight - 40) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+                    
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('OBSERVAÇÕES', margin + 3, y + 4);
+                    y += 12;
+                    
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(60, 60, 60);
+                    const observacoesLines = doc.splitTextToSize(observacoesParaPDF, pageWidth - (margin * 2));
+                    doc.text(observacoesLines, margin, y);
+                    y += observacoesLines.length * 4 + 5;
+                }
+                
+                // ========== TERMOS E CONDIÇÕES ==========
+                // Verificar se precisa de nova página
+                if (y > pageHeight - 50) {
+                    doc.addPage();
+                    y = margin + 10;
+                }
+                
+                doc.setFillColor(255, 102, 0);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('TERMOS E CONDIÇÕES', margin + 3, y + 4);
+                y += 12;
+                
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(8);
+                doc.setTextColor(60, 60, 60);
+                
+                const validadeDias = orcamento.validade_dias || 30;
+                const termosRodape = [
+                    `1. Esta proposta tem validade de ${validadeDias} dias corridos a partir da data de emissão.`,
+                    '2. A contratação dos serviços está sujeita à assinatura de contrato específico.',
+                    '3. Os valores podem sofrer alterações mediante alteração de escopo.',
+                    '4. Para mais informações, entre em contato conosco através dos canais indicados.'
+                ];
+                
+                termosRodape.forEach(termo => {
+                    // Verificar se precisa de nova página para os termos
+                    if (y > pageHeight - 15) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+                    const termoLines = doc.splitTextToSize(termo, pageWidth - (margin * 2));
+                    doc.text(termoLines, margin, y);
+                    y += termoLines.length * 4 + 2;
+                });
+                
+                // Informações de contato no rodapé - Sempre na última linha da página
+                const contatoY = pageHeight - 8;
+                doc.setFontSize(7);
+                doc.setTextColor(128, 128, 128);
+                doc.setFont(undefined, 'normal');
+                doc.text('AUTOVIZION', margin, contatoY);
+                doc.text('|', margin + 25, contatoY);
+                doc.text('www.autovizon.com.br', margin + 30, contatoY);
+                doc.text('|', margin + 70, contatoY);
+                doc.text('autovizioncomercial@gmail.com', margin + 75, contatoY);
+                doc.text('|', margin + 130, contatoY);
+                doc.text('(14) 99600-5936', margin + 135, contatoY);
+                
+                // Salvar PDF
+                const fileName = `Proposta_${orcamento.numero || 'N'}_${clienteNome.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+                doc.save(fileName);
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                alert('Erro ao gerar PDF: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+        
+        // Abrir modal de assinatura
+        function abrirAssinatura(orcamentoId) {
+            alert('Funcionalidade de assinatura será implementada em breve. Por enquanto, você pode baixar o PDF e assinar manualmente.');
+        }
+        
         // Verificar autenticação ao carregar
         aplicarConfiguracaoPlataforma();
-        checkAuth();
+        
+        // Verificar se é acesso público primeiro
+        verificarAcessoPublico().then(isPublic => {
+            if (!isPublic) {
+                // Se não for acesso público, verificar autenticação normal
+                checkAuth();
+            }
+        });
     </script>
 </body>
 </html>
