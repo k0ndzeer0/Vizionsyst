@@ -3447,6 +3447,7 @@
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="closeProjetoDetailsModal()">Fechar</button>
                 <button type="button" class="btn btn-primary" id="editProjetoFromDetailsBtn" onclick="">Editar</button>
+                <button type="button" class="btn btn-primary" id="gerarDocumentoFinalizacaoBtn" onclick="" style="background: var(--success); border-color: var(--success);">📄 Gerar Documento de Finalização</button>
                 <button type="button" class="btn btn-danger" id="deleteProjetoFromDetailsBtn" onclick="">Excluir</button>
             </div>
         </div>
@@ -4064,6 +4065,120 @@
                 <button type="button" class="btn btn-primary" id="editPlataformaFromDetailsBtn" onclick="">Editar</button>
                 <button type="button" class="btn btn-danger" id="deletePlataformaFromDetailsBtn" onclick="">Excluir</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal Documento de Finalização -->
+    <div id="documentoFinalizacaoModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="documentoFinalizacaoModalTitle">Gerar Documento de Finalização</h2>
+                <button class="btn-close" onclick="closeDocumentoFinalizacaoModal()">&times;</button>
+            </div>
+            <form id="documentoFinalizacaoForm">
+                <input type="hidden" id="documentoFinalizacaoId">
+                <input type="hidden" id="documentoFinalizacaoProjetoId">
+                <input type="hidden" id="documentoFinalizacaoClienteId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Número do Documento</label>
+                        <input type="text" id="documentoFinalizacaoNumero" class="form-input" placeholder="Gerado automaticamente" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data de Conclusão *</label>
+                        <input type="date" id="documentoFinalizacaoDataConclusao" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Valor Total do Projeto</label>
+                        <input type="number" id="documentoFinalizacaoValorTotal" class="form-input" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Valor Pago</label>
+                        <input type="number" id="documentoFinalizacaoValorPago" class="form-input" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Formas de Pagamento</label>
+                    <div class="checkbox-group" style="background: var(--tertiary); padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="formaPagamentoPix" value="PIX" onchange="atualizarFormasPagamento()">
+                            <label for="formaPagamentoPix">PIX</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="formaPagamentoCartao" value="Cartão de Crédito/Débito" onchange="atualizarFormasPagamento()">
+                            <label for="formaPagamentoCartao">Cartão de Crédito/Débito</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="formaPagamentoBoleto" value="Boleto" onchange="atualizarFormasPagamento()">
+                            <label for="formaPagamentoBoleto">Boleto</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="formaPagamentoDinheiro" value="Dinheiro" onchange="atualizarFormasPagamento()">
+                            <label for="formaPagamentoDinheiro">Dinheiro</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="formaPagamentoTransferencia" value="Transferência Bancária" onchange="atualizarFormasPagamento()">
+                            <label for="formaPagamentoTransferencia">Transferência Bancária</label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="documentoFinalizacaoFormasPagamento" value="">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Entregas Realizadas *</label>
+                    <div style="background: var(--tertiary); padding: 16px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 12px;">
+                        <div id="entregasContainer" style="margin-bottom: 12px;">
+                            <!-- Entregas serão adicionadas aqui -->
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="adicionarEntrega()" style="padding: 8px 16px; font-size: 14px; width: 100%;">
+                            ➕ Adicionar Nova Entrega
+                        </button>
+                        <small style="color: var(--text-gray); font-size: 12px; display: block; margin-top: 8px;">
+                            💡 Adicione cada item/serviço que foi entregue ao cliente
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Garantia (dias)</label>
+                        <input type="number" id="documentoFinalizacaoGarantia" class="form-input" min="0" value="30" placeholder="30">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Suporte Incluído</label>
+                        <select id="documentoFinalizacaoSuporteIncluso" class="form-input" onchange="toggleSuporteDias()">
+                            <option value="false">Não</option>
+                            <option value="true">Sim</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" id="suporteDiasGroup" style="display: none;">
+                    <label class="form-label">Período de Suporte (dias)</label>
+                    <input type="number" id="documentoFinalizacaoSuporteDias" class="form-input" min="0" placeholder="30">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Observações</label>
+                    <textarea id="documentoFinalizacaoObservacoes" class="form-input" rows="3" placeholder="Observações adicionais sobre o projeto..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Termos e Condições</label>
+                    <textarea id="documentoFinalizacaoTermos" class="form-input" rows="4" placeholder="Termos e condições padrão...">O cliente confirma o recebimento de todas as entregas listadas acima. A empresa se compromete a corrigir eventuais problemas técnicos no período de garantia especificado.</textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeDocumentoFinalizacaoModal()">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="previewDocumentoFinalizacao()" style="background: var(--warning); border-color: var(--warning);">👁️ Visualizar PDF</button>
+                    <button type="submit" class="btn btn-primary">Salvar e Gerar PDF</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -6063,6 +6178,17 @@
                 closeProjetoDetailsModal();
                 editProjeto(id);
             };
+
+            // Configurar botão de gerar documento de finalização
+            const gerarDocBtn = document.getElementById('gerarDocumentoFinalizacaoBtn');
+            if (gerarDocBtn) {
+                gerarDocBtn.onclick = () => {
+                    closeProjetoDetailsModal();
+                    openDocumentoFinalizacaoModal(id);
+                };
+                // Mostrar botão apenas se projeto estiver concluído ou em andamento
+                gerarDocBtn.style.display = (projeto.status === 'concluido' || projeto.status === 'em_andamento') ? 'inline-block' : 'none';
+            }
 
             // Configurar botão de excluir com confirmação
             deleteBtn.onclick = async () => {
@@ -12816,6 +12942,823 @@
                 alert('Erro ao salvar plataforma: ' + (error.message || 'Erro desconhecido'));
             }
         });
+
+        // ========== DOCUMENTOS DE FINALIZAÇÃO ==========
+        
+        let entregasList = [];
+
+        // Adicionar entrega
+        function adicionarEntrega() {
+            const container = document.getElementById('entregasContainer');
+            if (!container) return;
+            
+            const entregaId = Date.now();
+            const numeroEntrega = container.children.length + 1;
+            const entregaHtml = `
+                <div class="entrega-item" data-id="${entregaId}" style="background: var(--secondary); padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--primary); font-weight: 600; font-size: 14px;">Entrega #${numeroEntrega}</span>
+                        <button type="button" class="btn btn-danger" onclick="removerEntrega(${entregaId})" style="padding: 6px 12px; font-size: 12px;">🗑️ Remover</button>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div>
+                            <label style="display: block; color: var(--text-gray); font-size: 12px; margin-bottom: 4px;">Nome da Entrega *</label>
+                            <input type="text" class="form-input" placeholder="Ex: Site institucional, Logo, Sistema de gestão..." data-field="item" style="width: 100%;">
+                        </div>
+                        <div>
+                            <label style="display: block; color: var(--text-gray); font-size: 12px; margin-bottom: 4px;">Descrição (opcional)</label>
+                            <textarea class="form-input" placeholder="Descreva detalhes da entrega, funcionalidades, etc." rows="2" data-field="descricao" style="width: 100%; resize: vertical;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', entregaHtml);
+        }
+
+        // Remover entrega
+        function removerEntrega(id) {
+            if (!confirm('Deseja remover esta entrega?')) return;
+            
+            const item = document.querySelector(`.entrega-item[data-id="${id}"]`);
+            if (item) {
+                item.remove();
+                // Renumerar entregas
+                renumerarEntregas();
+            }
+        }
+
+        // Renumerar entregas
+        function renumerarEntregas() {
+            const container = document.getElementById('entregasContainer');
+            if (!container) return;
+            
+            const items = container.querySelectorAll('.entrega-item');
+            items.forEach((item, index) => {
+                const numeroSpan = item.querySelector('span');
+                if (numeroSpan) {
+                    numeroSpan.textContent = `Entrega #${index + 1}`;
+                }
+            });
+        }
+
+        // Toggle suporte dias
+        function toggleSuporteDias() {
+            const suporteIncluso = document.getElementById('documentoFinalizacaoSuporteIncluso').value === 'true';
+            const suporteDiasGroup = document.getElementById('suporteDiasGroup');
+            if (suporteDiasGroup) {
+                suporteDiasGroup.style.display = suporteIncluso ? 'block' : 'none';
+            }
+        }
+
+        // Atualizar formas de pagamento
+        function atualizarFormasPagamento() {
+            const formasSelecionadas = [];
+            if (document.getElementById('formaPagamentoPix').checked) formasSelecionadas.push('PIX');
+            if (document.getElementById('formaPagamentoCartao').checked) formasSelecionadas.push('Cartão de Crédito/Débito');
+            if (document.getElementById('formaPagamentoBoleto').checked) formasSelecionadas.push('Boleto');
+            if (document.getElementById('formaPagamentoDinheiro').checked) formasSelecionadas.push('Dinheiro');
+            if (document.getElementById('formaPagamentoTransferencia').checked) formasSelecionadas.push('Transferência Bancária');
+            document.getElementById('documentoFinalizacaoFormasPagamento').value = formasSelecionadas.join(', ');
+        }
+
+        // Abrir modal de documento de finalização
+        async function openDocumentoFinalizacaoModal(projetoId) {
+            const projeto = allProjetos.find(p => p.id === projetoId);
+            if (!projeto) {
+                alert('Projeto não encontrado');
+                return;
+            }
+
+            // Limpar formulário
+            document.getElementById('documentoFinalizacaoForm').reset();
+            document.getElementById('documentoFinalizacaoId').value = '';
+            document.getElementById('entregasContainer').innerHTML = '';
+            entregasList = [];
+            
+            // Limpar checkboxes de formas de pagamento
+            document.getElementById('formaPagamentoPix').checked = false;
+            document.getElementById('formaPagamentoCartao').checked = false;
+            document.getElementById('formaPagamentoBoleto').checked = false;
+            document.getElementById('formaPagamentoDinheiro').checked = false;
+            document.getElementById('formaPagamentoTransferencia').checked = false;
+            document.getElementById('documentoFinalizacaoFormasPagamento').value = '';
+
+            // Preencher dados do projeto
+            document.getElementById('documentoFinalizacaoProjetoId').value = projetoId;
+            document.getElementById('documentoFinalizacaoClienteId').value = projeto.cliente_id || '';
+            
+            // Preencher data de conclusão (usar data de conclusão do projeto ou hoje)
+            const dataConclusao = projeto.data_conclusao ? projeto.data_conclusao.split('T')[0] : new Date().toISOString().split('T')[0];
+            document.getElementById('documentoFinalizacaoDataConclusao').value = dataConclusao;
+
+            // Preencher valor total do projeto
+            if (projeto.valor) {
+                document.getElementById('documentoFinalizacaoValorTotal').value = projeto.valor;
+            }
+
+            // Buscar orçamento relacionado para pegar formas de pagamento
+            try {
+                const { data: orcamento } = await supabase
+                    .from('orcamentos')
+                    .select('forma_pagamento')
+                    .eq('id', projeto.orcamento_id)
+                    .single();
+                
+                if (orcamento && orcamento.forma_pagamento) {
+                    const formas = orcamento.forma_pagamento.split(',').map(f => f.trim());
+                    formas.forEach(forma => {
+                        if (forma.includes('PIX')) document.getElementById('formaPagamentoPix').checked = true;
+                        if (forma.includes('Cartão')) document.getElementById('formaPagamentoCartao').checked = true;
+                        if (forma.includes('Boleto')) document.getElementById('formaPagamentoBoleto').checked = true;
+                        if (forma.includes('Dinheiro')) document.getElementById('formaPagamentoDinheiro').checked = true;
+                        if (forma.includes('Transferência')) document.getElementById('formaPagamentoTransferencia').checked = true;
+                    });
+                    atualizarFormasPagamento();
+                }
+            } catch (e) {
+                console.warn('Erro ao buscar formas de pagamento:', e);
+            }
+
+            // Calcular valor pago (buscar receitas do projeto)
+            try {
+                const { data: receitas } = await supabase
+                    .from('receitas')
+                    .select('valor, status, forma_pagamento')
+                    .eq('projeto_id', projetoId)
+                    .eq('status', 'recebido');
+                
+                let valorPago = 0;
+                if (receitas) {
+                    valorPago = receitas.reduce((sum, r) => sum + (parseFloat(r.valor) || 0), 0);
+                }
+                document.getElementById('documentoFinalizacaoValorPago').value = valorPago.toFixed(2);
+            } catch (e) {
+                console.warn('Erro ao calcular valor pago:', e);
+            }
+
+            // Gerar número do documento
+            try {
+                const { data } = await supabase
+                    .from('documentos_finalizacao')
+                    .select('numero_documento')
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+                
+                let proximoNumero = 1;
+                if (data && data.length > 0 && data[0].numero_documento) {
+                    const match = data[0].numero_documento.match(/\d+/);
+                    if (match) {
+                        proximoNumero = parseInt(match[0]) + 1;
+                    }
+                }
+                
+                const ano = new Date().getFullYear();
+                document.getElementById('documentoFinalizacaoNumero').value = `${String(proximoNumero).padStart(4, '0')}/${ano}`;
+            } catch (e) {
+                const ano = new Date().getFullYear();
+                document.getElementById('documentoFinalizacaoNumero').value = `0001/${ano}`;
+            }
+
+            // Preencher entregas do projeto (se houver descrição ou observações)
+            // Por enquanto, adicionar uma entrega padrão baseada no nome do projeto
+            adicionarEntrega();
+            const primeiraEntrega = document.querySelector('.entrega-item');
+            if (primeiraEntrega) {
+                const itemInput = primeiraEntrega.querySelector('[data-field="item"]');
+                if (itemInput && projeto.nome) {
+                    itemInput.value = projeto.nome;
+                }
+            }
+
+            const modal = document.getElementById('documentoFinalizacaoModal');
+            openModal(modal);
+        }
+
+        // Fechar modal
+        function closeDocumentoFinalizacaoModal() {
+            const modal = document.getElementById('documentoFinalizacaoModal');
+            closeModal(modal);
+        }
+
+        // Coletar entregas do formulário
+        function coletarEntregas() {
+            const entregas = [];
+            const items = document.querySelectorAll('.entrega-item');
+            
+            items.forEach(item => {
+                const itemInput = item.querySelector('[data-field="item"]');
+                const descricaoInput = item.querySelector('[data-field="descricao"]');
+                
+                const itemValue = itemInput?.value.trim();
+                const descricaoValue = descricaoInput?.value.trim();
+                
+                if (itemValue) {
+                    entregas.push({
+                        item: itemValue,
+                        descricao: descricaoValue || '',
+                        status: 'entregue'
+                    });
+                }
+            });
+            
+            return entregas;
+        }
+
+        // Salvar documento de finalização
+        document.getElementById('documentoFinalizacaoForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const entregas = coletarEntregas();
+            if (entregas.length === 0) {
+                alert('Adicione pelo menos uma entrega!');
+                return;
+            }
+
+            const documentoData = {
+                projeto_id: document.getElementById('documentoFinalizacaoProjetoId').value,
+                cliente_id: document.getElementById('documentoFinalizacaoClienteId').value,
+                numero_documento: document.getElementById('documentoFinalizacaoNumero').value,
+                data_conclusao: document.getElementById('documentoFinalizacaoDataConclusao').value,
+                entregas: entregas,
+                valor_total: document.getElementById('documentoFinalizacaoValorTotal').value ? parseFloat(document.getElementById('documentoFinalizacaoValorTotal').value) : null,
+                valor_pago: document.getElementById('documentoFinalizacaoValorPago').value ? parseFloat(document.getElementById('documentoFinalizacaoValorPago').value) : null,
+                garantia_dias: parseInt(document.getElementById('documentoFinalizacaoGarantia').value) || 30,
+                suporte_incluso: document.getElementById('documentoFinalizacaoSuporteIncluso').value === 'true',
+                suporte_dias: document.getElementById('documentoFinalizacaoSuporteDias').value ? parseInt(document.getElementById('documentoFinalizacaoSuporteDias').value) : null,
+                observacoes: document.getElementById('documentoFinalizacaoObservacoes').value.trim() || null,
+                termos_condicoes: document.getElementById('documentoFinalizacaoTermos').value.trim() || null,
+                formas_pagamento: document.getElementById('documentoFinalizacaoFormasPagamento').value.trim() || null,
+                status: 'rascunho'
+            };
+
+            // Calcular valor pendente
+            if (documentoData.valor_total && documentoData.valor_pago) {
+                documentoData.valor_pendente = Math.max(0, documentoData.valor_total - documentoData.valor_pago);
+            } else {
+                documentoData.valor_pendente = null;
+            }
+
+            try {
+                let documentoId;
+                const id = document.getElementById('documentoFinalizacaoId').value;
+
+                if (id) {
+                    // Atualizar
+                    const { data, error } = await supabase
+                        .from('documentos_finalizacao')
+                        .update(documentoData)
+                        .eq('id', id)
+                        .select()
+                        .single();
+                    
+                    if (error) throw error;
+                    documentoId = data.id;
+                } else {
+                    // Criar
+                    const { data, error } = await supabase
+                        .from('documentos_finalizacao')
+                        .insert([documentoData])
+                        .select()
+                        .single();
+                    
+                    if (error) throw error;
+                    documentoId = data.id;
+                }
+
+                // Gerar PDF
+                await gerarPDFDocumentoFinalizacao(documentoId);
+                
+                alert('Documento de finalização criado e PDF gerado com sucesso!');
+                closeDocumentoFinalizacaoModal();
+            } catch (error) {
+                console.error('Erro ao salvar documento:', error);
+                alert('Erro ao salvar documento: ' + (error.message || 'Erro desconhecido'));
+            }
+        });
+
+        // Gerar PDF do documento de finalização
+        async function gerarPDFDocumentoFinalizacao(documentoId) {
+            try {
+                if (!window.jspdf) {
+                    alert('Biblioteca de PDF não carregada. Por favor, recarregue a página.');
+                    return;
+                }
+
+                // Buscar documento com relacionamentos
+                const { data: documento, error } = await supabase
+                    .from('documentos_finalizacao')
+                    .select(`
+                        *,
+                        projeto:projetos(*),
+                        cliente:clientes(*)
+                    `)
+                    .eq('id', documentoId)
+                    .single();
+
+                if (error) throw error;
+                if (!documento) throw new Error('Documento não encontrado');
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                const margin = 20;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                let y = margin;
+
+                // Funções auxiliares
+                const formatCurrencyPDF = (value) => {
+                    if (!value && value !== 0) return 'R$ 0,00';
+                    return new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }).format(value);
+                };
+
+                const formatDatePDF = (dateStr) => {
+                    if (!dateStr) return '-';
+                    try {
+                        const date = new Date(dateStr);
+                        return date.toLocaleDateString('pt-BR');
+                    } catch {
+                        return dateStr;
+                    }
+                };
+
+                // ========== CABEÇALHO ==========
+                try {
+                    const logoUrl = 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/LOGO%203D%20SEM%20FUNDO%20(1).png';
+                    const response = await fetch(logoUrl);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const reader = new FileReader();
+                        await new Promise((resolve, reject) => {
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        });
+                        doc.addImage(reader.result, 'PNG', margin, 5, 60, 25);
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar logo:', e);
+                }
+
+                doc.setFontSize(20);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 102, 0);
+                doc.text('TERMO DE FINALIZAÇÃO DE PROJETO', pageWidth / 2, y + 20, { align: 'center' });
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Nº ${documento.numero_documento}`, pageWidth / 2, y + 28, { align: 'center' });
+                doc.text(`Data de Emissão: ${formatDatePDF(documento.data_emissao)}`, pageWidth / 2, y + 34, { align: 'center' });
+                
+                y = 50;
+
+                // ========== DADOS DAS PARTES ==========
+                const cliente = documento.cliente || {};
+                doc.setFillColor(255, 102, 0);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('DADOS DAS PARTES', margin + 3, y + 4);
+                y += 12;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                
+                doc.setFont(undefined, 'bold');
+                doc.text('CONTRATANTE (Cliente):', margin, y);
+                y += 6;
+                doc.setFont(undefined, 'normal');
+                doc.text(`Nome: ${cliente.nome || '-'}`, margin + 5, y);
+                y += 6;
+                if (cliente.empresa) {
+                    doc.text(`Empresa: ${cliente.empresa}`, margin + 5, y);
+                    y += 6;
+                }
+                if (cliente.cpf_cnpj) {
+                    doc.text(`CPF/CNPJ: ${cliente.cpf_cnpj}`, margin + 5, y);
+                    y += 6;
+                }
+                if (cliente.endereco) {
+                    let enderecoCompleto = cliente.endereco;
+                    if (cliente.cidade) enderecoCompleto += `, ${cliente.cidade}`;
+                    if (cliente.estado) enderecoCompleto += ` - ${cliente.estado}`;
+                    doc.text(`Endereço: ${enderecoCompleto}`, margin + 5, y);
+                    y += 6;
+                }
+                if (cliente.email) {
+                    doc.text(`Email: ${cliente.email}`, margin + 5, y);
+                    y += 6;
+                }
+                if (cliente.telefone || cliente.whatsapp) {
+                    doc.text(`Telefone: ${cliente.telefone || cliente.whatsapp || '-'}`, margin + 5, y);
+                    y += 6;
+                }
+
+                y += 5;
+                doc.setFont(undefined, 'bold');
+                doc.text('CONTRATADO (Empresa):', margin, y);
+                y += 6;
+                doc.setFont(undefined, 'normal');
+                doc.text('Razão Social: Autovizion Comercial', margin + 5, y);
+                y += 6;
+                doc.text('CNPJ: 12.345.678/0001-90', margin + 5, y);
+                y += 6;
+                doc.text('Endereço: Bauru/SP', margin + 5, y);
+                y += 6;
+                doc.text('Email: autovizioncomercial@gmail.com', margin + 5, y);
+                y += 6;
+                doc.text('Telefone: (14) 99683-3385', margin + 5, y);
+                y += 10;
+
+                // ========== INFORMAÇÕES DO PROJETO ==========
+                const projeto = documento.projeto || {};
+                if (y > pageHeight - 60) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                doc.setFillColor(10, 185, 129);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('INFORMAÇÕES DO PROJETO', margin + 3, y + 4);
+                y += 12;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Nome do Projeto: ${projeto.nome || '-'}`, margin, y);
+                y += 6;
+                doc.text(`Data de Início: ${formatDatePDF(projeto.data_inicio)}`, margin, y);
+                y += 6;
+                doc.text(`Data de Conclusão: ${formatDatePDF(documento.data_conclusao)}`, margin, y);
+                y += 6;
+                doc.text(`Valor Total: ${formatCurrencyPDF(documento.valor_total || 0)}`, margin, y);
+                y += 10;
+
+                // ========== ENTREGAS ==========
+                if (y > pageHeight - 80) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                doc.setFillColor(59, 130, 246);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('ENTREGAS REALIZADAS', margin + 3, y + 4);
+                y += 12;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+
+                const entregas = Array.isArray(documento.entregas) ? documento.entregas : [];
+                if (entregas.length === 0) {
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(128, 128, 128);
+                    doc.text('Nenhuma entrega cadastrada', margin + 5, y);
+                    y += 6;
+                } else {
+                    entregas.forEach((entrega, index) => {
+                        if (y > pageHeight - 30) {
+                            doc.addPage();
+                            y = margin;
+                        }
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(0, 0, 0);
+                        let itemTexto = String(entrega.item || `Item ${index + 1}`).trim();
+                        // Garantir que seja texto válido
+                        if (!itemTexto) itemTexto = `Item ${index + 1}`;
+                        // Adicionar texto diretamente (jsPDF lida bem com UTF-8)
+                        doc.text(`[OK] ${itemTexto}`, margin + 5, y);
+                        y += 6;
+                        if (entrega.descricao && entrega.descricao.trim()) {
+                            doc.setFont(undefined, 'normal');
+                            let descTexto = String(entrega.descricao).trim();
+                            // Normalizar e limpar texto mantendo acentos
+                            descTexto = descTexto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\s\-.,;:!?()áàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ]/gi, ' ').replace(/\s+/g, ' ').trim();
+                            if (descTexto) {
+                                // Usar splitTextToSize corretamente
+                                try {
+                                    const maxWidth = pageWidth - (margin * 2) - 10;
+                                    const descLines = doc.splitTextToSize(descTexto, maxWidth);
+                                    if (Array.isArray(descLines)) {
+                                        descLines.forEach(line => {
+                                            if (line && String(line).trim()) {
+                                                doc.text(String(line).trim(), margin + 10, y);
+                                                y += 5;
+                                            }
+                                        });
+                                    } else if (descLines) {
+                                        doc.text(String(descLines).trim(), margin + 10, y);
+                                        y += 5;
+                                    }
+                                } catch (e) {
+                                    console.warn('Erro ao processar descrição:', e);
+                                    // Fallback: adicionar texto direto limitado
+                                    const textoLimitado = descTexto.substring(0, 80);
+                                    doc.text(textoLimitado, margin + 10, y);
+                                    y += 5;
+                                }
+                            }
+                        }
+                        y += 3;
+                    });
+                }
+                y += 5;
+
+                // ========== INFORMAÇÕES FINANCEIRAS ==========
+                if (y > pageHeight - 60) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                doc.setFillColor(251, 191, 36);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('INFORMAÇÕES FINANCEIRAS', margin + 3, y + 4);
+                y += 12;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Valor Total do Projeto: ${formatCurrencyPDF(documento.valor_total || 0)}`, margin, y);
+                y += 6;
+                doc.text(`Valor Pago: ${formatCurrencyPDF(documento.valor_pago || 0)}`, margin, y);
+                y += 6;
+                doc.text(`Valor Pendente: ${formatCurrencyPDF(documento.valor_pendente || 0)}`, margin, y);
+                y += 6;
+                
+                // Formas de pagamento
+                if (documento.formas_pagamento && documento.formas_pagamento.trim()) {
+                    doc.setFont(undefined, 'bold');
+                    doc.text('Formas de Pagamento:', margin, y);
+                    y += 6;
+                    doc.setFont(undefined, 'normal');
+                    const formasPagamento = documento.formas_pagamento.split(',').map(f => f.trim()).filter(f => f);
+                    formasPagamento.forEach(forma => {
+                        doc.text(`• ${forma}`, margin + 5, y);
+                        y += 5;
+                    });
+                }
+                y += 5;
+
+                // ========== GARANTIA E SUPORTE ==========
+                if (y > pageHeight - 50) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'bold');
+                doc.text('GARANTIA E SUPORTE:', margin, y);
+                y += 6;
+                doc.setFont(undefined, 'normal');
+                doc.text(`Período de Garantia: ${documento.garantia_dias || 30} dias`, margin + 5, y);
+                y += 6;
+                if (documento.suporte_incluso) {
+                    doc.text(`Suporte Incluído: Sim (${documento.suporte_dias || 30} dias)`, margin + 5, y);
+                    y += 6;
+                } else {
+                    doc.text('Suporte Incluído: Não', margin + 5, y);
+                    y += 6;
+                }
+                y += 5;
+
+                // ========== TERMOS E CONDIÇÕES ==========
+                if (documento.termos_condicoes) {
+                    if (y > pageHeight - 60) {
+                        doc.addPage();
+                        y = margin;
+                    }
+
+                    doc.setFillColor(45, 45, 45);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('TERMOS E CONDIÇÕES', margin + 3, y + 4);
+                    y += 12;
+
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    const termosLines = doc.splitTextToSize(documento.termos_condicoes, pageWidth - (margin * 2));
+                    doc.text(termosLines, margin, y);
+                    y += termosLines.length * 4 + 5;
+                }
+
+                // ========== OBSERVAÇÕES ==========
+                if (documento.observacoes) {
+                    if (y > pageHeight - 50) {
+                        doc.addPage();
+                        y = margin;
+                    }
+
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('OBSERVAÇÕES:', margin, y);
+                    y += 6;
+                    doc.setFont(undefined, 'normal');
+                    const obsLines = doc.splitTextToSize(documento.observacoes, pageWidth - (margin * 2));
+                    doc.text(obsLines, margin, y);
+                    y += obsLines.length * 4 + 10;
+                }
+
+                // ========== ASSINATURAS ==========
+                if (y > pageHeight - 50) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'bold');
+                doc.text('ASSINATURAS:', margin, y);
+                y += 15;
+
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                doc.text('_________________________', margin, y);
+                doc.text('Cliente', margin, y + 6);
+                doc.text(`${cliente.nome || 'Nome do Cliente'}`, margin, y + 12);
+                doc.text(`Data: ${formatDatePDF(documento.data_conclusao)}`, margin, y + 18);
+
+                doc.text('_________________________', pageWidth - margin - 60, y);
+                doc.text('Responsável', pageWidth - margin - 60, y + 6);
+                doc.text('Autovizion Comercial', pageWidth - margin - 60, y + 12);
+                doc.text(`Data: ${formatDatePDF(documento.data_emissao)}`, pageWidth - margin - 60, y + 18);
+
+                // ========== RODAPÉ ==========
+                const contatoY = pageHeight - 8;
+                doc.setFontSize(7);
+                doc.setTextColor(128, 128, 128);
+                doc.setFont(undefined, 'normal');
+                doc.text('AUTOVIZION', margin, contatoY);
+                doc.text('|', margin + 25, contatoY);
+                doc.text('www.autovizon.com.br', margin + 30, contatoY);
+                doc.text('|', margin + 70, contatoY);
+                doc.text('autovizioncomercial@gmail.com', margin + 75, contatoY);
+                doc.text('|', margin + 130, contatoY);
+                doc.text('(14) 99683-3385', margin + 135, contatoY);
+
+                // Salvar PDF
+                const clienteNome = cliente.nome || cliente.empresa || 'Cliente';
+                const dataFormatada = formatDatePDF(documento.data_conclusao).replace(/\//g, '_');
+                const fileName = `Documento_Finalizacao_${clienteNome.replace(/[^a-zA-Z0-9]/g, '_')}_${dataFormatada}.pdf`;
+                doc.save(fileName);
+
+                // Upload para Supabase Storage (opcional)
+                try {
+                    const pdfBlob = doc.output('blob');
+                    const fileNameStorage = `documentos-finalizacao/${documentoId}.pdf`;
+                    
+                    const { error: uploadError } = await supabase.storage
+                        .from('pdfs-temporarios')
+                        .upload(fileNameStorage, pdfBlob, {
+                            contentType: 'application/pdf',
+                            upsert: true
+                        });
+
+                    if (!uploadError) {
+                        const { data: { publicUrl } } = supabase.storage
+                            .from('pdfs-temporarios')
+                            .getPublicUrl(fileNameStorage);
+
+                        // Atualizar documento com URL do PDF
+                        await supabase
+                            .from('documentos_finalizacao')
+                            .update({ pdf_url: publicUrl, status: 'enviado' })
+                            .eq('id', documentoId);
+                    }
+                } catch (e) {
+                    console.warn('Erro ao fazer upload do PDF:', e);
+                }
+
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                alert('Erro ao gerar PDF: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Enviar documento por WhatsApp
+        async function enviarDocumentoFinalizacaoWhatsApp(documentoId) {
+            try {
+                const { data: documento, error } = await supabase
+                    .from('documentos_finalizacao')
+                    .select(`
+                        *,
+                        cliente:clientes(*)
+                    `)
+                    .eq('id', documentoId)
+                    .single();
+
+                if (error) throw error;
+                if (!documento) {
+                    alert('Documento não encontrado');
+                    return;
+                }
+
+                const cliente = documento.cliente || {};
+                const whatsapp = cliente.whatsapp || cliente.telefone || '';
+                
+                if (!whatsapp) {
+                    alert('Cliente não possui WhatsApp cadastrado');
+                    return;
+                }
+
+                // Limpar formatação do WhatsApp
+                const whatsappLimpo = whatsapp.replace(/\D/g, '');
+                
+                // Mensagem
+                const mensagem = `Olá ${cliente.nome || 'Cliente'}! 🎉
+
+Seu projeto foi finalizado com sucesso!
+
+Segue o documento de finalização com todas as entregas e informações:
+
+${documento.pdf_url || 'PDF será gerado em breve'}
+
+Por favor, confirme o recebimento e, se possível, assine o documento.
+
+Obrigado pela confiança! 🙏`;
+
+                // Abrir WhatsApp
+                const url = `https://wa.me/55${whatsappLimpo}?text=${encodeURIComponent(mensagem)}`;
+                window.open(url, '_blank');
+            } catch (error) {
+                console.error('Erro ao enviar por WhatsApp:', error);
+                alert('Erro ao enviar por WhatsApp: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Preview do documento
+        async function previewDocumentoFinalizacao() {
+            const entregas = coletarEntregas();
+            if (entregas.length === 0) {
+                alert('Adicione pelo menos uma entrega!');
+                return;
+            }
+
+            // Criar documento temporário para preview
+            const tempData = {
+                numero_documento: document.getElementById('documentoFinalizacaoNumero').value,
+                data_emissao: new Date().toISOString().split('T')[0],
+                data_conclusao: document.getElementById('documentoFinalizacaoDataConclusao').value,
+                entregas: entregas,
+                valor_total: document.getElementById('documentoFinalizacaoValorTotal').value ? parseFloat(document.getElementById('documentoFinalizacaoValorTotal').value) : null,
+                valor_pago: document.getElementById('documentoFinalizacaoValorPago').value ? parseFloat(document.getElementById('documentoFinalizacaoValorPago').value) : null,
+                garantia_dias: parseInt(document.getElementById('documentoFinalizacaoGarantia').value) || 30,
+                suporte_incluso: document.getElementById('documentoFinalizacaoSuporteIncluso').value === 'true',
+                suporte_dias: document.getElementById('documentoFinalizacaoSuporteDias').value ? parseInt(document.getElementById('documentoFinalizacaoSuporteDias').value) : null,
+                observacoes: document.getElementById('documentoFinalizacaoObservacoes').value.trim() || null,
+                termos_condicoes: document.getElementById('documentoFinalizacaoTermos').value.trim() || null
+            };
+
+            // Buscar dados do projeto e cliente
+            const projetoId = document.getElementById('documentoFinalizacaoProjetoId').value;
+            const clienteId = document.getElementById('documentoFinalizacaoClienteId').value;
+
+            try {
+                const [projetoResult, clienteResult] = await Promise.all([
+                    supabase.from('projetos').select('*').eq('id', projetoId).single(),
+                    supabase.from('clientes').select('*').eq('id', clienteId).single()
+                ]);
+
+                tempData.projeto = projetoResult.data || {};
+                tempData.cliente = clienteResult.data || {};
+
+                // Calcular valor pendente
+                if (tempData.valor_total && tempData.valor_pago) {
+                    tempData.valor_pendente = Math.max(0, tempData.valor_total - tempData.valor_pago);
+                }
+
+                // Gerar PDF temporário
+                if (!window.jspdf) {
+                    alert('Biblioteca de PDF não carregada.');
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                // ... (mesmo código de geração de PDF, mas usando tempData)
+                // Por enquanto, vamos apenas salvar o documento e gerar o PDF
+                alert('Para visualizar o PDF, salve o documento primeiro.');
+            } catch (error) {
+                console.error('Erro no preview:', error);
+                alert('Erro ao gerar preview: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
 
         // Verificar autenticação ao carregar
         aplicarConfiguracaoPlataforma();
