@@ -2585,6 +2585,14 @@
             <span>📁</span>
             <span>Projetos</span>
         </a>
+            <a href="#" class="menu-item" data-page="ideias" onclick="closeSidebarMobile()">
+                <span>💡</span>
+                <span>Análises & Ideias</span>
+            </a>
+            <a href="#" class="menu-item" data-page="templates" onclick="closeSidebarMobile()">
+                <span>📝</span>
+                <span>Templates de Mensagens</span>
+            </a>
             <a href="#" class="menu-item" data-page="financeiro" onclick="closeSidebarMobile()">
                 <span>💰</span>
                 <span>Financeiro</span>
@@ -3171,6 +3179,81 @@
 
                     <div id="plataformasEmpty" class="empty-state" style="display: none;">
                         Nenhuma plataforma encontrada
+                    </div>
+                </div>
+            </div>
+
+            <!-- Análises & Ideias Content -->
+            <div id="ideiasContent" class="page-content" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h1 class="page-title">💡 Análises & Ideias</h1>
+                        <p class="page-subtitle">Registre análises de empresas e ideias de melhorias estratégicas</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openIdeiaModal()">+ Nova Análise/Ideia</button>
+                </div>
+
+                <div class="section-card">
+                    <div class="search-bar">
+                        <input 
+                            type="text" 
+                            id="ideiaSearch" 
+                            class="search-input" 
+                            placeholder="Buscar por título, cliente ou descrição..."
+                            onkeyup="filterIdeias()"
+                        >
+                        <select id="ideiaClienteFilter" class="form-input" style="width: 200px;" onchange="filterIdeias()">
+                            <option value="">Todos os clientes</option>
+                        </select>
+                        <select id="ideiaStatusFilter" class="form-input" style="width: 180px;" onchange="filterIdeias()">
+                            <option value="">Todos os status</option>
+                            <option value="nova">Nova</option>
+                            <option value="em_analise">Em Análise</option>
+                            <option value="aprovada">Aprovada</option>
+                            <option value="rejeitada">Rejeitada</option>
+                            <option value="implementada">Implementada</option>
+                        </select>
+                        <select id="ideiaCategoriaFilter" class="form-input" style="width: 180px;" onchange="filterIdeias()">
+                            <option value="">Todas as categorias</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Operacional">Operacional</option>
+                            <option value="Tecnologia">Tecnologia</option>
+                            <option value="Estratégia">Estratégia</option>
+                            <option value="Vendas">Vendas</option>
+                            <option value="Atendimento">Atendimento</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                        <select id="ideiaPrioridadeFilter" class="form-input" style="width: 150px;" onchange="filterIdeias()">
+                            <option value="">Todas as prioridades</option>
+                            <option value="baixa">Baixa</option>
+                            <option value="media">Média</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+
+                    <div class="table-container">
+                        <div id="ideiasLoading" class="loading active">
+                            <div class="spinner"></div>
+                            <p>Carregando ideias...</p>
+                        </div>
+                        <table id="ideiasTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Cliente</th>
+                                    <th>Categoria</th>
+                                    <th>Prioridade</th>
+                                    <th>Status</th>
+                                    <th>Data</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ideiasTableBody">
+                            </tbody>
+                        </table>
+                        <div id="ideiasEmpty" class="empty-state" style="display: none;">
+                            Nenhuma ideia encontrada. Clique em "+ Nova Ideia" para começar!
+                        </div>
                     </div>
                 </div>
             </div>
@@ -4409,6 +4492,162 @@
         </div>
     </div>
 
+    <!-- Modal Ideia de Melhoria -->
+    <div id="ideiaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="ideiaModalTitle">Nova Análise/Ideia</h2>
+                <button class="btn-close" onclick="closeIdeiaModal()">&times;</button>
+            </div>
+            <form id="ideiaForm">
+                <input type="hidden" id="ideiaId">
+                
+                <div class="form-group">
+                    <label class="form-label">Cliente/Empresa *</label>
+                    <select id="ideiaClienteId" class="form-input" required>
+                        <option value="">Selecione um cliente</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Título da Análise/Ideia *</label>
+                    <input type="text" id="ideiaTitulo" class="form-input" placeholder="Ex: Análise de estratégia digital - Melhorias sugeridas" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Análise e Ideias de Melhorias *</label>
+                    <textarea id="ideiaDescricao" class="form-input" rows="6" placeholder="Descreva sua análise da empresa e as ideias de melhorias que surgiram dessa análise..." required></textarea>
+                    <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                        💡 Dica: Descreva o que você observou na empresa e quais melhorias/estratégias poderiam funcionar.
+                    </small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Categoria</label>
+                        <select id="ideiaCategoria" class="form-input">
+                            <option value="">Selecione</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Operacional">Operacional</option>
+                            <option value="Tecnologia">Tecnologia</option>
+                            <option value="Estratégia">Estratégia</option>
+                            <option value="Vendas">Vendas</option>
+                            <option value="Atendimento">Atendimento</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prioridade</label>
+                        <select id="ideiaPrioridade" class="form-input">
+                            <option value="media">Média</option>
+                            <option value="baixa">Baixa</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select id="ideiaStatus" class="form-input">
+                            <option value="nova">Nova</option>
+                            <option value="em_analise">Em Análise</option>
+                            <option value="aprovada">Aprovada</option>
+                            <option value="rejeitada">Rejeitada</option>
+                            <option value="implementada">Implementada</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Observações</label>
+                    <textarea id="ideiaObservacoes" class="form-input" rows="3" placeholder="Anotações adicionais, pontos de atenção, etc."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Data de Criação</label>
+                        <input type="date" id="ideiaDataCriacao" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data de Implementação (se aplicável)</label>
+                        <input type="date" id="ideiaDataImplementacao" class="form-input">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeIdeiaModal()">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" id="transformarIdeiaBtn" onclick="transformarIdeiaEmOrcamento()" style="display: none; background: var(--primary); border-color: var(--primary);">📄 Transformar em Orçamento</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Template de Mensagem -->
+    <div id="templateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="templateModalTitle">Novo Template</h2>
+                <button class="btn-close" onclick="closeTemplateModal()">&times;</button>
+            </div>
+            <form id="templateForm">
+                <input type="hidden" id="templateId">
+                
+                <div class="form-group">
+                    <label class="form-label">Nome do Template *</label>
+                    <input type="text" id="templateNome" class="form-input" placeholder="Ex: Orçamento Padrão, Follow-up, etc." required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tipo *</label>
+                        <select id="templateTipo" class="form-input" required>
+                            <option value="">Selecione</option>
+                            <option value="orcamento">Orçamento</option>
+                            <option value="cobranca">Cobrança</option>
+                            <option value="followup">Follow-up</option>
+                            <option value="personalizado">Personalizado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Categoria</label>
+                        <select id="templateCategoria" class="form-input">
+                            <option value="">Selecione</option>
+                            <option value="comercial">Comercial</option>
+                            <option value="financeiro">Financeiro</option>
+                            <option value="projetos">Projetos</option>
+                            <option value="atendimento">Atendimento</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mensagem *</label>
+                    <textarea id="templateMensagem" class="form-input" rows="8" placeholder="Digite a mensagem do template..." required></textarea>
+                    <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                        💡 Variáveis disponíveis: *{cliente_nome}*, *{cliente_empresa}*, *{projeto_nome}*, *{orcamento_numero}*, *{valor}*, *{data_vencimento}*
+                    </small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="templateAtivo" checked>
+                            <span style="margin-left: 8px;">Template ativo</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ordem</label>
+                        <input type="number" id="templateOrdem" class="form-input" value="0" min="0">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeTemplateModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- jsPDF para geração de PDF -->
@@ -4835,6 +5074,8 @@
             'clientes': 'Clientes',
             'projetos': 'Projetos',
             'orcamentos': 'Orçamentos',
+            'ideias': 'Análises & Ideias',
+            'templates': 'Templates de Mensagens',
             'financeiro': 'Financeiro',
             'plataformas': 'Plataformas'
         };
@@ -4878,6 +5119,10 @@
                         loadProjetos();
                     } else if (page === 'orcamentos') {
                         loadOrcamentos();
+                    } else if (page === 'ideias') {
+                        loadIdeias();
+                    } else if (page === 'templates') {
+                        loadTemplates();
                     } else if (page === 'financeiro') {
                         loadFinanceiro();
                     } else if (page === 'plataformas') {
@@ -4962,8 +5207,9 @@
                             </span>
                         </td>
                         <td data-label="Ações">
-                            <button class="btn-action" onclick="viewClienteDetails('${cliente.id}')" style="border-color: var(--primary); color: var(--primary); margin-right: 8px;">Ver Detalhes</button>
-                            <button class="btn-action" onclick="criarOrcamentoParaCliente('${cliente.id}')" style="border-color: var(--success); color: var(--success);">📄 Novo Orçamento</button>
+                            <button class="btn-action" onclick="viewClienteDetails('${cliente.id}')" style="border-color: var(--primary); color: var(--primary); margin-right: 4px;">Ver</button>
+                            <button class="btn-action" onclick="selecionarTemplateEEnviar('${cliente.id}')" style="border-color: #25D366; color: #25D366; margin-right: 4px;" title="Enviar WhatsApp">💬</button>
+                            <button class="btn-action" onclick="criarOrcamentoParaCliente('${cliente.id}')" style="border-color: var(--success); color: var(--success);">📄</button>
                         </td>
                     </tr>
                 `;
@@ -6091,6 +6337,12 @@
             // Adicionar campos opcionais apenas se preenchidos
             const prioridade = document.getElementById('projetoPrioridade').value;
             if (prioridade) projetoData.prioridade = prioridade;
+            
+            // Verificar se há campo orcamento_id no formulário
+            const orcamentoIdInput = document.getElementById('projetoOrcamentoId');
+            if (orcamentoIdInput && orcamentoIdInput.value) {
+                projetoData.orcamento_id = orcamentoIdInput.value;
+            }
 
             const responsavelId = document.getElementById('projetoResponsavelId').value;
             if (responsavelId) projetoData.responsavel_id = responsavelId;
@@ -6132,7 +6384,75 @@
                     if (error) throw error;
                     alert('Projeto atualizado com sucesso!');
                 } else {
-                    // Criar
+                    // Criar - verificar se tem orcamento_id e copiar itens
+                    // Verificar campo hidden primeiro
+                    const orcamentoIdInput = document.getElementById('projetoOrcamentoId');
+                    const orcamentoId = orcamentoIdInput ? orcamentoIdInput.value : (projetoData.orcamento_id || null);
+                    
+                    console.log('Criando projeto. Orcamento ID:', orcamentoId);
+                    
+                    // Se tiver orcamento_id, buscar itens do orçamento e copiar para o projeto
+                    if (orcamentoId && orcamentoId.trim() !== '') {
+                        try {
+                            console.log('Buscando itens do orçamento:', orcamentoId);
+                            
+                            // Validar formato do ID (UUID)
+                            if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orcamentoId)) {
+                                console.warn('⚠️ ID do orçamento inválido:', orcamentoId);
+                            } else {
+                                const { data: orcamento, error: orcError } = await supabase
+                                    .from('orcamentos')
+                                    .select('itens')
+                                    .eq('id', orcamentoId.trim())
+                                    .maybeSingle(); // Usar maybeSingle para evitar erro se não encontrar
+                                
+                                if (orcError) {
+                                    console.error('❌ Erro ao buscar orçamento:', orcError);
+                                    console.error('Detalhes do erro:', JSON.stringify(orcError, null, 2));
+                                } else if (orcamento) {
+                                    console.log('Orçamento encontrado. Itens (tipo):', typeof orcamento.itens, orcamento.itens);
+                                    
+                                    // Parse dos itens se for string
+                                    let itens = [];
+                                    if (typeof orcamento.itens === 'string') {
+                                        try {
+                                            itens = JSON.parse(orcamento.itens);
+                                            console.log('Itens parseados de string:', itens);
+                                        } catch (e) {
+                                            console.warn('Erro ao parsear itens do orçamento:', e);
+                                        }
+                                    } else if (Array.isArray(orcamento.itens)) {
+                                        itens = orcamento.itens;
+                                        console.log('Itens já são array:', itens);
+                                    } else if (orcamento.itens) {
+                                        // Se for objeto, tentar converter
+                                        console.warn('Itens não são array nem string:', orcamento.itens);
+                                    }
+                                    
+                                    // Copiar itens para o campo 'itens' do projeto
+                                    if (itens && itens.length > 0) {
+                                        projetoData.itens = itens;
+                                        projetoData.orcamento_id = orcamentoId; // Garantir que o orcamento_id seja salvo
+                                        console.log('✅ Itens copiados do orçamento para o projeto:', itens.length, 'itens');
+                                        console.log('Dados do projeto antes de salvar:', JSON.stringify(projetoData, null, 2));
+                                    } else {
+                                        console.warn('⚠️ Orçamento não possui itens válidos. Itens encontrados:', itens);
+                                    }
+                                } else {
+                                    console.warn('⚠️ Orçamento não encontrado com ID:', orcamentoId);
+                                }
+                            }
+                        } catch (e) {
+                            console.error('❌ Erro ao buscar itens do orçamento para copiar:', e);
+                            console.error('Stack trace:', e.stack);
+                            // Continuar criação mesmo se não conseguir copiar itens
+                        }
+                    } else {
+                        console.log('ℹ️ Projeto criado sem orcamento_id válido');
+                    }
+                    
+                    // Criar projeto
+                    console.log('Salvando projeto com dados:', JSON.stringify(projetoData, null, 2));
                     const { error } = await supabase
                         .from('projetos')
                         .insert([projetoData]);
@@ -7168,6 +7488,7 @@
                         </td>
                         <td data-label="Ações">
                             <button class="btn-action" onclick="viewOrcamentoDetails('${orcamento.id}')" style="border-color: var(--primary); color: var(--primary); margin-right: 4px;">Ver</button>
+                            <button class="btn-action" onclick="selecionarTemplateEEnviar('${orcamento.cliente_id}', 'orcamento', {orcamento_numero: '${orcamento.numero || ''}', valor: ${orcamento.valor || 0}})" style="border-color: #25D366; color: #25D366; margin-right: 4px;" title="Enviar WhatsApp">💬</button>
                             ${orcamento.status === 'enviado' ? `
                                 <button class="btn-action" onclick="aprovarOrcamento('${orcamento.id}')" style="border-color: var(--success); color: var(--success); margin-right: 4px;" title="Aprovar">✓</button>
                                 <button class="btn-action" onclick="recusarOrcamento('${orcamento.id}')" style="border-color: var(--danger); color: var(--danger);" title="Recusar">✗</button>
@@ -7779,6 +8100,16 @@
 
             // Tags com referência ao orçamento
             document.getElementById('projetoTags').value = `orcamento-${orcamento.numero || orcamentoId}, aprovado`;
+
+            // Adicionar campo hidden para orcamento_id (criar se não existir)
+            let orcamentoIdInput = document.getElementById('projetoOrcamentoId');
+            if (!orcamentoIdInput) {
+                orcamentoIdInput = document.createElement('input');
+                orcamentoIdInput.type = 'hidden';
+                orcamentoIdInput.id = 'projetoOrcamentoId';
+                document.getElementById('projetoForm').appendChild(orcamentoIdInput);
+            }
+            orcamentoIdInput.value = orcamentoId;
 
             // Carregar clientes e usuários
             await Promise.all([
@@ -13119,15 +13450,122 @@
                 document.getElementById('documentoFinalizacaoNumero').value = `0001/${ano}`;
             }
 
-            // Preencher entregas do projeto (se houver descrição ou observações)
-            // Por enquanto, adicionar uma entrega padrão baseada no nome do projeto
-            adicionarEntrega();
-            const primeiraEntrega = document.querySelector('.entrega-item');
-            if (primeiraEntrega) {
-                const itemInput = primeiraEntrega.querySelector('[data-field="item"]');
-                if (itemInput && projeto.nome) {
-                    itemInput.value = projeto.nome;
+            // Preencher entregas automaticamente dos trabalhos/itens do projeto
+            try {
+                // Buscar projeto completo com todos os campos (incluindo possíveis campos de trabalhos/itens)
+                const { data: projetoCompleto, error: projetoError } = await supabase
+                    .from('projetos')
+                    .select('*')
+                    .eq('id', projetoId)
+                    .single();
+                
+                if (projetoError) throw projetoError;
+                
+                let itens = [];
+                
+                // Tentar buscar itens/trabalhos diretamente do projeto
+                // Primeiro, verificar se o projeto tem um campo 'itens' ou 'trabalhos'
+                if (projetoCompleto.itens) {
+                    // Se o projeto tem campo 'itens'
+                    if (typeof projetoCompleto.itens === 'string') {
+                        try {
+                            itens = JSON.parse(projetoCompleto.itens);
+                        } catch (e) {
+                            console.warn('Erro ao parsear itens do projeto:', e);
+                        }
+                    } else if (Array.isArray(projetoCompleto.itens)) {
+                        itens = projetoCompleto.itens;
+                    }
+                } else if (projetoCompleto.trabalhos) {
+                    // Se o projeto tem campo 'trabalhos'
+                    if (typeof projetoCompleto.trabalhos === 'string') {
+                        try {
+                            itens = JSON.parse(projetoCompleto.trabalhos);
+                        } catch (e) {
+                            console.warn('Erro ao parsear trabalhos do projeto:', e);
+                        }
+                    } else if (Array.isArray(projetoCompleto.trabalhos)) {
+                        itens = projetoCompleto.trabalhos;
+                    }
                 }
+                
+                // Se não encontrou itens no projeto, buscar do orçamento como fallback
+                if (!itens || itens.length === 0) {
+                    if (projeto.orcamento_id) {
+                        const { data: orcamento } = await supabase
+                            .from('orcamentos')
+                            .select('itens')
+                            .eq('id', projeto.orcamento_id)
+                            .single();
+                        
+                        if (orcamento && orcamento.itens) {
+                            try {
+                                if (typeof orcamento.itens === 'string') {
+                                    itens = JSON.parse(orcamento.itens);
+                                } else if (Array.isArray(orcamento.itens)) {
+                                    itens = orcamento.itens;
+                                }
+                            } catch (e) {
+                                console.warn('Erro ao parsear itens do orçamento:', e);
+                            }
+                        }
+                    }
+                }
+                
+                // Adicionar cada item como entrega
+                if (itens && itens.length > 0) {
+                    itens.forEach((item) => {
+                        const container = document.getElementById('entregasContainer');
+                        if (!container) return;
+                        
+                        // Adicionar entrega
+                        const entregaId = Date.now() + Math.random();
+                        const numeroEntrega = container.children.length + 1;
+                        const entregaHtml = `
+                            <div class="entrega-item" data-id="${entregaId}" style="background: var(--secondary); padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 12px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="color: var(--primary); font-weight: 600; font-size: 14px;">Entrega #${numeroEntrega}</span>
+                                    <button type="button" class="btn btn-danger" onclick="removerEntrega(${entregaId})" style="padding: 6px 12px; font-size: 12px;">🗑️ Remover</button>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    <div>
+                                        <label style="display: block; color: var(--text-gray); font-size: 12px; margin-bottom: 4px;">Nome da Entrega *</label>
+                                        <input type="text" class="form-input" placeholder="Ex: Site institucional, Logo, Sistema de gestão..." data-field="item" style="width: 100%;" value="${(item.descricao || item.desc || item.item || item.trabalho || '').replace(/"/g, '&quot;')}">
+                                    </div>
+                                    <div>
+                                        <label style="display: block; color: var(--text-gray); font-size: 12px; margin-bottom: 4px;">Descrição (opcional)</label>
+                                        <textarea class="form-input" placeholder="Descreva detalhes da entrega, funcionalidades, etc." rows="2" data-field="descricao" style="width: 100%; resize: vertical;">${(() => {
+                                            let descTexto = '';
+                                            if (item.quantidade) descTexto += `Quantidade: ${item.quantidade}`;
+                                            if (item.valor_unitario) {
+                                                if (descTexto) descTexto += ' | ';
+                                                descTexto += `Valor: ${formatCurrency(item.valor_unitario)}`;
+                                            }
+                                            if (item.desconto_percent && item.desconto_percent > 0) {
+                                                if (descTexto) descTexto += ' | ';
+                                                descTexto += `Desconto: ${item.desconto_percent}%`;
+                                            }
+                                            // Se tiver descrição separada, adicionar também
+                                            if (item.descricao_detalhada && item.descricao_detalhada !== item.descricao) {
+                                                if (descTexto) descTexto += '\n';
+                                                descTexto += item.descricao_detalhada;
+                                            }
+                                            return descTexto.replace(/"/g, '&quot;');
+                                        })()}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        container.insertAdjacentHTML('beforeend', entregaHtml);
+                    });
+                } else {
+                    // Se não houver itens, adicionar uma entrega padrão
+                    adicionarEntrega();
+                }
+            } catch (e) {
+                console.warn('Erro ao buscar trabalhos/itens do projeto:', e);
+                // Fallback: adicionar uma entrega padrão
+                adicionarEntrega();
             }
 
             const modal = document.getElementById('documentoFinalizacaoModal');
@@ -13143,21 +13581,26 @@
         // Coletar entregas do formulário
         function coletarEntregas() {
             const entregas = [];
-            const items = document.querySelectorAll('.entrega-item');
+            const container = document.getElementById('entregasContainer');
+            if (!container) return entregas;
+            
+            const items = container.querySelectorAll('.entrega-item');
             
             items.forEach(item => {
                 const itemInput = item.querySelector('[data-field="item"]');
                 const descricaoInput = item.querySelector('[data-field="descricao"]');
                 
-                const itemValue = itemInput?.value.trim();
-                const descricaoValue = descricaoInput?.value.trim();
-                
-                if (itemValue) {
-                    entregas.push({
-                        item: itemValue,
-                        descricao: descricaoValue || '',
-                        status: 'entregue'
-                    });
+                if (itemInput) {
+                    const itemValue = itemInput.value ? itemInput.value.trim() : '';
+                    const descricaoValue = descricaoInput && descricaoInput.value ? descricaoInput.value.trim() : '';
+                    
+                    if (itemValue) {
+                        entregas.push({
+                            item: itemValue,
+                            descricao: descricaoValue || '',
+                            status: 'entregue'
+                        });
+                    }
                 }
             });
             
@@ -13187,9 +13630,14 @@
                 suporte_dias: document.getElementById('documentoFinalizacaoSuporteDias').value ? parseInt(document.getElementById('documentoFinalizacaoSuporteDias').value) : null,
                 observacoes: document.getElementById('documentoFinalizacaoObservacoes').value.trim() || null,
                 termos_condicoes: document.getElementById('documentoFinalizacaoTermos').value.trim() || null,
-                formas_pagamento: document.getElementById('documentoFinalizacaoFormasPagamento').value.trim() || null,
                 status: 'rascunho'
             };
+            
+            // Adicionar formas_pagamento apenas se a coluna existir (evitar erro)
+            const formasPagamento = document.getElementById('documentoFinalizacaoFormasPagamento').value.trim();
+            if (formasPagamento) {
+                documentoData.formas_pagamento = formasPagamento;
+            }
 
             // Calcular valor pendente
             if (documentoData.valor_total && documentoData.valor_pago) {
@@ -13244,19 +13692,71 @@
                     return;
                 }
 
-                // Buscar documento com relacionamentos
+                // Buscar documento
                 const { data: documento, error } = await supabase
                     .from('documentos_finalizacao')
-                    .select(`
-                        *,
-                        projeto:projetos(*),
-                        cliente:clientes(*)
-                    `)
+                    .select('*')
                     .eq('id', documentoId)
                     .single();
 
                 if (error) throw error;
                 if (!documento) throw new Error('Documento não encontrado');
+
+                // Buscar projeto separadamente
+                let projeto = null;
+                if (documento.projeto_id) {
+                    try {
+                        const { data: projetoData, error: projetoError } = await supabase
+                            .from('projetos')
+                            .select('*')
+                            .eq('id', documento.projeto_id)
+                            .single();
+                        
+                        if (!projetoError && projetoData) {
+                            projeto = projetoData;
+                            documento.projeto = projeto;
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao buscar projeto:', e);
+                    }
+                }
+
+                // Buscar cliente separadamente
+                let cliente = null;
+                if (documento.cliente_id) {
+                    try {
+                        const { data: clienteData, error: clienteError } = await supabase
+                            .from('clientes')
+                            .select('*')
+                            .eq('id', documento.cliente_id)
+                            .single();
+                        
+                        if (!clienteError && clienteData) {
+                            cliente = clienteData;
+                            documento.cliente = cliente;
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao buscar cliente:', e);
+                    }
+                }
+
+                // Buscar orçamento separadamente se o projeto tiver orcamento_id
+                if (projeto && projeto.orcamento_id) {
+                    try {
+                        const { data: orcamento, error: orcError } = await supabase
+                            .from('orcamentos')
+                            .select('*')
+                            .eq('id', projeto.orcamento_id)
+                            .single();
+                        
+                        if (!orcError && orcamento) {
+                            documento.projeto = documento.projeto || {};
+                            documento.projeto.orcamento = orcamento;
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao buscar orçamento:', e);
+                    }
+                }
 
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
@@ -13286,6 +13786,12 @@
                 };
 
                 // ========== CABEÇALHO ==========
+                // Fundo laranja no topo
+                doc.setFillColor(255, 102, 0);
+                doc.rect(0, 0, pageWidth, 45, 'F');
+                
+                // Logo (se disponível)
+                let logoLoaded = false;
                 try {
                     const logoUrl = 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/LOGO%203D%20SEM%20FUNDO%20(1).png';
                     const response = await fetch(logoUrl);
@@ -13297,27 +13803,32 @@
                             reader.onerror = reject;
                             reader.readAsDataURL(blob);
                         });
-                        doc.addImage(reader.result, 'PNG', margin, 5, 60, 25);
+                        // Logo menor e melhor posicionado
+                        doc.addImage(reader.result, 'PNG', margin, 8, 50, 20);
+                        logoLoaded = true;
                     }
                 } catch (e) {
                     console.warn('Erro ao carregar logo:', e);
                 }
 
-                doc.setFontSize(20);
+                // Título
+                doc.setFontSize(18);
                 doc.setFont(undefined, 'bold');
-                doc.setTextColor(255, 102, 0);
-                doc.text('TERMO DE FINALIZAÇÃO DE PROJETO', pageWidth / 2, y + 20, { align: 'center' });
+                doc.setTextColor(255, 255, 255);
+                const tituloX = logoLoaded ? margin + 55 : margin;
+                doc.text('TERMO DE FINALIZAÇÃO DE PROJETO', tituloX, 20);
                 
-                doc.setFontSize(12);
+                // Número e data
+                doc.setFontSize(10);
                 doc.setFont(undefined, 'normal');
-                doc.setTextColor(0, 0, 0);
-                doc.text(`Nº ${documento.numero_documento}`, pageWidth / 2, y + 28, { align: 'center' });
-                doc.text(`Data de Emissão: ${formatDatePDF(documento.data_emissao)}`, pageWidth / 2, y + 34, { align: 'center' });
+                doc.text(`Nº ${documento.numero_documento}`, tituloX, 28);
+                doc.text(`Data de Emissão: ${formatDatePDF(documento.data_emissao)}`, tituloX, 35);
                 
-                y = 50;
+                y = 55;
 
                 // ========== DADOS DAS PARTES ==========
-                const cliente = documento.cliente || {};
+                // Usar cliente já buscado ou objeto vazio
+                const clienteData = documento.cliente || cliente || {};
                 doc.setFillColor(255, 102, 0);
                 doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
                 doc.setFontSize(12);
@@ -13334,29 +13845,29 @@
                 doc.text('CONTRATANTE (Cliente):', margin, y);
                 y += 6;
                 doc.setFont(undefined, 'normal');
-                doc.text(`Nome: ${cliente.nome || '-'}`, margin + 5, y);
+                doc.text(`Nome: ${clienteData.nome || '-'}`, margin + 5, y);
                 y += 6;
-                if (cliente.empresa) {
-                    doc.text(`Empresa: ${cliente.empresa}`, margin + 5, y);
+                if (clienteData.empresa) {
+                    doc.text(`Empresa: ${clienteData.empresa}`, margin + 5, y);
                     y += 6;
                 }
-                if (cliente.cpf_cnpj) {
-                    doc.text(`CPF/CNPJ: ${cliente.cpf_cnpj}`, margin + 5, y);
+                if (clienteData.cpf_cnpj) {
+                    doc.text(`CPF/CNPJ: ${clienteData.cpf_cnpj}`, margin + 5, y);
                     y += 6;
                 }
-                if (cliente.endereco) {
-                    let enderecoCompleto = cliente.endereco;
-                    if (cliente.cidade) enderecoCompleto += `, ${cliente.cidade}`;
-                    if (cliente.estado) enderecoCompleto += ` - ${cliente.estado}`;
+                if (clienteData.endereco) {
+                    let enderecoCompleto = clienteData.endereco;
+                    if (clienteData.cidade) enderecoCompleto += `, ${clienteData.cidade}`;
+                    if (clienteData.estado) enderecoCompleto += ` - ${clienteData.estado}`;
                     doc.text(`Endereço: ${enderecoCompleto}`, margin + 5, y);
                     y += 6;
                 }
-                if (cliente.email) {
-                    doc.text(`Email: ${cliente.email}`, margin + 5, y);
+                if (clienteData.email) {
+                    doc.text(`Email: ${clienteData.email}`, margin + 5, y);
                     y += 6;
                 }
-                if (cliente.telefone || cliente.whatsapp) {
-                    doc.text(`Telefone: ${cliente.telefone || cliente.whatsapp || '-'}`, margin + 5, y);
+                if (clienteData.telefone || clienteData.whatsapp) {
+                    doc.text(`Telefone: ${clienteData.telefone || clienteData.whatsapp || '-'}`, margin + 5, y);
                     y += 6;
                 }
 
@@ -13377,7 +13888,8 @@
                 y += 10;
 
                 // ========== INFORMAÇÕES DO PROJETO ==========
-                const projeto = documento.projeto || {};
+                // Usar projeto já buscado ou objeto vazio
+                const projetoData = documento.projeto || projeto || {};
                 if (y > pageHeight - 60) {
                     doc.addPage();
                     y = margin;
@@ -13394,9 +13906,9 @@
                 doc.setFontSize(10);
                 doc.setFont(undefined, 'normal');
                 doc.setTextColor(0, 0, 0);
-                doc.text(`Nome do Projeto: ${projeto.nome || '-'}`, margin, y);
+                doc.text(`Nome do Projeto: ${projetoData.nome || '-'}`, margin, y);
                 y += 6;
-                doc.text(`Data de Início: ${formatDatePDF(projeto.data_inicio)}`, margin, y);
+                doc.text(`Data de Início: ${formatDatePDF(projetoData.data_inicio)}`, margin, y);
                 y += 6;
                 doc.text(`Data de Conclusão: ${formatDatePDF(documento.data_conclusao)}`, margin, y);
                 y += 6;
@@ -13536,7 +14048,130 @@
                 }
                 y += 5;
 
-                // ========== TERMOS E CONDIÇÕES ==========
+                // ========== OBSERVAÇÕES E CONDIÇÕES COMERCIAIS ==========
+                // projeto já foi declarado acima
+                const orcamento = projeto.orcamento || {};
+                
+                // Observações do documento
+                if (documento.observacoes) {
+                    if (y > pageHeight - 50) {
+                        doc.addPage();
+                        y = margin;
+                    }
+
+                    doc.setFillColor(45, 45, 45);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('OBSERVAÇÕES', margin + 3, y + 4);
+                    y += 12;
+
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    const obsLines = doc.splitTextToSize(documento.observacoes, pageWidth - (margin * 2));
+                    doc.text(obsLines, margin, y);
+                    y += obsLines.length * 4 + 5;
+                }
+
+                // Observações do orçamento (se houver)
+                if (orcamentoData.observacoes) {
+                    let obsOrcamento = orcamentoData.observacoes;
+                    // Extrair condições comerciais se estiverem nas observações
+                    if (obsOrcamento.includes('=== CONDIÇÕES COMERCIAIS ===')) {
+                        const partes = obsOrcamento.split('=== CONDIÇÕES COMERCIAIS ===');
+                        obsOrcamento = partes[0].trim();
+                    }
+                    
+                    if (obsOrcamento.trim()) {
+                        if (y > pageHeight - 50) {
+                            doc.addPage();
+                            y = margin;
+                        }
+
+                        doc.setFillColor(245, 245, 245);
+                        doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                        doc.setFontSize(11);
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(0, 0, 0);
+                        doc.text('OBSERVAÇÕES DO ORÇAMENTO', margin + 3, y + 4);
+                        y += 12;
+
+                        doc.setFontSize(9);
+                        doc.setFont(undefined, 'normal');
+                        const obsOrcLines = doc.splitTextToSize(obsOrcamento, pageWidth - (margin * 2));
+                        doc.text(obsOrcLines, margin, y);
+                        y += obsOrcLines.length * 4 + 5;
+                    }
+                }
+
+                // Condições Comerciais do Orçamento
+                if (orcamentoData.observacoes && orcamentoData.observacoes.includes('=== CONDIÇÕES COMERCIAIS ===')) {
+                    if (y > pageHeight - 60) {
+                        doc.addPage();
+                        y = margin;
+                    }
+
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('CONDIÇÕES COMERCIAIS', margin + 3, y + 4);
+                    y += 12;
+
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    
+                    const partes = orcamentoData.observacoes.split('=== CONDIÇÕES COMERCIAIS ===');
+                    const condicoesTexto = partes[1] || '';
+                    
+                    // Extrair informações específicas
+                    const matchCondicoes = condicoesTexto.match(/Condições de Pagamento:\s*(.+?)(?:\n|$)/i);
+                    const matchForma = condicoesTexto.match(/Forma de Pagamento:\s*(.+?)(?:\n|$)/i);
+                    const matchPrazo = condicoesTexto.match(/Prazo de Entrega:\s*(.+?)(?:\n|$)/i);
+                    
+                    if (matchCondicoes) {
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Condições de Pagamento:', margin, y);
+                        y += 5;
+                        doc.setFont(undefined, 'normal');
+                        const condLines = doc.splitTextToSize(matchCondicoes[1].trim(), pageWidth - (margin * 2));
+                        doc.text(condLines, margin + 5, y);
+                        y += condLines.length * 4 + 3;
+                    }
+                    
+                    if (matchForma) {
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Forma de Pagamento:', margin, y);
+                        y += 5;
+                        doc.setFont(undefined, 'normal');
+                        doc.text(matchForma[1].trim(), margin + 5, y);
+                        y += 5;
+                    }
+                    
+                    if (matchPrazo) {
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Prazo de Entrega:', margin, y);
+                        y += 5;
+                        doc.setFont(undefined, 'normal');
+                        doc.text(matchPrazo[1].trim(), margin + 5, y);
+                        y += 5;
+                    }
+                    
+                    // Se não encontrou padrão, mostrar texto completo
+                    if (!matchCondicoes && !matchForma && !matchPrazo && condicoesTexto.trim()) {
+                        const condLines = doc.splitTextToSize(condicoesTexto.trim(), pageWidth - (margin * 2));
+                        doc.text(condLines, margin, y);
+                        y += condLines.length * 4;
+                    }
+                    
+                    y += 5;
+                }
+
+                // Termos e Condições do Documento
                 if (documento.termos_condicoes) {
                     if (y > pageHeight - 60) {
                         doc.addPage();
@@ -13559,23 +14194,6 @@
                     y += termosLines.length * 4 + 5;
                 }
 
-                // ========== OBSERVAÇÕES ==========
-                if (documento.observacoes) {
-                    if (y > pageHeight - 50) {
-                        doc.addPage();
-                        y = margin;
-                    }
-
-                    doc.setFontSize(10);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('OBSERVAÇÕES:', margin, y);
-                    y += 6;
-                    doc.setFont(undefined, 'normal');
-                    const obsLines = doc.splitTextToSize(documento.observacoes, pageWidth - (margin * 2));
-                    doc.text(obsLines, margin, y);
-                    y += obsLines.length * 4 + 10;
-                }
-
                 // ========== ASSINATURAS ==========
                 if (y > pageHeight - 50) {
                     doc.addPage();
@@ -13591,7 +14209,7 @@
                 doc.setFontSize(9);
                 doc.text('_________________________', margin, y);
                 doc.text('Cliente', margin, y + 6);
-                doc.text(`${cliente.nome || 'Nome do Cliente'}`, margin, y + 12);
+                doc.text(`${clienteData.nome || 'Nome do Cliente'}`, margin, y + 12);
                 doc.text(`Data: ${formatDatePDF(documento.data_conclusao)}`, margin, y + 18);
 
                 doc.text('_________________________', pageWidth - margin - 60, y);
@@ -13738,6 +14356,28 @@ Obrigado pela confiança! 🙏`;
                 tempData.projeto = projetoResult.data || {};
                 tempData.cliente = clienteResult.data || {};
 
+                // Buscar orçamento se houver
+                if (tempData.projeto.orcamento_id) {
+                    try {
+                        const { data: orcamentoData } = await supabase
+                            .from('orcamentos')
+                            .select('*')
+                            .eq('id', tempData.projeto.orcamento_id)
+                            .single();
+                        if (orcamentoData) {
+                            tempData.projeto.orcamento = orcamentoData;
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao buscar orçamento:', e);
+                    }
+                }
+
+                // Adicionar formas de pagamento ao tempData
+                const formasPagamento = document.getElementById('documentoFinalizacaoFormasPagamento').value.trim();
+                if (formasPagamento) {
+                    tempData.formas_pagamento = formasPagamento;
+                }
+
                 // Calcular valor pendente
                 if (tempData.valor_total && tempData.valor_pago) {
                     tempData.valor_pendente = Math.max(0, tempData.valor_total - tempData.valor_pago);
@@ -13751,12 +14391,1349 @@ Obrigado pela confiança! 🙏`;
 
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                // ... (mesmo código de geração de PDF, mas usando tempData)
-                // Por enquanto, vamos apenas salvar o documento e gerar o PDF
-                alert('Para visualizar o PDF, salve o documento primeiro.');
+                
+                // Usar tempData como documento para o PDF
+                const documento = tempData;
+                
+                const margin = 20;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                let y = margin;
+
+                // Funções auxiliares
+                const formatCurrencyPDF = (value) => {
+                    if (!value && value !== 0) return 'R$ 0,00';
+                    return new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }).format(value);
+                };
+
+                const formatDatePDF = (dateStr) => {
+                    if (!dateStr) return '-';
+                    try {
+                        const date = new Date(dateStr);
+                        return date.toLocaleDateString('pt-BR');
+                    } catch {
+                        return dateStr;
+                    }
+                };
+
+                // ========== CABEÇALHO ==========
+                // Fundo laranja no topo
+                doc.setFillColor(255, 102, 0);
+                doc.rect(0, 0, pageWidth, 45, 'F');
+                
+                // Logo (se disponível)
+                let logoLoaded = false;
+                try {
+                    const logoUrl = 'https://zhzhpctsndrcedukivhk.supabase.co/storage/v1/object/public/logo/LOGO%203D%20SEM%20FUNDO%20(1).png';
+                    const response = await fetch(logoUrl);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const reader = new FileReader();
+                        await new Promise((resolve, reject) => {
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        });
+                        // Logo menor e melhor posicionado
+                        doc.addImage(reader.result, 'PNG', margin, 8, 50, 20);
+                        logoLoaded = true;
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar logo:', e);
+                }
+
+                // Título
+                doc.setFontSize(18);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                const tituloX = logoLoaded ? margin + 55 : margin;
+                doc.text('TERMO DE FINALIZAÇÃO DE PROJETO', tituloX, 20);
+                
+                // Número e data
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Nº ${documento.numero_documento || '0001/2024'}`, tituloX, 28);
+                doc.text(`Data de Emissão: ${formatDatePDF(documento.data_emissao)}`, tituloX, 35);
+                
+                y = 55;
+
+                // ========== DADOS DAS PARTES ==========
+                // Usar cliente já buscado ou objeto vazio
+                const clienteData = documento.cliente || cliente || {};
+                doc.setFillColor(255, 102, 0);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('DADOS DAS PARTES', margin + 3, y + 4);
+                y += 12;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                
+                doc.setFont(undefined, 'bold');
+                doc.text('CONTRATANTE (Cliente):', margin, y);
+                y += 6;
+                doc.setFont(undefined, 'normal');
+                doc.text(`Nome: ${clienteData.nome || '-'}`, margin + 5, y);
+                y += 6;
+                if (clienteData.empresa) {
+                    doc.text(`Empresa: ${clienteData.empresa}`, margin + 5, y);
+                    y += 6;
+                }
+                if (clienteData.cpf_cnpj) {
+                    doc.text(`CPF/CNPJ: ${clienteData.cpf_cnpj}`, margin + 5, y);
+                    y += 6;
+                }
+                if (clienteData.endereco) {
+                    let enderecoCompleto = clienteData.endereco;
+                    if (clienteData.cidade) enderecoCompleto += `, ${clienteData.cidade}`;
+                    if (clienteData.estado) enderecoCompleto += ` - ${clienteData.estado}`;
+                    doc.text(`Endereço: ${enderecoCompleto}`, margin + 5, y);
+                    y += 6;
+                }
+                if (clienteData.email) {
+                    doc.text(`Email: ${clienteData.email}`, margin + 5, y);
+                    y += 6;
+                }
+                if (clienteData.telefone || clienteData.whatsapp) {
+                    doc.text(`Telefone: ${clienteData.telefone || clienteData.whatsapp || '-'}`, margin + 5, y);
+                    y += 6;
+                }
+
+                y += 5;
+                doc.setFont(undefined, 'bold');
+                doc.text('CONTRATADO (Empresa):', margin, y);
+                y += 6;
+                doc.setFont(undefined, 'normal');
+                doc.text('Razão Social: Autovizion Comercial', margin + 5, y);
+                y += 6;
+                doc.text('CNPJ: 12.345.678/0001-90', margin + 5, y);
+                y += 6;
+                doc.text('Endereço: Bauru/SP', margin + 5, y);
+                y += 6;
+                doc.text('Email: autovizioncomercial@gmail.com', margin + 5, y);
+                y += 6;
+                doc.text('Telefone: (14) 99683-3385', margin + 5, y);
+                y += 10;
+
+                // ========== INFORMAÇÕES DO PROJETO ==========
+                // Usar projeto já buscado ou objeto vazio
+                const projetoData = documento.projeto || projeto || {};
+                if (y > pageHeight - 60) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                doc.setFillColor(10, 185, 129);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('INFORMAÇÕES DO PROJETO', margin + 3, y + 4);
+                y += 12;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Nome do Projeto: ${projetoData.nome || '-'}`, margin, y);
+                y += 6;
+                doc.text(`Data de Início: ${formatDatePDF(projetoData.data_inicio)}`, margin, y);
+                y += 6;
+                doc.text(`Data de Conclusão: ${formatDatePDF(documento.data_conclusao)}`, margin, y);
+                y += 6;
+                doc.text(`Valor Total: ${formatCurrencyPDF(documento.valor_total || 0)}`, margin, y);
+                y += 10;
+
+                // ========== ENTREGAS ==========
+                if (y > pageHeight - 80) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                doc.setFillColor(59, 130, 246);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('ENTREGAS REALIZADAS', margin + 3, y + 4);
+                y += 12;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+
+                const entregas = Array.isArray(documento.entregas) ? documento.entregas : [];
+                if (entregas.length === 0) {
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(128, 128, 128);
+                    doc.text('Nenhuma entrega cadastrada', margin + 5, y);
+                    y += 6;
+                } else {
+                    entregas.forEach((entrega, index) => {
+                        if (y > pageHeight - 30) {
+                            doc.addPage();
+                            y = margin;
+                        }
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(0, 0, 0);
+                        let itemTexto = String(entrega.item || `Item ${index + 1}`).trim();
+                        if (!itemTexto) itemTexto = `Item ${index + 1}`;
+                        doc.text(`[OK] ${itemTexto}`, margin + 5, y);
+                        y += 6;
+                        if (entrega.descricao && entrega.descricao.trim()) {
+                            doc.setFont(undefined, 'normal');
+                            let descTexto = String(entrega.descricao).trim();
+                            descTexto = descTexto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\s\-.,;:!?()áàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ]/gi, ' ').replace(/\s+/g, ' ').trim();
+                            if (descTexto) {
+                                try {
+                                    const maxWidth = pageWidth - (margin * 2) - 10;
+                                    const descLines = doc.splitTextToSize(descTexto, maxWidth);
+                                    if (Array.isArray(descLines)) {
+                                        descLines.forEach(line => {
+                                            if (line && String(line).trim()) {
+                                                doc.text(String(line).trim(), margin + 10, y);
+                                                y += 5;
+                                            }
+                                        });
+                                    } else if (descLines) {
+                                        doc.text(String(descLines).trim(), margin + 10, y);
+                                        y += 5;
+                                    }
+                                } catch (e) {
+                                    console.warn('Erro ao processar descrição:', e);
+                                    const textoLimitado = descTexto.substring(0, 80);
+                                    doc.text(textoLimitado, margin + 10, y);
+                                    y += 5;
+                                }
+                            }
+                        }
+                        y += 3;
+                    });
+                }
+                y += 5;
+
+                // ========== INFORMAÇÕES FINANCEIRAS ==========
+                if (y > pageHeight - 60) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                doc.setFillColor(251, 191, 36);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('INFORMAÇÕES FINANCEIRAS', margin + 3, y + 4);
+                y += 12;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Valor Total do Projeto: ${formatCurrencyPDF(documento.valor_total || 0)}`, margin, y);
+                y += 6;
+                doc.text(`Valor Pago: ${formatCurrencyPDF(documento.valor_pago || 0)}`, margin, y);
+                y += 6;
+                doc.text(`Valor Pendente: ${formatCurrencyPDF(documento.valor_pendente || 0)}`, margin, y);
+                y += 6;
+                
+                // Formas de pagamento
+                if (documento.formas_pagamento && documento.formas_pagamento.trim()) {
+                    doc.setFont(undefined, 'bold');
+                    doc.text('Formas de Pagamento:', margin, y);
+                    y += 6;
+                    doc.setFont(undefined, 'normal');
+                    const formasPagamento = documento.formas_pagamento.split(',').map(f => f.trim()).filter(f => f);
+                    formasPagamento.forEach(forma => {
+                        doc.text(`• ${forma}`, margin + 5, y);
+                        y += 5;
+                    });
+                }
+                y += 5;
+
+                // ========== GARANTIA E SUPORTE ==========
+                if (y > pageHeight - 50) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'bold');
+                doc.text('GARANTIA E SUPORTE:', margin, y);
+                y += 6;
+                doc.setFont(undefined, 'normal');
+                doc.text(`Período de Garantia: ${documento.garantia_dias || 30} dias`, margin + 5, y);
+                y += 6;
+                if (documento.suporte_incluso) {
+                    doc.text(`Suporte Incluído: Sim (${documento.suporte_dias || 30} dias)`, margin + 5, y);
+                    y += 6;
+                } else {
+                    doc.text('Suporte Incluído: Não', margin + 5, y);
+                    y += 6;
+                }
+                y += 5;
+
+                // ========== OBSERVAÇÕES E CONDIÇÕES COMERCIAIS ==========
+                const orcamentoData = projetoData?.orcamento || {};
+                
+                // Observações do documento
+                if (documento.observacoes) {
+                    if (y > pageHeight - 50) {
+                        doc.addPage();
+                        y = margin;
+                    }
+
+                    doc.setFillColor(45, 45, 45);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('OBSERVAÇÕES', margin + 3, y + 4);
+                    y += 12;
+
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    const obsLines = doc.splitTextToSize(documento.observacoes, pageWidth - (margin * 2));
+                    doc.text(obsLines, margin, y);
+                    y += obsLines.length * 4 + 5;
+                }
+
+                // Observações do orçamento (se houver)
+                if (orcamentoData.observacoes) {
+                    let obsOrcamento = orcamentoData.observacoes;
+                    if (obsOrcamento.includes('=== CONDIÇÕES COMERCIAIS ===')) {
+                        const partes = obsOrcamento.split('=== CONDIÇÕES COMERCIAIS ===');
+                        obsOrcamento = partes[0].trim();
+                    }
+                    
+                    if (obsOrcamento.trim()) {
+                        if (y > pageHeight - 50) {
+                            doc.addPage();
+                            y = margin;
+                        }
+
+                        doc.setFillColor(245, 245, 245);
+                        doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                        doc.setFontSize(11);
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(0, 0, 0);
+                        doc.text('OBSERVAÇÕES DO ORÇAMENTO', margin + 3, y + 4);
+                        y += 12;
+
+                        doc.setFontSize(9);
+                        doc.setFont(undefined, 'normal');
+                        const obsOrcLines = doc.splitTextToSize(obsOrcamento, pageWidth - (margin * 2));
+                        doc.text(obsOrcLines, margin, y);
+                        y += obsOrcLines.length * 4 + 5;
+                    }
+                }
+
+                // Condições Comerciais do Orçamento
+                if (orcamentoData.observacoes && orcamentoData.observacoes.includes('=== CONDIÇÕES COMERCIAIS ===')) {
+                    if (y > pageHeight - 60) {
+                        doc.addPage();
+                        y = margin;
+                    }
+
+                    doc.setFillColor(255, 102, 0);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('CONDIÇÕES COMERCIAIS', margin + 3, y + 4);
+                    y += 12;
+
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    
+                    const partes = orcamentoData.observacoes.split('=== CONDIÇÕES COMERCIAIS ===');
+                    const condicoesTexto = partes[1] || '';
+                    
+                    const matchCondicoes = condicoesTexto.match(/Condições de Pagamento:\s*(.+?)(?:\n|$)/i);
+                    const matchForma = condicoesTexto.match(/Forma de Pagamento:\s*(.+?)(?:\n|$)/i);
+                    const matchPrazo = condicoesTexto.match(/Prazo de Entrega:\s*(.+?)(?:\n|$)/i);
+                    
+                    if (matchCondicoes) {
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Condições de Pagamento:', margin, y);
+                        y += 5;
+                        doc.setFont(undefined, 'normal');
+                        const condLines = doc.splitTextToSize(matchCondicoes[1].trim(), pageWidth - (margin * 2));
+                        doc.text(condLines, margin + 5, y);
+                        y += condLines.length * 4 + 3;
+                    }
+                    
+                    if (matchForma) {
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Forma de Pagamento:', margin, y);
+                        y += 5;
+                        doc.setFont(undefined, 'normal');
+                        doc.text(matchForma[1].trim(), margin + 5, y);
+                        y += 5;
+                    }
+                    
+                    if (matchPrazo) {
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Prazo de Entrega:', margin, y);
+                        y += 5;
+                        doc.setFont(undefined, 'normal');
+                        doc.text(matchPrazo[1].trim(), margin + 5, y);
+                        y += 5;
+                    }
+                    
+                    if (!matchCondicoes && !matchForma && !matchPrazo && condicoesTexto.trim()) {
+                        const condLines = doc.splitTextToSize(condicoesTexto.trim(), pageWidth - (margin * 2));
+                        doc.text(condLines, margin, y);
+                        y += condLines.length * 4;
+                    }
+                    
+                    y += 5;
+                }
+
+                // Termos e Condições do Documento
+                if (documento.termos_condicoes) {
+                    if (y > pageHeight - 60) {
+                        doc.addPage();
+                        y = margin;
+                    }
+
+                    doc.setFillColor(45, 45, 45);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('TERMOS E CONDIÇÕES', margin + 3, y + 4);
+                    y += 12;
+
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    const termosLines = doc.splitTextToSize(documento.termos_condicoes, pageWidth - (margin * 2));
+                    doc.text(termosLines, margin, y);
+                    y += termosLines.length * 4 + 5;
+                }
+
+                // ========== ASSINATURAS ==========
+                if (y > pageHeight - 50) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'bold');
+                doc.text('ASSINATURAS:', margin, y);
+                y += 15;
+
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                doc.text('_________________________', margin, y);
+                doc.text('Cliente', margin, y + 6);
+                doc.text(`${clienteData.nome || 'Nome do Cliente'}`, margin, y + 12);
+                doc.text(`Data: ${formatDatePDF(documento.data_conclusao)}`, margin, y + 18);
+
+                doc.text('_________________________', pageWidth - margin - 60, y);
+                doc.text('Responsável', pageWidth - margin - 60, y + 6);
+                doc.text('Autovizion Comercial', pageWidth - margin - 60, y + 12);
+                doc.text(`Data: ${formatDatePDF(documento.data_emissao)}`, pageWidth - margin - 60, y + 18);
+
+                // ========== RODAPÉ ==========
+                const contatoY = pageHeight - 8;
+                doc.setFontSize(7);
+                doc.setTextColor(128, 128, 128);
+                doc.setFont(undefined, 'normal');
+                doc.text('AUTOVIZION', margin, contatoY);
+                doc.text('|', margin + 25, contatoY);
+                doc.text('www.autovizon.com.br', margin + 30, contatoY);
+                doc.text('|', margin + 70, contatoY);
+                doc.text('autovizioncomercial@gmail.com', margin + 75, contatoY);
+                doc.text('|', margin + 130, contatoY);
+                doc.text('(14) 99683-3385', margin + 135, contatoY);
+
+                // Abrir PDF em nova aba (preview)
+                const pdfBlob = doc.output('blob');
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                window.open(pdfUrl, '_blank');
             } catch (error) {
                 console.error('Erro no preview:', error);
                 alert('Erro ao gerar preview: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // ========== CRUD IDEIAS DE MELHORIAS ==========
+        let allIdeias = [];
+        let filteredIdeias = [];
+
+        // Carregar ideias do Supabase
+        async function loadIdeias() {
+            const loading = document.getElementById('ideiasLoading');
+            const table = document.getElementById('ideiasTable');
+            const empty = document.getElementById('ideiasEmpty');
+            
+            loading.classList.add('active');
+            table.style.display = 'none';
+            empty.style.display = 'none';
+
+            try {
+                const { data: ideiasData, error } = await supabase
+                    .from('ideias_melhorias')
+                    .select('*, cliente:clientes(*)')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                allIdeias = ideiasData || [];
+                filteredIdeias = [...allIdeias];
+                
+                // Carregar clientes no filtro
+                await loadClientesForIdeiaFilter();
+                
+                renderIdeias();
+            } catch (error) {
+                console.error('Erro ao carregar ideias:', error);
+                allIdeias = [];
+                filteredIdeias = [];
+                renderIdeias();
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Carregar clientes para o filtro
+        async function loadClientesForIdeiaFilter() {
+            try {
+                const { data: clientes } = await supabase
+                    .from('clientes')
+                    .select('id, nome, empresa')
+                    .order('nome');
+                
+                const select = document.getElementById('ideiaClienteFilter');
+                if (select) {
+                    select.innerHTML = '<option value="">Todos os clientes</option>';
+                    if (clientes) {
+                        clientes.forEach(cliente => {
+                            const nome = cliente.nome || cliente.empresa || 'Cliente';
+                            const option = document.createElement('option');
+                            option.value = cliente.id;
+                            option.textContent = nome;
+                            select.appendChild(option);
+                        });
+                    }
+                }
+            } catch (e) {
+                console.warn('Erro ao carregar clientes para filtro:', e);
+            }
+        }
+
+        // Renderizar tabela de ideias
+        function renderIdeias() {
+            const tbody = document.getElementById('ideiasTableBody');
+            const table = document.getElementById('ideiasTable');
+            const empty = document.getElementById('ideiasEmpty');
+
+            if (filteredIdeias.length === 0) {
+                table.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            table.style.display = 'table';
+            empty.style.display = 'none';
+
+            tbody.innerHTML = filteredIdeias.map(ideia => {
+                const cliente = ideia.cliente || {};
+                const clienteNome = cliente.nome || cliente.empresa || 'Cliente não encontrado';
+                
+                const statusMap = {
+                    'nova': { label: 'Nova', class: 'badge-rascunho' },
+                    'em_analise': { label: 'Em Análise', class: 'badge-enviado' },
+                    'aprovada': { label: 'Aprovada', class: 'badge-aprovado' },
+                    'rejeitada': { label: 'Rejeitada', class: 'badge-rejeitado' },
+                    'implementada': { label: 'Implementada', class: 'badge-concluido' }
+                };
+
+                const prioridadeMap = {
+                    'baixa': { label: 'Baixa', class: 'badge-prioridade-baixa' },
+                    'media': { label: 'Média', class: 'badge-prioridade-media' },
+                    'alta': { label: 'Alta', class: 'badge-prioridade-alta' }
+                };
+
+                const status = statusMap[ideia.status] || { label: ideia.status, class: 'badge-rascunho' };
+                const prioridade = prioridadeMap[ideia.prioridade] || { label: 'Média', class: 'badge-prioridade-media' };
+
+                return `
+                    <tr>
+                        <td data-label="Título">
+                            <div style="font-weight: 600; margin-bottom: 4px;">${ideia.titulo || '-'}</div>
+                            <div style="font-size: 12px; color: var(--text-gray);">${(ideia.descricao || '').substring(0, 60)}${ideia.descricao && ideia.descricao.length > 60 ? '...' : ''}</div>
+                        </td>
+                        <td data-label="Cliente">${clienteNome}</td>
+                        <td data-label="Categoria">${ideia.categoria || '-'}</td>
+                        <td data-label="Prioridade">
+                            <span class="badge ${prioridade.class}">${prioridade.label}</span>
+                        </td>
+                        <td data-label="Status">
+                            <span class="badge ${status.class}">${status.label}</span>
+                        </td>
+                        <td data-label="Data">${formatDate(ideia.data_criacao)}</td>
+                        <td data-label="Ações">
+                            <button class="btn-action" onclick="editIdeia('${ideia.id}')" style="border-color: var(--primary); color: var(--primary); margin-right: 4px;">Editar</button>
+                            <button class="btn-action" onclick="deleteIdeia('${ideia.id}')" style="border-color: var(--danger); color: var(--danger);">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filtrar ideias
+        function filterIdeias() {
+            const search = document.getElementById('ideiaSearch').value.toLowerCase();
+            const clienteFilter = document.getElementById('ideiaClienteFilter').value;
+            const statusFilter = document.getElementById('ideiaStatusFilter').value;
+            const categoriaFilter = document.getElementById('ideiaCategoriaFilter').value;
+            const prioridadeFilter = document.getElementById('ideiaPrioridadeFilter').value;
+
+            filteredIdeias = allIdeias.filter(ideia => {
+                const cliente = ideia.cliente || {};
+                const clienteNome = (cliente.nome || cliente.empresa || '').toLowerCase();
+                const titulo = (ideia.titulo || '').toLowerCase();
+                const descricao = (ideia.descricao || '').toLowerCase();
+                
+                const matchSearch = !search || 
+                    titulo.includes(search) ||
+                    descricao.includes(search) ||
+                    clienteNome.includes(search);
+                
+                const matchCliente = !clienteFilter || ideia.cliente_id === clienteFilter;
+                const matchStatus = !statusFilter || ideia.status === statusFilter;
+                const matchCategoria = !categoriaFilter || ideia.categoria === categoriaFilter;
+                const matchPrioridade = !prioridadeFilter || ideia.prioridade === prioridadeFilter;
+                
+                return matchSearch && matchCliente && matchStatus && matchCategoria && matchPrioridade;
+            });
+
+            renderIdeias();
+        }
+
+        // Abrir modal de ideia (novo)
+        async function openIdeiaModal() {
+            document.getElementById('ideiaModalTitle').textContent = 'Nova Ideia de Melhoria';
+            document.getElementById('ideiaForm').reset();
+            document.getElementById('ideiaId').value = '';
+            document.getElementById('transformarIdeiaBtn').style.display = 'none';
+            
+            // Preencher data de criação com hoje
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('ideiaDataCriacao').value = hoje;
+            
+            // Carregar clientes
+            await loadClientesForIdeiaSelect();
+            
+            const modal = document.getElementById('ideiaModal');
+            openModal(modal);
+        }
+
+        // Carregar clientes para o select
+        async function loadClientesForIdeiaSelect() {
+            try {
+                const { data: clientes } = await supabase
+                    .from('clientes')
+                    .select('id, nome, empresa')
+                    .order('nome');
+                
+                const select = document.getElementById('ideiaClienteId');
+                if (select) {
+                    select.innerHTML = '<option value="">Selecione um cliente</option>';
+                    if (clientes) {
+                        clientes.forEach(cliente => {
+                            const nome = cliente.nome || cliente.empresa || 'Cliente';
+                            const option = document.createElement('option');
+                            option.value = cliente.id;
+                            option.textContent = nome;
+                            select.appendChild(option);
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error('Erro ao carregar clientes:', e);
+            }
+        }
+
+        // Fechar modal
+        function closeIdeiaModal() {
+            const modal = document.getElementById('ideiaModal');
+            closeModal(modal);
+        }
+
+        // Editar ideia
+        async function editIdeia(id) {
+            const ideia = allIdeias.find(i => i.id === id);
+            if (!ideia) return;
+
+            document.getElementById('ideiaModalTitle').textContent = 'Editar Ideia de Melhoria';
+            document.getElementById('ideiaId').value = ideia.id;
+            document.getElementById('ideiaTitulo').value = ideia.titulo || '';
+            document.getElementById('ideiaDescricao').value = ideia.descricao || '';
+            document.getElementById('ideiaCategoria').value = ideia.categoria || '';
+            document.getElementById('ideiaPrioridade').value = ideia.prioridade || 'media';
+            document.getElementById('ideiaStatus').value = ideia.status || 'nova';
+            document.getElementById('ideiaObservacoes').value = ideia.observacoes || '';
+            document.getElementById('ideiaDataCriacao').value = ideia.data_criacao ? ideia.data_criacao.split('T')[0] : '';
+            document.getElementById('ideiaDataImplementacao').value = ideia.data_implementacao ? ideia.data_implementacao.split('T')[0] : '';
+            
+            // Carregar clientes e selecionar
+            await loadClientesForIdeiaSelect();
+            document.getElementById('ideiaClienteId').value = ideia.cliente_id || '';
+            
+            // Mostrar botão de transformar se status for aprovada
+            const transformarBtn = document.getElementById('transformarIdeiaBtn');
+            if (ideia.status === 'aprovada' && !ideia.orcamento_id && !ideia.projeto_id) {
+                transformarBtn.style.display = 'inline-block';
+                transformarBtn.onclick = () => transformarIdeiaEmOrcamento(id);
+            } else {
+                transformarBtn.style.display = 'none';
+            }
+
+            const modal = document.getElementById('ideiaModal');
+            openModal(modal);
+        }
+
+        // Salvar ideia (criar ou atualizar)
+        document.getElementById('ideiaForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('ideiaId').value;
+
+            const ideiaData = {
+                cliente_id: document.getElementById('ideiaClienteId').value,
+                titulo: document.getElementById('ideiaTitulo').value.trim(),
+                descricao: document.getElementById('ideiaDescricao').value.trim(),
+                categoria: document.getElementById('ideiaCategoria').value || null,
+                prioridade: document.getElementById('ideiaPrioridade').value || 'media',
+                status: document.getElementById('ideiaStatus').value || 'nova',
+                observacoes: document.getElementById('ideiaObservacoes').value.trim() || null,
+                data_criacao: document.getElementById('ideiaDataCriacao').value || null,
+                data_implementacao: document.getElementById('ideiaDataImplementacao').value || null
+            };
+
+            try {
+                if (id) {
+                    // Atualizar
+                    const { error } = await supabase
+                        .from('ideias_melhorias')
+                        .update(ideiaData)
+                        .eq('id', id);
+
+                    if (error) throw error;
+                    alert('Ideia atualizada com sucesso!');
+                } else {
+                    // Criar
+                    const { error } = await supabase
+                        .from('ideias_melhorias')
+                        .insert([ideiaData]);
+
+                    if (error) throw error;
+                    alert('Ideia criada com sucesso!');
+                }
+
+                closeIdeiaModal();
+                loadIdeias();
+            } catch (error) {
+                console.error('Erro ao salvar ideia:', error);
+                alert('Erro ao salvar ideia: ' + (error.message || 'Erro desconhecido'));
+            }
+        });
+
+        // Excluir ideia
+        async function deleteIdeia(id) {
+            if (!confirm('Tem certeza que deseja excluir esta ideia?')) return;
+
+            try {
+                const { error } = await supabase
+                    .from('ideias_melhorias')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+                alert('Ideia excluída com sucesso!');
+                loadIdeias();
+            } catch (error) {
+                console.error('Erro ao excluir ideia:', error);
+                alert('Erro ao excluir ideia: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // ========== CRUD TEMPLATES DE MENSAGENS ==========
+        let allTemplates = [];
+        let filteredTemplates = [];
+
+        // Carregar templates do Supabase
+        async function loadTemplates() {
+            const loading = document.getElementById('templatesLoading');
+            const table = document.getElementById('templatesTable');
+            const empty = document.getElementById('templatesEmpty');
+            
+            // Só manipular elementos se a página de templates estiver visível
+            if (loading) loading.classList.add('active');
+            if (table) table.style.display = 'none';
+            if (empty) empty.style.display = 'none';
+
+            try {
+                const { data: templatesData, error } = await supabase
+                    .from('templates_mensagens')
+                    .select('*')
+                    .order('ordem', { ascending: true })
+                    .order('nome', { ascending: true });
+
+                if (error) throw error;
+
+                allTemplates = templatesData || [];
+                filteredTemplates = [...allTemplates];
+                
+                // Só renderizar se a página de templates estiver visível
+                if (table || empty) {
+                    renderTemplates();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar templates:', error);
+                allTemplates = [];
+                filteredTemplates = [];
+                
+                // Só renderizar se a página de templates estiver visível
+                if (table || empty) {
+                    renderTemplates();
+                }
+            } finally {
+                if (loading) loading.classList.remove('active');
+            }
+        }
+
+        // Renderizar tabela de templates
+        function renderTemplates() {
+            const tbody = document.getElementById('templatesTableBody');
+            const table = document.getElementById('templatesTable');
+            const empty = document.getElementById('templatesEmpty');
+
+            // Se os elementos não existem (página não está visível), não renderizar
+            if (!tbody || !table || !empty) {
+                return;
+            }
+
+            if (filteredTemplates.length === 0) {
+                table.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            table.style.display = 'table';
+            empty.style.display = 'none';
+
+            tbody.innerHTML = filteredTemplates.map(template => {
+                const preview = (template.mensagem || '').substring(0, 80) + ((template.mensagem || '').length > 80 ? '...' : '');
+                const statusBadge = template.ativo 
+                    ? '<span class="badge badge-aprovado">Ativo</span>'
+                    : '<span class="badge badge-rejeitado">Inativo</span>';
+
+                return `
+                    <tr>
+                        <td data-label="Nome">${template.nome || '-'}</td>
+                        <td data-label="Tipo">${template.tipo || '-'}</td>
+                        <td data-label="Categoria">${template.categoria || '-'}</td>
+                        <td data-label="Mensagem" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${preview}
+                        </td>
+                        <td data-label="Status">${statusBadge}</td>
+                        <td data-label="Ações">
+                            <button class="btn-action" onclick="editTemplate('${template.id}')" style="border-color: var(--primary); color: var(--primary); margin-right: 4px;">Editar</button>
+                            <button class="btn-action" onclick="deleteTemplate('${template.id}')" style="border-color: var(--danger); color: var(--danger);">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filtrar templates
+        function filterTemplates() {
+            const search = document.getElementById('templateSearch').value.toLowerCase();
+            const tipoFilter = document.getElementById('templateTipoFilter').value;
+            const categoriaFilter = document.getElementById('templateCategoriaFilter').value;
+
+            filteredTemplates = allTemplates.filter(template => {
+                const nome = (template.nome || '').toLowerCase();
+                const mensagem = (template.mensagem || '').toLowerCase();
+                
+                const matchSearch = !search || 
+                    nome.includes(search) ||
+                    mensagem.includes(search) ||
+                    (template.tipo || '').toLowerCase().includes(search) ||
+                    (template.categoria || '').toLowerCase().includes(search);
+                
+                const matchTipo = !tipoFilter || template.tipo === tipoFilter;
+                const matchCategoria = !categoriaFilter || template.categoria === categoriaFilter;
+                
+                return matchSearch && matchTipo && matchCategoria;
+            });
+
+            renderTemplates();
+        }
+
+        // Abrir modal de template (novo)
+        function openTemplateModal() {
+            document.getElementById('templateModalTitle').textContent = 'Novo Template';
+            document.getElementById('templateForm').reset();
+            document.getElementById('templateId').value = '';
+            document.getElementById('templateAtivo').checked = true;
+            document.getElementById('templateOrdem').value = '0';
+            
+            const modal = document.getElementById('templateModal');
+            openModal(modal);
+        }
+
+        // Fechar modal
+        function closeTemplateModal() {
+            const modal = document.getElementById('templateModal');
+            closeModal(modal);
+        }
+
+        // Editar template
+        function editTemplate(id) {
+            const template = allTemplates.find(t => t.id === id);
+            if (!template) return;
+
+            document.getElementById('templateModalTitle').textContent = 'Editar Template';
+            document.getElementById('templateId').value = template.id;
+            document.getElementById('templateNome').value = template.nome || '';
+            document.getElementById('templateTipo').value = template.tipo || '';
+            document.getElementById('templateCategoria').value = template.categoria || '';
+            document.getElementById('templateMensagem').value = template.mensagem || '';
+            document.getElementById('templateAtivo').checked = template.ativo !== false;
+            document.getElementById('templateOrdem').value = template.ordem || 0;
+
+            const modal = document.getElementById('templateModal');
+            openModal(modal);
+        }
+
+        // Salvar template (criar ou atualizar)
+        document.getElementById('templateForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('templateId').value;
+
+            const templateData = {
+                nome: document.getElementById('templateNome').value.trim(),
+                tipo: document.getElementById('templateTipo').value,
+                categoria: document.getElementById('templateCategoria').value || null,
+                mensagem: document.getElementById('templateMensagem').value.trim(),
+                ativo: document.getElementById('templateAtivo').checked,
+                ordem: parseInt(document.getElementById('templateOrdem').value) || 0
+            };
+
+            try {
+                if (id) {
+                    // Atualizar
+                    const { error } = await supabase
+                        .from('templates_mensagens')
+                        .update(templateData)
+                        .eq('id', id);
+
+                    if (error) throw error;
+                    alert('Template atualizado com sucesso!');
+                } else {
+                    // Criar
+                    const { error } = await supabase
+                        .from('templates_mensagens')
+                        .insert([templateData]);
+
+                    if (error) throw error;
+                    alert('Template criado com sucesso!');
+                }
+
+                closeTemplateModal();
+                loadTemplates();
+            } catch (error) {
+                console.error('Erro ao salvar template:', error);
+                alert('Erro ao salvar template: ' + (error.message || 'Erro desconhecido'));
+            }
+        });
+
+        // Excluir template
+        async function deleteTemplate(id) {
+            if (!confirm('Tem certeza que deseja excluir este template?')) return;
+
+            try {
+                const { error } = await supabase
+                    .from('templates_mensagens')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+                alert('Template excluído com sucesso!');
+                loadTemplates();
+            } catch (error) {
+                console.error('Erro ao excluir template:', error);
+                alert('Erro ao excluir template: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Função para substituir variáveis na mensagem
+        function substituirVariaveisTemplate(mensagem, dados) {
+            if (!mensagem) return '';
+            
+            let mensagemFinal = mensagem;
+            
+            // Variáveis disponíveis
+            const variaveis = {
+                '*{cliente_nome}*': dados.cliente_nome || dados.cliente?.nome || 'Cliente',
+                '*{cliente_empresa}*': dados.cliente_empresa || dados.cliente?.empresa || '',
+                '*{projeto_nome}*': dados.projeto_nome || dados.projeto?.nome || '',
+                '*{orcamento_numero}*': dados.orcamento_numero || dados.orcamento?.numero || '',
+                '*{valor}*': dados.valor ? formatCurrency(dados.valor) : '',
+                '*{data_vencimento}*': dados.data_vencimento ? formatDate(dados.data_vencimento) : '',
+                '*{COBRANÇA}*': dados.cobranca_texto || '',
+                '*{ORÇAMENTO}*': dados.orcamento_texto || '',
+                '*{MENSAGEM_PERSONALIZADA}*': dados.mensagem_personalizada || ''
+            };
+            
+            // Substituir todas as variáveis
+            Object.keys(variaveis).forEach(variavel => {
+                const regex = new RegExp(variavel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+                mensagemFinal = mensagemFinal.replace(regex, variaveis[variavel]);
+            });
+            
+            return mensagemFinal;
+        }
+
+        // Enviar mensagem WhatsApp com template
+        async function enviarWhatsAppComTemplate(templateId, dadosCliente, dadosAdicionais = {}) {
+            try {
+                // Buscar template
+                const template = allTemplates.find(t => t.id === templateId);
+                if (!template) {
+                    alert('Template não encontrado');
+                    return;
+                }
+
+                if (!template.ativo) {
+                    alert('Este template está inativo');
+                    return;
+                }
+
+                // Buscar dados do cliente se necessário
+                let cliente = dadosCliente;
+                if (typeof dadosCliente === 'string') {
+                    const { data: clienteData } = await supabase
+                        .from('clientes')
+                        .select('*')
+                        .eq('id', dadosCliente)
+                        .single();
+                    cliente = clienteData || {};
+                }
+
+                // Preparar dados para substituição
+                const dados = {
+                    cliente: cliente,
+                    cliente_nome: cliente?.nome || 'Cliente',
+                    cliente_empresa: cliente?.empresa || '',
+                    ...dadosAdicionais
+                };
+
+                // Substituir variáveis
+                const mensagemFinal = substituirVariaveisTemplate(template.mensagem, dados);
+
+                // Obter WhatsApp do cliente
+                const whatsapp = cliente?.whatsapp || cliente?.telefone || '';
+                if (!whatsapp) {
+                    alert('Cliente não possui WhatsApp cadastrado');
+                    return;
+                }
+
+                // Limpar formatação do WhatsApp
+                const whatsappLimpo = whatsapp.replace(/\D/g, '');
+                
+                // Abrir WhatsApp
+                const url = `https://wa.me/55${whatsappLimpo}?text=${encodeURIComponent(mensagemFinal)}`;
+                window.open(url, '_blank');
+            } catch (error) {
+                console.error('Erro ao enviar WhatsApp:', error);
+                alert('Erro ao enviar WhatsApp: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Selecionar template e enviar WhatsApp
+        async function selecionarTemplateEEnviar(clienteId, tipoTemplate = null, dadosAdicionais = {}) {
+            try {
+                // Carregar templates se necessário
+                if (allTemplates.length === 0) {
+                    await loadTemplates();
+                }
+
+                // Filtrar templates por tipo se especificado
+                let templatesDisponiveis = allTemplates.filter(t => t.ativo);
+                if (tipoTemplate) {
+                    templatesDisponiveis = templatesDisponiveis.filter(t => t.tipo === tipoTemplate);
+                }
+
+                if (templatesDisponiveis.length === 0) {
+                    alert('Nenhum template disponível');
+                    return;
+                }
+
+                // Buscar dados do cliente
+                let cliente = {};
+                if (typeof clienteId === 'string') {
+                    const { data: clienteData } = await supabase
+                        .from('clientes')
+                        .select('*')
+                        .eq('id', clienteId)
+                        .single();
+                    cliente = clienteData || {};
+                } else {
+                    cliente = clienteId;
+                }
+
+                // Preparar dados para substituição
+                const dados = {
+                    cliente: cliente,
+                    cliente_nome: cliente?.nome || 'Cliente',
+                    cliente_empresa: cliente?.empresa || '',
+                    ...dadosAdicionais
+                };
+
+                // Criar modal de seleção e edição de template
+                const modalDiv = document.createElement('div');
+                modalDiv.id = 'selectTemplateModal';
+                modalDiv.className = 'modal';
+                
+                modalDiv.innerHTML = `
+                    <div class="modal-content" style="max-width: 700px;">
+                        <div class="modal-header">
+                            <h2 class="modal-title">Enviar WhatsApp</h2>
+                            <button class="btn-close" onclick="fecharModalWhatsApp()">&times;</button>
+                        </div>
+                        <div style="padding: 20px;">
+                            <div class="form-group" style="margin-bottom: 16px;">
+                                <label class="form-label">Selecione um Template</label>
+                                <select id="templateSelectWhatsApp" class="form-input" onchange="carregarTemplateNoEditor()">
+                                    <option value="">Selecione um template...</option>
+                                    ${templatesDisponiveis.map(template => {
+                                        const nomeEscapado = (template.nome || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                                        return `<option value="${template.id}">${nomeEscapado} (${template.tipo || ''})</option>`;
+                                    }).join('')}
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 16px;">
+                                <label class="form-label">Mensagem (edite se necessário)</label>
+                                <textarea id="mensagemWhatsAppEditor" class="form-input" rows="10" placeholder="Selecione um template ou digite sua mensagem..."></textarea>
+                                <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                                    💡 Você pode editar a mensagem antes de enviar. Variáveis já foram substituídas automaticamente.
+                                </small>
+                            </div>
+
+                            <div style="background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+                                <div style="font-size: 12px; color: var(--text-gray);">
+                                    <strong>Cliente:</strong> ${cliente?.nome || 'N/A'} ${cliente?.empresa ? '(' + cliente.empresa + ')' : ''}<br>
+                                    <strong>WhatsApp:</strong> ${cliente?.whatsapp || cliente?.telefone || 'Não cadastrado'}
+                                </div>
+                            </div>
+
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="fecharModalWhatsApp()">Cancelar</button>
+                                <button type="button" class="btn btn-primary" onclick="enviarWhatsAppFinal('${clienteId}')" style="background: #25D366; border-color: #25D366;">
+                                    💬 Enviar WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modalDiv);
+                
+                // Armazenar dados para uso nas funções
+                window._whatsappData = {
+                    clienteId: clienteId,
+                    cliente: cliente,
+                    dadosAdicionais: dadosAdicionais,
+                    dados: dados
+                };
+                
+                // Abrir modal
+                setTimeout(() => {
+                    const modalElement = document.getElementById('selectTemplateModal');
+                    if (modalElement) {
+                        modalElement.classList.add('active');
+                        modalElement.style.display = 'block';
+                        document.body.classList.add('modal-open');
+                    }
+                }, 10);
+            } catch (error) {
+                console.error('Erro ao selecionar template:', error);
+                alert('Erro ao selecionar template: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Carregar template no editor
+        function carregarTemplateNoEditor() {
+            const select = document.getElementById('templateSelectWhatsApp');
+            const editor = document.getElementById('mensagemWhatsAppEditor');
+            
+            if (!select || !editor) return;
+            
+            const selectedOption = select.options[select.selectedIndex];
+            if (!selectedOption || !selectedOption.value) {
+                editor.value = '';
+                return;
+            }
+            
+            const templateId = selectedOption.value;
+            const template = allTemplates.find(t => t.id === templateId);
+            
+            if (!template) return;
+            
+            // Substituir variáveis
+            const dados = window._whatsappData?.dados || {};
+            const mensagemFinal = substituirVariaveisTemplate(template.mensagem, dados);
+            
+            editor.value = mensagemFinal;
+        }
+
+        // Fechar modal WhatsApp
+        function fecharModalWhatsApp() {
+            const modal = document.getElementById('selectTemplateModal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+                setTimeout(() => {
+                    modal.remove();
+                }, 300);
+                document.body.classList.remove('modal-open');
+            }
+            window._whatsappData = null;
+        }
+
+        // Enviar WhatsApp final (com mensagem editada)
+        async function enviarWhatsAppFinal(clienteId) {
+            try {
+                const editor = document.getElementById('mensagemWhatsAppEditor');
+                if (!editor) {
+                    alert('Editor de mensagem não encontrado');
+                    return;
+                }
+                
+                const mensagem = editor.value.trim();
+                if (!mensagem) {
+                    alert('Digite uma mensagem antes de enviar');
+                    return;
+                }
+                
+                // Buscar dados do cliente
+                let cliente = window._whatsappData?.cliente;
+                if (!cliente) {
+                    if (typeof clienteId === 'string') {
+                        const { data: clienteData } = await supabase
+                            .from('clientes')
+                            .select('*')
+                            .eq('id', clienteId)
+                            .single();
+                        cliente = clienteData || {};
+                    } else {
+                        cliente = clienteId;
+                    }
+                }
+
+                // Obter WhatsApp do cliente
+                const whatsapp = cliente?.whatsapp || cliente?.telefone || '';
+                if (!whatsapp) {
+                    alert('Cliente não possui WhatsApp cadastrado');
+                    return;
+                }
+
+                // Limpar formatação do WhatsApp
+                const whatsappLimpo = whatsapp.replace(/\D/g, '');
+                
+                // Abrir WhatsApp com mensagem
+                const url = `https://wa.me/55${whatsappLimpo}?text=${encodeURIComponent(mensagem)}`;
+                window.open(url, '_blank');
+                
+                // Fechar modal
+                fecharModalWhatsApp();
+            } catch (error) {
+                console.error('Erro ao enviar WhatsApp:', error);
+                alert('Erro ao enviar WhatsApp: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Transformar ideia em orçamento
+        async function transformarIdeiaEmOrcamento(ideiaId) {
+            const ideia = allIdeias.find(i => i.id === ideiaId);
+            if (!ideia) {
+                alert('Ideia não encontrada');
+                return;
+            }
+
+            if (!ideia.cliente_id) {
+                alert('A ideia precisa estar vinculada a um cliente');
+                return;
+            }
+
+            if (!confirm('Deseja transformar esta ideia em um orçamento?')) return;
+
+            try {
+                // Fechar modal de ideia
+                closeIdeiaModal();
+
+                // Abrir modal de orçamento preenchido
+                document.getElementById('orcamentoModalTitle').textContent = 'Novo Orçamento (da Ideia)';
+                document.getElementById('orcamentoForm').reset();
+                document.getElementById('orcamentoId').value = '';
+
+                // Preencher dados da ideia
+                // Carregar clientes para o select de orçamento (usar função existente ou criar)
+                try {
+                    const { data: clientes } = await supabase
+                        .from('clientes')
+                        .select('id, nome, empresa')
+                        .order('nome');
+                    
+                    const select = document.getElementById('orcamentoClienteId');
+                    if (select) {
+                        select.innerHTML = '<option value="">Selecione um cliente</option>';
+                        if (clientes) {
+                            clientes.forEach(cliente => {
+                                const nome = cliente.nome || cliente.empresa || 'Cliente';
+                                const option = document.createElement('option');
+                                option.value = cliente.id;
+                                option.textContent = nome;
+                                select.appendChild(option);
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar clientes:', e);
+                }
+                
+                document.getElementById('orcamentoClienteId').value = ideia.cliente_id;
+                document.getElementById('orcamentoDescricao').value = `Orçamento baseado na ideia: ${ideia.titulo}\n\n${ideia.descricao || ''}`;
+                
+                if (ideia.observacoes) {
+                    const obsAtual = document.getElementById('orcamentoObservacoes').value;
+                    document.getElementById('orcamentoObservacoes').value = obsAtual ? `${obsAtual}\n\nIdeia: ${ideia.observacoes}` : `Ideia: ${ideia.observacoes}`;
+                }
+
+                // Abrir modal de orçamento
+                const modal = document.getElementById('orcamentoModal');
+                openModal(modal);
+
+                // Atualizar ideia com referência ao orçamento (será atualizado quando o orçamento for salvo)
+                // Isso será feito manualmente ou podemos criar uma função para isso depois
+            } catch (error) {
+                console.error('Erro ao transformar ideia em orçamento:', error);
+                alert('Erro ao transformar ideia: ' + (error.message || 'Erro desconhecido'));
             }
         }
 
