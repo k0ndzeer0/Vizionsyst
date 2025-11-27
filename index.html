@@ -3257,6 +3257,67 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Templates de Mensagens Content -->
+            <div id="templatesContent" class="page-content" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h1 class="page-title">📝 Templates de Mensagens</h1>
+                        <p class="page-subtitle">Gerencie templates de mensagens para WhatsApp e comunicação</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openTemplateModal()">+ Novo Template</button>
+                </div>
+
+                <div class="section-card">
+                    <div class="search-bar">
+                        <input 
+                            type="text" 
+                            id="templateSearch" 
+                            class="search-input" 
+                            placeholder="Buscar por nome, tipo ou categoria..."
+                            onkeyup="filterTemplates()"
+                        >
+                        <select id="templateTipoFilter" class="form-input" style="width: 200px;" onchange="filterTemplates()">
+                            <option value="">Todos os tipos</option>
+                            <option value="orcamento">Orçamento</option>
+                            <option value="cobranca">Cobrança</option>
+                            <option value="followup">Follow-up</option>
+                            <option value="personalizado">Personalizado</option>
+                        </select>
+                        <select id="templateCategoriaFilter" class="form-input" style="width: 200px;" onchange="filterTemplates()">
+                            <option value="">Todas as categorias</option>
+                            <option value="comercial">Comercial</option>
+                            <option value="financeiro">Financeiro</option>
+                            <option value="projetos">Projetos</option>
+                            <option value="atendimento">Atendimento</option>
+                        </select>
+                    </div>
+
+                    <div class="table-container">
+                        <div id="templatesLoading" class="loading active">
+                            <div class="spinner"></div>
+                            <p>Carregando templates...</p>
+                        </div>
+                        <table id="templatesTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Tipo</th>
+                                    <th>Categoria</th>
+                                    <th>Mensagem (Preview)</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="templatesTableBody">
+                            </tbody>
+                        </table>
+                        <div id="templatesEmpty" class="empty-state" style="display: none;">
+                            Nenhum template encontrado. Clique em "+ Novo Template" para começar!
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -15178,16 +15239,24 @@ Obrigado pela confiança! 🙏`;
             const table = document.getElementById('templatesTable');
             const empty = document.getElementById('templatesEmpty');
             
-            // Só manipular elementos se a página de templates estiver visível
-            if (loading) loading.classList.add('active');
-            if (table) table.style.display = 'none';
-            if (empty) empty.style.display = 'none';
+            // Verificar se os elementos existem
+            if (!loading || !table || !empty) {
+                console.warn('Elementos da página de templates não encontrados. Tentando novamente...');
+                // Tentar novamente após um pequeno delay
+                setTimeout(() => {
+                    loadTemplates();
+                }, 100);
+                return;
+            }
+            
+            loading.classList.add('active');
+            table.style.display = 'none';
+            empty.style.display = 'none';
 
             try {
                 const { data: templatesData, error } = await supabase
                     .from('templates_mensagens')
                     .select('*')
-                    .order('ordem', { ascending: true })
                     .order('nome', { ascending: true });
 
                 if (error) throw error;
@@ -15195,21 +15264,14 @@ Obrigado pela confiança! 🙏`;
                 allTemplates = templatesData || [];
                 filteredTemplates = [...allTemplates];
                 
-                // Só renderizar se a página de templates estiver visível
-                if (table || empty) {
-                    renderTemplates();
-                }
+                renderTemplates();
             } catch (error) {
                 console.error('Erro ao carregar templates:', error);
                 allTemplates = [];
                 filteredTemplates = [];
-                
-                // Só renderizar se a página de templates estiver visível
-                if (table || empty) {
-                    renderTemplates();
-                }
+                renderTemplates();
             } finally {
-                if (loading) loading.classList.remove('active');
+                loading.classList.remove('active');
             }
         }
 
@@ -15312,7 +15374,10 @@ Obrigado pela confiança! 🙏`;
             document.getElementById('templateCategoria').value = template.categoria || '';
             document.getElementById('templateMensagem').value = template.mensagem || '';
             document.getElementById('templateAtivo').checked = template.ativo !== false;
-            document.getElementById('templateOrdem').value = template.ordem || 0;
+            const ordemField = document.getElementById('templateOrdem');
+            if (ordemField) {
+                ordemField.value = template.ordem || 0;
+            }
 
             const modal = document.getElementById('templateModal');
             openModal(modal);
@@ -15329,9 +15394,11 @@ Obrigado pela confiança! 🙏`;
                 tipo: document.getElementById('templateTipo').value,
                 categoria: document.getElementById('templateCategoria').value || null,
                 mensagem: document.getElementById('templateMensagem').value.trim(),
-                ativo: document.getElementById('templateAtivo').checked,
-                ordem: parseInt(document.getElementById('templateOrdem').value) || 0
+                ativo: document.getElementById('templateAtivo').checked
             };
+            
+            // Nota: Coluna 'ordem' pode não existir no banco. 
+            // Se quiser usar ordenação, execute o SQL: add_coluna_ordem_templates.sql
 
             try {
                 if (id) {
