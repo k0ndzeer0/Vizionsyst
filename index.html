@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -2597,6 +2598,10 @@
                 <span>💰</span>
                 <span>Financeiro</span>
             </a>
+            <a href="#" class="menu-item" data-page="contratos" onclick="closeSidebarMobile()">
+                <span>📋</span>
+                <span>Contratos</span>
+            </a>
             <a href="#" class="menu-item" data-page="plataformas" onclick="closeSidebarMobile()">
                 <span>🔑</span>
                 <span>Plataformas</span>
@@ -2670,14 +2675,53 @@
                     </div>
                 </div>
 
-                <div class="section-card">
-                    <h2 class="section-title">Próximos Vencimentos (7 dias)</h2>
-                    <div class="empty-state">Nenhum vencimento próximo</div>
+                <!-- Gráficos de Vendas -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+                    <div class="section-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h2 class="section-title">📈 Receitas vs Despesas</h2>
+                            <select id="graficoPeriodo" class="form-input" style="width: 150px; padding: 6px;" onchange="atualizarGraficos()">
+                                <option value="mes">Este Mês</option>
+                                <option value="trimestre">Trimestre</option>
+                                <option value="ano">Este Ano</option>
+                            </select>
+                        </div>
+                        <canvas id="graficoReceitasDespesas" style="max-height: 300px;"></canvas>
+                    </div>
+
+                    <div class="section-card">
+                        <h2 class="section-title" style="margin-bottom: 16px;">🎯 Taxa de Conversão</h2>
+                        <canvas id="graficoConversao" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+                    <div class="section-card">
+                        <h2 class="section-title" style="margin-bottom: 16px;">📊 Projetos por Status</h2>
+                        <canvas id="graficoProjetosStatus" style="max-height: 300px;"></canvas>
+                    </div>
+
+                    <div class="section-card">
+                        <h2 class="section-title" style="margin-bottom: 16px;">💰 Faturamento Mensal</h2>
+                        <canvas id="graficoFaturamentoMensal" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+
+                <div class="section-card" style="margin-top: 24px;">
+                    <h2 class="section-title">📋 Top 5 Clientes (por Faturamento)</h2>
+                    <div id="topClientesList" style="margin-top: 16px;">
+                        <div class="empty-state">Carregando...</div>
+                    </div>
                 </div>
 
                 <div class="section-card">
-                    <h2 class="section-title">Orçamentos Aguardando</h2>
-                    <div class="empty-state">Nenhum orçamento aguardando aprovação</div>
+                    <h2 class="section-title">Próximos Vencimentos (7 dias)</h2>
+                    <div id="proximosVencimentos" class="empty-state">Nenhum vencimento próximo</div>
+                </div>
+
+                <div class="section-card">
+                    <h2 class="section-title">Orçamentos Aguardando Aprovação</h2>
+                    <div id="orcamentosAguardando" class="empty-state">Nenhum orçamento aguardando aprovação</div>
                 </div>
 
                 <div class="section-card">
@@ -3137,6 +3181,67 @@
                             <div id="despesasEmpty" class="empty-state" style="display: none;">
                                 Nenhuma despesa encontrada
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contratos Content -->
+            <div id="contratosContent" class="page-content" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h1 class="page-title">📋 Contratos</h1>
+                        <p class="page-subtitle">Gerencie seus contratos com clientes</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openContratoModal()">+ Novo Contrato</button>
+                </div>
+
+                <div class="section-card">
+                    <div class="search-bar">
+                        <input 
+                            type="text" 
+                            id="contratoSearch" 
+                            class="search-input" 
+                            placeholder="Buscar por número, cliente ou descrição..."
+                            onkeyup="filterContratos()"
+                        >
+                        <select id="contratoStatusFilter" class="form-input" style="width: 200px;" onchange="filterContratos()">
+                            <option value="">Todos os status</option>
+                            <option value="rascunho">Rascunho</option>
+                            <option value="aguardando_assinatura">Aguardando Assinatura</option>
+                            <option value="ativo">Ativo</option>
+                            <option value="vencido">Vencido</option>
+                            <option value="renovado">Renovado</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                        <select id="contratoClienteFilter" class="form-input" style="width: 200px;" onchange="filterContratos()">
+                            <option value="">Todos os clientes</option>
+                        </select>
+                    </div>
+
+                    <div class="table-container">
+                        <div id="contratosLoading" class="loading active">
+                            <div class="spinner"></div>
+                            <p>Carregando contratos...</p>
+                        </div>
+                        <table id="contratosTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Cliente</th>
+                                    <th>Descrição</th>
+                                    <th>Valor</th>
+                                    <th>Início</th>
+                                    <th>Vencimento</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contratosTableBody">
+                            </tbody>
+                        </table>
+                        <div id="contratosEmpty" class="empty-state" style="display: none;">
+                            Nenhum contrato encontrado
                         </div>
                     </div>
                 </div>
@@ -4106,6 +4211,224 @@
                     <button type="submit" class="btn btn-primary">Salvar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Contrato -->
+    <div id="contratoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="contratoModalTitle">Novo Contrato</h2>
+                <button class="btn-close" onclick="closeContratoModal()">&times;</button>
+            </div>
+            <form id="contratoForm">
+                <input type="hidden" id="contratoId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Número do Contrato</label>
+                        <input type="text" id="contratoNumero" class="form-input" placeholder="Gerado automaticamente" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cliente *</label>
+                        <select id="contratoClienteId" class="form-input" required>
+                            <option value="">Selecione um cliente</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Projeto (opcional)</label>
+                        <select id="contratoProjetoId" class="form-input">
+                            <option value="">Nenhum</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Orçamento (opcional)</label>
+                        <select id="contratoOrcamentoId" class="form-input">
+                            <option value="">Nenhum</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Contrato *</label>
+                        <select id="contratoTipo" class="form-input" required>
+                            <option value="prestacao_servicos">Prestação de Serviços</option>
+                            <option value="fornecimento">Fornecimento de Produtos</option>
+                            <option value="locacao">Locação</option>
+                            <option value="licenciamento">Licenciamento</option>
+                            <option value="parceria">Parceria</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status *</label>
+                        <select id="contratoStatus" class="form-input" required>
+                            <option value="rascunho">Rascunho</option>
+                            <option value="aguardando_assinatura">Aguardando Assinatura</option>
+                            <option value="ativo">Ativo</option>
+                            <option value="vencido">Vencido</option>
+                            <option value="renovado">Renovado</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Objeto do Contrato *</label>
+                    <textarea id="contratoObjeto" class="form-input" rows="4" placeholder="Descreva detalhadamente o objeto do contrato, serviços ou produtos que serão fornecidos..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Descrição/Resumo</label>
+                    <textarea id="contratoDescricao" class="form-input" rows="3" placeholder="Descrição resumida do contrato..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Valor Total *</label>
+                        <input type="number" id="contratoValor" class="form-input" step="0.01" min="0" placeholder="0.00" required onchange="calcularParcela()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pagamento Parcelado</label>
+                        <select id="contratoValorParcelado" class="form-input" onchange="toggleParcelas()">
+                            <option value="false">À Vista</option>
+                            <option value="true">Parcelado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="parcelasGroup" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Número de Parcelas</label>
+                            <input type="number" id="contratoNumeroParcelas" class="form-input" min="1" value="1" onchange="calcularParcela()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Valor da Parcela</label>
+                            <input type="number" id="contratoValorParcela" class="form-input" step="0.01" min="0" placeholder="0.00" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Data de Início *</label>
+                        <input type="date" id="contratoDataInicio" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data de Vencimento *</label>
+                        <input type="date" id="contratoDataVencimento" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Prazo de Execução (dias)</label>
+                        <input type="number" id="contratoPrazoExecucao" class="form-input" min="1" placeholder="Ex: 30">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data de Assinatura</label>
+                        <input type="date" id="contratoDataAssinatura" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Local de Assinatura</label>
+                    <input type="text" id="contratoLocalAssinatura" class="form-input" placeholder="Ex: São Paulo, SP">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Renovação Automática</label>
+                        <select id="contratoRenovacaoAutomatica" class="form-input">
+                            <option value="false">Não</option>
+                            <option value="true">Sim</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Período de Renovação (dias)</label>
+                        <input type="number" id="contratoPeriodoRenovacao" class="form-input" min="1" placeholder="30" value="30">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Condições de Pagamento *</label>
+                    <textarea id="contratoCondicoesPagamento" class="form-input" rows="3" placeholder="Ex: 50% na assinatura, 50% na entrega" required></textarea>
+                </div>
+
+                <div style="background: var(--tertiary); padding: 16px; border-radius: 8px; margin: 16px 0; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <h3 style="color: var(--primary); margin-bottom: 12px; font-size: 16px;">📋 Dados da Empresa (Contratado)</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Nome/Razão Social</label>
+                            <input type="text" id="contratoContratadoNome" class="form-input" placeholder="Nome da sua empresa">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">CNPJ</label>
+                            <input type="text" id="contratoContratadoCnpj" class="form-input" placeholder="00.000.000/0000-00">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Endereço Completo</label>
+                        <input type="text" id="contratoContratadoEndereco" class="form-input" placeholder="Rua, número, complemento, cidade - estado, CEP">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Cláusulas Específicas</label>
+                    <textarea id="contratoClausulas" class="form-input" rows="5" placeholder="Adicione cláusulas específicas do contrato. Ex:&#10;&#10;CLÁUSULA 1 - O contratado se compromete a...&#10;CLÁUSULA 2 - O contratante deverá..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Termos e Condições Gerais</label>
+                    <textarea id="contratoTermosCondicoes" class="form-input" rows="4" placeholder="Termos e condições gerais do contrato..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Penalidades</label>
+                    <textarea id="contratoPenalidades" class="form-input" rows="3" placeholder="Descrição de penalidades em caso de descumprimento..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Foro (Local para resolução de disputas)</label>
+                    <input type="text" id="contratoForo" class="form-input" placeholder="Ex: Comarca de São Paulo, SP">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Observações</label>
+                    <textarea id="contratoObservacoes" class="form-input" rows="3" placeholder="Observações adicionais..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeContratoModal()">Cancelar</button>
+                    <button type="button" class="btn" onclick="previewContratoPDF()" style="background: var(--warning); border-color: var(--warning);">👁️ Visualizar PDF</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detalhes Contrato -->
+    <div id="contratoDetailsModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Detalhes do Contrato</h2>
+                <button class="btn-close" onclick="closeContratoDetailsModal()">&times;</button>
+            </div>
+            <div id="contratoDetailsContent" style="color: var(--text);">
+                <!-- Conteúdo será preenchido dinamicamente -->
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeContratoDetailsModal()">Fechar</button>
+                <button type="button" class="btn" id="gerarPDFContratoBtn" onclick="" style="background: var(--primary); border-color: var(--primary);">📄 Gerar PDF</button>
+                <button type="button" class="btn btn-primary" id="editContratoFromDetailsBtn" onclick="">Editar</button>
+                <button type="button" class="btn" id="renovarContratoBtn" onclick="" style="background: var(--success); border-color: var(--success);">🔄 Renovar</button>
+                <button type="button" class="btn btn-danger" id="deleteContratoFromDetailsBtn" onclick="">Excluir</button>
+            </div>
         </div>
     </div>
 
@@ -5138,6 +5461,7 @@
             'ideias': 'Análises & Ideias',
             'templates': 'Templates de Mensagens',
             'financeiro': 'Financeiro',
+            'contratos': 'Contratos',
             'plataformas': 'Plataformas'
         };
 
@@ -5186,6 +5510,8 @@
                         loadTemplates();
                     } else if (page === 'financeiro') {
                         loadFinanceiro();
+                    } else if (page === 'contratos') {
+                        loadContratos();
                     } else if (page === 'plataformas') {
                         loadPlataformas();
                     }
@@ -15802,6 +16128,2109 @@ Obrigado pela confiança! 🙏`;
                 console.error('Erro ao transformar ideia em orçamento:', error);
                 alert('Erro ao transformar ideia: ' + (error.message || 'Erro desconhecido'));
             }
+        }
+
+        // ========== INTEGRAÇÃO N8N + WHATSAPP ==========
+        
+        // Processar comando recebido do n8n
+        async function processarComandoN8N(webhookData) {
+            try {
+                const { from, message, command, data, ai_response } = webhookData;
+                
+                console.log('📱 Comando recebido do n8n:', { from, command, data });
+                
+                let resultado = null;
+                
+                switch (command) {
+                    case 'criar_cliente':
+                        resultado = await criarClienteViaWhatsApp(data, from);
+                        break;
+                    
+                    case 'consultar_cliente':
+                        resultado = await consultarClienteViaWhatsApp(data?.query || message);
+                        break;
+                    
+                    case 'criar_orcamento':
+                        resultado = await criarOrcamentoViaWhatsApp(data, from);
+                        break;
+                    
+                    case 'atualizar_projeto':
+                        resultado = await atualizarProjetoViaWhatsApp(data);
+                        break;
+                    
+                    case 'listar_projetos':
+                        resultado = await listarProjetosViaWhatsApp(data?.status);
+                        break;
+                    
+                    case 'consultar_orcamento':
+                        resultado = await consultarOrcamentoViaWhatsApp(data?.query || message);
+                        break;
+                    
+                    default:
+                        resultado = {
+                            success: false,
+                            message: 'Comando não reconhecido',
+                            available_commands: [
+                                'criar_cliente',
+                                'consultar_cliente',
+                                'criar_orcamento',
+                                'atualizar_projeto',
+                                'listar_projetos',
+                                'consultar_orcamento'
+                            ]
+                        };
+                }
+                
+                // Retornar resposta para n8n
+                return {
+                    success: true,
+                    command: command,
+                    result: resultado,
+                    ai_response: ai_response || resultado.message || 'Comando processado',
+                    timestamp: new Date().toISOString()
+                };
+                
+            } catch (error) {
+                console.error('❌ Erro ao processar comando n8n:', error);
+                return {
+                    success: false,
+                    error: error.message,
+                    timestamp: new Date().toISOString()
+                };
+            }
+        }
+        
+        // Criar cliente via WhatsApp
+        async function criarClienteViaWhatsApp(data, whatsapp) {
+            try {
+                // Limpar WhatsApp (remover caracteres não numéricos)
+                const whatsappLimpo = (whatsapp || data.telefone || '').replace(/\D/g, '');
+                
+                const clienteData = {
+                    nome: data.nome || 'Cliente WhatsApp',
+                    telefone: data.telefone || whatsappLimpo,
+                    whatsapp: whatsappLimpo,
+                    email: data.email || null,
+                    empresa: data.empresa || null,
+                    origem: 'whatsapp',
+                    observacoes: data.observacoes || `Cliente criado via WhatsApp em ${new Date().toLocaleString('pt-BR')}`
+                };
+                
+                const { data: cliente, error } = await supabase
+                    .from('clientes')
+                    .insert([clienteData])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                return {
+                    success: true,
+                    message: `Cliente "${cliente.nome}" criado com sucesso!`,
+                    data: cliente
+                };
+                
+            } catch (error) {
+                console.error('Erro ao criar cliente via WhatsApp:', error);
+                return {
+                    success: false,
+                    message: 'Erro ao criar cliente: ' + error.message,
+                    error: error.message
+                };
+            }
+        }
+        
+        // Consultar cliente via WhatsApp
+        async function consultarClienteViaWhatsApp(query) {
+            try {
+                const queryLower = query.toLowerCase();
+                
+                // Buscar por nome, telefone ou WhatsApp
+                const { data: clientes, error } = await supabase
+                    .from('clientes')
+                    .select('*')
+                    .or(`nome.ilike.%${query}%,telefone.ilike.%${query}%,whatsapp.ilike.%${query}%,empresa.ilike.%${query}%`)
+                    .limit(10);
+                
+                if (error) throw error;
+                
+                if (!clientes || clientes.length === 0) {
+                    return {
+                        success: true,
+                        message: 'Nenhum cliente encontrado',
+                        data: []
+                    };
+                }
+                
+                if (clientes.length === 1) {
+                    return {
+                        success: true,
+                        message: `Cliente encontrado: ${clientes[0].nome}`,
+                        data: clientes[0]
+                    };
+                }
+                
+                return {
+                    success: true,
+                    message: `Encontrados ${clientes.length} clientes`,
+                    data: clientes.map(c => ({
+                        id: c.id,
+                        nome: c.nome,
+                        empresa: c.empresa,
+                        telefone: c.telefone,
+                        whatsapp: c.whatsapp
+                    }))
+                };
+                
+            } catch (error) {
+                console.error('Erro ao consultar cliente:', error);
+                return {
+                    success: false,
+                    message: 'Erro ao consultar cliente: ' + error.message
+                };
+            }
+        }
+        
+        // Criar orçamento via WhatsApp
+        async function criarOrcamentoViaWhatsApp(data, whatsapp) {
+            try {
+                // Primeiro, encontrar ou criar cliente
+                let clienteId = data.cliente_id;
+                
+                if (!clienteId && whatsapp) {
+                    // Buscar cliente pelo WhatsApp
+                    const { data: cliente } = await supabase
+                        .from('clientes')
+                        .select('id')
+                        .eq('whatsapp', whatsapp.replace(/\D/g, ''))
+                        .single();
+                    
+                    if (cliente) {
+                        clienteId = cliente.id;
+                    } else if (data.nome_cliente) {
+                        // Criar cliente se não existir
+                        const clienteNovo = await criarClienteViaWhatsApp({
+                            nome: data.nome_cliente,
+                            telefone: whatsapp
+                        }, whatsapp);
+                        if (clienteNovo.success) {
+                            clienteId = clienteNovo.data.id;
+                        }
+                    }
+                }
+                
+                if (!clienteId) {
+                    return {
+                        success: false,
+                        message: 'Cliente não encontrado. Por favor, crie o cliente primeiro.'
+                    };
+                }
+                
+                // Criar orçamento
+                const orcamentoData = {
+                    cliente_id: clienteId,
+                    descricao: data.descricao || 'Orçamento criado via WhatsApp',
+                    valor: parseFloat(data.valor || 0),
+                    status: 'rascunho',
+                    observacoes: data.observacoes || `Orçamento criado via WhatsApp em ${new Date().toLocaleString('pt-BR')}`
+                };
+                
+                const { data: orcamento, error } = await supabase
+                    .from('orcamentos')
+                    .insert([orcamentoData])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                return {
+                    success: true,
+                    message: `Orçamento criado com sucesso! Valor: R$ ${orcamento.valor.toFixed(2)}`,
+                    data: orcamento
+                };
+                
+            } catch (error) {
+                console.error('Erro ao criar orçamento via WhatsApp:', error);
+                return {
+                    success: false,
+                    message: 'Erro ao criar orçamento: ' + error.message
+                };
+            }
+        }
+        
+        // Atualizar projeto via WhatsApp
+        async function atualizarProjetoViaWhatsApp(data) {
+            try {
+                const { projeto_id, projeto_nome, status, observacoes } = data;
+                
+                let projetoId = projeto_id;
+                
+                // Se não tiver ID, buscar por nome
+                if (!projetoId && projeto_nome) {
+                    const { data: projetos } = await supabase
+                        .from('projetos')
+                        .select('id')
+                        .ilike('nome', `%${projeto_nome}%`)
+                        .limit(1)
+                        .single();
+                    
+                    if (projetos) projetoId = projetos.id;
+                }
+                
+                if (!projetoId) {
+                    return {
+                        success: false,
+                        message: 'Projeto não encontrado'
+                    };
+                }
+                
+                const updateData = {};
+                if (status) updateData.status = status;
+                if (observacoes) {
+                    const { data: projetoAtual } = await supabase
+                        .from('projetos')
+                        .select('observacoes')
+                        .eq('id', projetoId)
+                        .single();
+                    
+                    updateData.observacoes = (projetoAtual?.observacoes || '') + 
+                        `\n\n[WhatsApp ${new Date().toLocaleString('pt-BR')}]: ${observacoes}`;
+                }
+                
+                const { data: projeto, error } = await supabase
+                    .from('projetos')
+                    .update(updateData)
+                    .eq('id', projetoId)
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                return {
+                    success: true,
+                    message: `Projeto "${projeto.nome}" atualizado com sucesso!`,
+                    data: projeto
+                };
+                
+            } catch (error) {
+                console.error('Erro ao atualizar projeto:', error);
+                return {
+                    success: false,
+                    message: 'Erro ao atualizar projeto: ' + error.message
+                };
+            }
+        }
+        
+        // Listar projetos via WhatsApp
+        async function listarProjetosViaWhatsApp(status) {
+            try {
+                let query = supabase
+                    .from('projetos')
+                    .select('*, cliente:clientes(nome, empresa)')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (status) {
+                    query = query.eq('status', status);
+                }
+                
+                const { data: projetos, error } = await query;
+                
+                if (error) throw error;
+                
+                if (!projetos || projetos.length === 0) {
+                    return {
+                        success: true,
+                        message: 'Nenhum projeto encontrado',
+                        data: []
+                    };
+                }
+                
+                const projetosFormatados = projetos.map(p => ({
+                    nome: p.nome,
+                    cliente: p.cliente?.nome || p.cliente?.empresa || 'Sem cliente',
+                    status: p.status,
+                    valor: p.valor
+                }));
+                
+                return {
+                    success: true,
+                    message: `Encontrados ${projetos.length} projetos`,
+                    data: projetosFormatados
+                };
+                
+            } catch (error) {
+                console.error('Erro ao listar projetos:', error);
+                return {
+                    success: false,
+                    message: 'Erro ao listar projetos: ' + error.message
+                };
+            }
+        }
+        
+        // Consultar orçamento via WhatsApp
+        async function consultarOrcamentoViaWhatsApp(query) {
+            try {
+                // Buscar por número, cliente ou descrição
+                const { data: orcamentos, error } = await supabase
+                    .from('orcamentos')
+                    .select('*, cliente:clientes(nome, empresa)')
+                    .or(`numero.ilike.%${query}%,descricao.ilike.%${query}%`)
+                    .limit(5)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                if (!orcamentos || orcamentos.length === 0) {
+                    return {
+                        success: true,
+                        message: 'Nenhum orçamento encontrado',
+                        data: []
+                    };
+                }
+                
+                return {
+                    success: true,
+                    message: `Encontrados ${orcamentos.length} orçamentos`,
+                    data: orcamentos.map(o => ({
+                        numero: o.numero,
+                        cliente: o.cliente?.nome || o.cliente?.empresa || 'Sem cliente',
+                        valor: o.valor,
+                        status: o.status
+                    }))
+                };
+                
+            } catch (error) {
+                console.error('Erro ao consultar orçamento:', error);
+                return {
+                    success: false,
+                    message: 'Erro ao consultar orçamento: ' + error.message
+                };
+            }
+        }
+        
+        // Endpoint para receber webhook do n8n (simulado - em produção usar Supabase Edge Function)
+        // Esta função pode ser chamada via HTTP POST de um servidor externo
+        window.receberWebhookN8N = async function(webhookData) {
+            const resultado = await processarComandoN8N(webhookData);
+            return resultado;
+        };
+        
+        // Expor função globalmente para testes
+        window.processarComandoN8N = processarComandoN8N;
+        
+        console.log('✅ Integração n8n + WhatsApp carregada!');
+
+        // ========== DASHBOARD COM GRÁFICOS ==========
+        let graficoReceitasDespesas = null;
+        let graficoConversao = null;
+        let graficoProjetosStatus = null;
+        let graficoFaturamentoMensal = null;
+
+        // Carregar dados do dashboard
+        async function loadDashboardData() {
+            try {
+                // Carregar dados financeiros
+                const hoje = new Date();
+                const mesAtual = hoje.getMonth();
+                const anoAtual = hoje.getFullYear();
+                
+                let receitas = [];
+                let despesas = [];
+                let projetos = [];
+                let orcamentos = [];
+
+                // Receitas do mês (com tratamento de erro)
+                try {
+                    // Primeiro, buscar todas as receitas (sem filtro de data para evitar erro 400)
+                    const { data: receitasData, error: receitasError } = await supabase
+                        .from('receitas')
+                        .select('valor, data_recebimento, data_vencimento, status');
+                    
+                    if (!receitasError && receitasData) {
+                        // Filtrar no JavaScript pelo mês atual
+                        const dataInicio = new Date(anoAtual, mesAtual, 1);
+                        const dataFim = new Date(anoAtual, mesAtual + 1, 0);
+                        receitas = receitasData.filter(r => {
+                            if (!r.data_vencimento) return false;
+                            const dataVenc = new Date(r.data_vencimento);
+                            return dataVenc >= dataInicio && dataVenc <= dataFim;
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar receitas (tabela pode não existir):', e);
+                    receitas = [];
+                }
+
+                // Despesas do mês (com tratamento de erro)
+                try {
+                    // Primeiro, buscar todas as despesas (sem filtro de data para evitar erro 400)
+                    const { data: despesasData, error: despesasError } = await supabase
+                        .from('despesas')
+                        .select('valor, data_pagamento, data_vencimento, status');
+                    
+                    if (!despesasError && despesasData) {
+                        // Filtrar no JavaScript pelo mês atual
+                        const dataInicio = new Date(anoAtual, mesAtual, 1);
+                        const dataFim = new Date(anoAtual, mesAtual + 1, 0);
+                        despesas = despesasData.filter(d => {
+                            if (!d.data_vencimento) return false;
+                            const dataVenc = new Date(d.data_vencimento);
+                            return dataVenc >= dataInicio && dataVenc <= dataFim;
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar despesas (tabela pode não existir):', e);
+                    despesas = [];
+                }
+
+                // Projetos ativos (com tratamento de erro)
+                try {
+                    const { data: projetosData, error: projetosError } = await supabase
+                        .from('projetos')
+                        .select('*')
+                        .eq('status', 'em_andamento');
+                    
+                    if (!projetosError && projetosData) {
+                        projetos = projetosData;
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar projetos:', e);
+                }
+
+                // Orçamentos (com tratamento de erro)
+                try {
+                    const { data: orcamentosData, error: orcamentosError } = await supabase
+                        .from('orcamentos')
+                        .select('*');
+                    
+                    if (!orcamentosError && orcamentosData) {
+                        orcamentos = orcamentosData;
+                    }
+                } catch (e) {
+                    console.warn('Erro ao carregar orçamentos:', e);
+                }
+
+                // Calcular totais
+                const receitasTotal = receitas?.filter(r => r.status === 'recebido').reduce((sum, r) => sum + (r.valor || 0), 0) || 0;
+                const despesasTotal = despesas?.filter(d => d.status === 'pago').reduce((sum, d) => sum + (d.valor || 0), 0) || 0;
+                const pendentes = receitas?.filter(r => r.status === 'pendente').reduce((sum, r) => sum + (r.valor || 0), 0) || 0;
+                const vencidos = receitas?.filter(r => r.status === 'atrasado').reduce((sum, r) => sum + (r.valor || 0), 0) || 0;
+
+                // Atualizar cards
+                const faturamentoEl = document.getElementById('faturamentoMes');
+                const projetosEl = document.getElementById('projetosAtivos');
+                const pendentesEl = document.getElementById('pagamentosPendentes');
+                const vencidosEl = document.getElementById('pagamentosVencidos');
+                
+                if (faturamentoEl) faturamentoEl.textContent = formatCurrency(receitasTotal);
+                if (projetosEl) projetosEl.textContent = projetos?.length || 0;
+                if (pendentesEl) pendentesEl.textContent = formatCurrency(pendentes);
+                if (vencidosEl) vencidosEl.textContent = formatCurrency(vencidos);
+
+                // Carregar gráficos
+                await atualizarGraficos();
+                await loadTopClientes();
+                await loadProximosVencimentos();
+                await loadOrcamentosAguardando();
+
+            } catch (error) {
+                console.error('Erro ao carregar dashboard:', error);
+            }
+        }
+
+        // Atualizar gráficos
+        async function atualizarGraficos() {
+            const periodo = document.getElementById('graficoPeriodo')?.value || 'mes';
+            await criarGraficoReceitasDespesas(periodo);
+            await criarGraficoConversao();
+            await criarGraficoProjetosStatus();
+            await criarGraficoFaturamentoMensal();
+        }
+
+        // Gráfico Receitas vs Despesas
+        async function criarGraficoReceitasDespesas(periodo = 'mes') {
+            const ctx = document.getElementById('graficoReceitasDespesas');
+            if (!ctx) return;
+
+            try {
+                const hoje = new Date();
+                let labels = [];
+                let receitasData = [];
+                let despesasData = [];
+
+                if (periodo === 'mes') {
+                    // Últimos 6 meses
+                    for (let i = 5; i >= 0; i--) {
+                        const data = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+                        labels.push(data.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }));
+                        
+                        let receitasMes = 0;
+                        let despesasMes = 0;
+
+                        try {
+                            // Buscar todas e filtrar no JavaScript
+                            const { data: receitasAll } = await supabase
+                                .from('receitas')
+                                .select('valor, data_vencimento, status')
+                                .eq('status', 'recebido');
+                            
+                            if (receitasAll) {
+                                const dataInicio = new Date(data.getFullYear(), data.getMonth(), 1);
+                                const dataFim = new Date(data.getFullYear(), data.getMonth() + 1, 0);
+                                const receitasFiltradas = receitasAll.filter(r => {
+                                    if (!r.data_vencimento) return false;
+                                    const dataVenc = new Date(r.data_vencimento);
+                                    return dataVenc >= dataInicio && dataVenc <= dataFim;
+                                });
+                                receitasMes = receitasFiltradas.reduce((sum, r) => sum + (r.valor || 0), 0);
+                            }
+                        } catch (e) {
+                            console.warn('Erro ao buscar receitas do mês:', e);
+                        }
+                        
+                        try {
+                            // Buscar todas e filtrar no JavaScript
+                            const { data: despesasAll } = await supabase
+                                .from('despesas')
+                                .select('valor, data_vencimento, status')
+                                .eq('status', 'pago');
+
+                            if (despesasAll) {
+                                const dataInicio = new Date(data.getFullYear(), data.getMonth(), 1);
+                                const dataFim = new Date(data.getFullYear(), data.getMonth() + 1, 0);
+                                const despesasFiltradas = despesasAll.filter(d => {
+                                    if (!d.data_vencimento) return false;
+                                    const dataVenc = new Date(d.data_vencimento);
+                                    return dataVenc >= dataInicio && dataVenc <= dataFim;
+                                });
+                                despesasMes = despesasFiltradas.reduce((sum, d) => sum + (d.valor || 0), 0);
+                            }
+                        } catch (e) {
+                            console.warn('Erro ao buscar despesas do mês:', e);
+                        }
+
+                        receitasData.push(receitasMes);
+                        despesasData.push(despesasMes);
+                    }
+                }
+
+                if (graficoReceitasDespesas) {
+                    graficoReceitasDespesas.destroy();
+                }
+
+                graficoReceitasDespesas = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Receitas',
+                                data: receitasData,
+                                backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                                borderColor: '#10b981',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Despesas',
+                                data: despesasData,
+                                backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                                borderColor: '#ef4444',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: '#fff' }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#AFAFAF' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            x: {
+                                ticks: { color: '#AFAFAF' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Erro ao criar gráfico receitas/despesas:', error);
+            }
+        }
+
+        // Gráfico Taxa de Conversão
+        async function criarGraficoConversao() {
+            const ctx = document.getElementById('graficoConversao');
+            if (!ctx) return;
+
+            try {
+                const { data: orcamentos } = await supabase.from('orcamentos').select('status');
+                
+                const total = orcamentos?.length || 0;
+                const aprovados = orcamentos?.filter(o => o.status === 'aprovado').length || 0;
+                const taxa = total > 0 ? (aprovados / total * 100).toFixed(1) : 0;
+
+                if (graficoConversao) {
+                    graficoConversao.destroy();
+                }
+
+                graficoConversao = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Aprovados', 'Outros'],
+                        datasets: [{
+                            data: [aprovados, total - aprovados],
+                            backgroundColor: ['#10b981', 'rgba(255, 255, 255, 0.1)'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + context.parsed + ' (' + (context.parsed / total * 100).toFixed(1) + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    plugins: [{
+                        id: 'text',
+                        beforeDraw: function(chart) {
+                            const width = chart.width;
+                            const height = chart.height;
+                            const ctx = chart.ctx;
+                            ctx.restore();
+                            ctx.font = 'bold 24px Montserrat';
+                            ctx.fillStyle = '#FF6600';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(taxa + '%', width / 2, height / 2);
+                            ctx.save();
+                        }
+                    }]
+                });
+            } catch (error) {
+                console.error('Erro ao criar gráfico conversão:', error);
+            }
+        }
+
+        // Gráfico Projetos por Status
+        async function criarGraficoProjetosStatus() {
+            const ctx = document.getElementById('graficoProjetosStatus');
+            if (!ctx) return;
+
+            try {
+                const { data: projetos } = await supabase.from('projetos').select('status');
+                
+                const statusCount = {
+                    planejamento: 0,
+                    em_andamento: 0,
+                    pausado: 0,
+                    concluido: 0,
+                    cancelado: 0
+                };
+
+                projetos?.forEach(p => {
+                    if (statusCount[p.status] !== undefined) {
+                        statusCount[p.status]++;
+                    }
+                });
+
+                if (graficoProjetosStatus) {
+                    graficoProjetosStatus.destroy();
+                }
+
+                graficoProjetosStatus = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Planejamento', 'Em Andamento', 'Pausado', 'Concluído', 'Cancelado'],
+                        datasets: [{
+                            data: [
+                                statusCount.planejamento,
+                                statusCount.em_andamento,
+                                statusCount.pausado,
+                                statusCount.concluido,
+                                statusCount.cancelado
+                            ],
+                            backgroundColor: [
+                                'rgba(156, 163, 175, 0.6)',
+                                '#FF6600',
+                                'rgba(251, 191, 36, 0.6)',
+                                'rgba(16, 185, 129, 0.6)',
+                                'rgba(239, 68, 68, 0.6)'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#fff', padding: 15 }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Erro ao criar gráfico projetos:', error);
+            }
+        }
+
+        // Gráfico Faturamento Mensal
+        async function criarGraficoFaturamentoMensal() {
+            const ctx = document.getElementById('graficoFaturamentoMensal');
+            if (!ctx) return;
+
+            try {
+                const hoje = new Date();
+                const labels = [];
+                const data = [];
+
+                for (let i = 5; i >= 0; i--) {
+                    const dataMes = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+                    labels.push(dataMes.toLocaleDateString('pt-BR', { month: 'short' }));
+                    
+                    let receitasMes = 0;
+                    try {
+                        // Buscar todas e filtrar no JavaScript
+                        const { data: receitasAll } = await supabase
+                            .from('receitas')
+                            .select('valor, data_vencimento, status')
+                            .eq('status', 'recebido');
+
+                        if (receitasAll) {
+                            const dataInicio = new Date(dataMes.getFullYear(), dataMes.getMonth(), 1);
+                            const dataFim = new Date(dataMes.getFullYear(), dataMes.getMonth() + 1, 0);
+                            const receitasFiltradas = receitasAll.filter(r => {
+                                if (!r.data_vencimento) return false;
+                                const dataVenc = new Date(r.data_vencimento);
+                                return dataVenc >= dataInicio && dataVenc <= dataFim;
+                            });
+                            receitasMes = receitasFiltradas.reduce((sum, r) => sum + (r.valor || 0), 0);
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao buscar receitas para gráfico:', e);
+                    }
+
+                    data.push(receitasMes);
+                }
+
+                if (graficoFaturamentoMensal) {
+                    graficoFaturamentoMensal.destroy();
+                }
+
+                graficoFaturamentoMensal = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Faturamento',
+                            data: data,
+                            borderColor: '#FF6600',
+                            backgroundColor: 'rgba(255, 102, 0, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: '#fff' }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#AFAFAF' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            x: {
+                                ticks: { color: '#AFAFAF' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Erro ao criar gráfico faturamento:', error);
+            }
+        }
+
+        // Top 5 Clientes
+        async function loadTopClientes() {
+            try {
+                const container = document.getElementById('topClientesList');
+                if (!container) return;
+
+                try {
+                    const { data: receitas, error } = await supabase
+                        .from('receitas')
+                        .select('valor, cliente_id, cliente:clientes(nome, empresa)')
+                        .eq('status', 'recebido');
+
+                    if (error) throw error;
+
+                    const clientesMap = {};
+                    receitas?.forEach(r => {
+                        const clienteId = r.cliente_id;
+                        if (!clientesMap[clienteId]) {
+                            clientesMap[clienteId] = {
+                                cliente: r.cliente,
+                                total: 0
+                            };
+                        }
+                        clientesMap[clienteId].total += r.valor || 0;
+                    });
+
+                    const topClientes = Object.values(clientesMap)
+                        .sort((a, b) => b.total - a.total)
+                        .slice(0, 5);
+
+                    if (topClientes.length === 0) {
+                        container.innerHTML = '<div class="empty-state">Nenhum dado disponível</div>';
+                        return;
+                    }
+
+                    container.innerHTML = topClientes.map((item, index) => {
+                        const nome = item.cliente?.nome || item.cliente?.empresa || 'Cliente';
+                        return `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--tertiary); border-radius: 8px; margin-bottom: 8px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <span style="font-size: 18px; font-weight: 700; color: var(--primary);">#${index + 1}</span>
+                                    <span style="font-weight: 600;">${nome}</span>
+                                </div>
+                                <span style="color: var(--success); font-weight: 600;">${formatCurrency(item.total)}</span>
+                            </div>
+                        `;
+                    }).join('');
+                } catch (e) {
+                    console.warn('Erro ao carregar top clientes (tabela pode não existir):', e);
+                    container.innerHTML = '<div class="empty-state">Nenhum dado disponível</div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar top clientes:', error);
+            }
+        }
+
+        // Próximos Vencimentos
+        async function loadProximosVencimentos() {
+            try {
+                const container = document.getElementById('proximosVencimentos');
+                if (!container) return;
+
+                try {
+                    // Buscar todas as receitas pendentes e filtrar no JavaScript
+                    const { data: receitasAll, error } = await supabase
+                        .from('receitas')
+                        .select('*, cliente:clientes(nome, empresa)')
+                        .eq('status', 'pendente')
+                        .order('data_vencimento', { ascending: true });
+
+                    if (error) throw error;
+
+                    // Filtrar no JavaScript pelos próximos 7 dias
+                    const hoje = new Date();
+                    hoje.setHours(0, 0, 0, 0);
+                    const em7Dias = new Date();
+                    em7Dias.setDate(hoje.getDate() + 7);
+                    em7Dias.setHours(23, 59, 59, 999);
+
+                    const receitas = (receitasAll || []).filter(r => {
+                        if (!r.data_vencimento) return false;
+                        const dataVenc = new Date(r.data_vencimento);
+                        return dataVenc >= hoje && dataVenc <= em7Dias;
+                    }).slice(0, 10);
+
+                    if (!receitas || receitas.length === 0) {
+                        container.innerHTML = '<div class="empty-state">Nenhum vencimento próximo</div>';
+                        return;
+                    }
+
+                    container.innerHTML = receitas.map(r => {
+                        const clienteNome = r.cliente?.nome || r.cliente?.empresa || 'Cliente';
+                        return `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--tertiary); border-radius: 8px; margin-bottom: 8px;">
+                                <div>
+                                    <div style="font-weight: 600;">${r.descricao || 'Receita'}</div>
+                                    <div style="font-size: 12px; color: var(--text-gray);">${clienteNome} • ${formatDate(r.data_vencimento)}</div>
+                                </div>
+                                <span style="color: var(--warning); font-weight: 600;">${formatCurrency(r.valor)}</span>
+                            </div>
+                        `;
+                    }).join('');
+                } catch (e) {
+                    console.warn('Erro ao carregar vencimentos (tabela pode não existir):', e);
+                    container.innerHTML = '<div class="empty-state">Nenhum vencimento próximo</div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar vencimentos:', error);
+            }
+        }
+
+        // Orçamentos Aguardando
+        async function loadOrcamentosAguardando() {
+            try {
+                const { data: orcamentos } = await supabase
+                    .from('orcamentos')
+                    .select('*, cliente:clientes(nome, empresa)')
+                    .eq('status', 'enviado')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                const container = document.getElementById('orcamentosAguardando');
+                if (!container) return;
+
+                if (!orcamentos || orcamentos.length === 0) {
+                    container.innerHTML = '<div class="empty-state">Nenhum orçamento aguardando aprovação</div>';
+                    return;
+                }
+
+                container.innerHTML = orcamentos.map(o => {
+                    const clienteNome = o.cliente?.nome || o.cliente?.empresa || 'Cliente';
+                    return `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--tertiary); border-radius: 8px; margin-bottom: 8px;">
+                            <div>
+                                <div style="font-weight: 600;">Orçamento #${o.numero || o.id}</div>
+                                <div style="font-size: 12px; color: var(--text-gray);">${clienteNome} • ${formatDate(o.data)}</div>
+                            </div>
+                            <span style="color: var(--primary); font-weight: 600;">${formatCurrency(o.valor)}</span>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Erro ao carregar orçamentos:', error);
+            }
+        }
+
+        // ========== GESTÃO DE CONTRATOS ==========
+        let allContratos = [];
+        let filteredContratos = [];
+
+        // Carregar contratos
+        async function loadContratos() {
+            const loading = document.getElementById('contratosLoading');
+            const table = document.getElementById('contratosTable');
+            const empty = document.getElementById('contratosEmpty');
+            
+            loading.classList.add('active');
+            table.style.display = 'none';
+            empty.style.display = 'none';
+
+            try {
+                const { data, error } = await supabase
+                    .from('contratos')
+                    .select('*, cliente:clientes(*), projeto:projetos(*), orcamento:orcamentos(*)')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                allContratos = data || [];
+                filteredContratos = [...allContratos];
+                renderContratos();
+                
+                // Carregar clientes no filtro
+                await loadClientesForContratoFilter();
+            } catch (error) {
+                console.error('Erro ao carregar contratos:', error);
+                allContratos = [];
+                filteredContratos = [];
+                renderContratos();
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Renderizar contratos
+        function renderContratos() {
+            const tbody = document.getElementById('contratosTableBody');
+            const table = document.getElementById('contratosTable');
+            const empty = document.getElementById('contratosEmpty');
+
+            if (filteredContratos.length === 0) {
+                table.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            table.style.display = 'table';
+            empty.style.display = 'none';
+
+            tbody.innerHTML = filteredContratos.map(contrato => {
+                const cliente = contrato.cliente || {};
+                const clienteNome = cliente.nome || cliente.empresa || 'Cliente não encontrado';
+                
+                const statusMap = {
+                    'rascunho': { label: 'Rascunho', class: 'badge-rascunho' },
+                    'aguardando_assinatura': { label: 'Aguardando Assinatura', class: 'badge-enviado' },
+                    'ativo': { label: 'Ativo', class: 'badge-ativo' },
+                    'vencido': { label: 'Vencido', class: 'badge-inativo' },
+                    'renovado': { label: 'Renovado', class: 'badge-concluido' },
+                    'cancelado': { label: 'Cancelado', class: 'badge-cancelado' }
+                };
+
+                const status = statusMap[contrato.status] || { label: contrato.status, class: 'badge-rascunho' };
+
+                return `
+                    <tr>
+                        <td data-label="Número">${contrato.numero || '-'}</td>
+                        <td data-label="Cliente">${clienteNome}</td>
+                        <td data-label="Descrição">${(contrato.descricao || '').substring(0, 50)}${contrato.descricao && contrato.descricao.length > 50 ? '...' : ''}</td>
+                        <td data-label="Valor">${formatCurrency(contrato.valor || 0)}</td>
+                        <td data-label="Início">${formatDate(contrato.data_inicio)}</td>
+                        <td data-label="Vencimento">${formatDate(contrato.data_vencimento)}</td>
+                        <td data-label="Status">
+                            <span class="badge ${status.class}">${status.label}</span>
+                        </td>
+                        <td data-label="Ações">
+                            <button class="btn-action" onclick="viewContratoDetails('${contrato.id}')" style="border-color: var(--primary); color: var(--primary); margin-right: 4px;">Ver</button>
+                            <button class="btn-action" onclick="editContrato('${contrato.id}')" style="border-color: var(--primary); color: var(--primary); margin-right: 4px;">Editar</button>
+                            <button class="btn-action" onclick="deleteContrato('${contrato.id}')" style="border-color: var(--danger); color: var(--danger);">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filtrar contratos
+        function filterContratos() {
+            const search = document.getElementById('contratoSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('contratoStatusFilter').value;
+            const clienteFilter = document.getElementById('contratoClienteFilter').value;
+
+            filteredContratos = allContratos.filter(contrato => {
+                const cliente = contrato.cliente || {};
+                const clienteNome = (cliente.nome || cliente.empresa || '').toLowerCase();
+                const descricao = (contrato.descricao || '').toLowerCase();
+                const numero = (contrato.numero || '').toLowerCase();
+                
+                const matchSearch = !search || 
+                    numero.includes(search) ||
+                    descricao.includes(search) ||
+                    clienteNome.includes(search);
+                
+                const matchStatus = !statusFilter || contrato.status === statusFilter;
+                const matchCliente = !clienteFilter || contrato.cliente_id === clienteFilter;
+                
+                return matchSearch && matchStatus && matchCliente;
+            });
+
+            renderContratos();
+        }
+
+        // Carregar clientes para filtro
+        async function loadClientesForContratoFilter() {
+            try {
+                const { data: clientes } = await supabase
+                    .from('clientes')
+                    .select('id, nome, empresa')
+                    .order('nome');
+                
+                const select = document.getElementById('contratoClienteFilter');
+                if (select) {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">Todos os clientes</option>';
+                    if (clientes) {
+                        clientes.forEach(cliente => {
+                            const nome = cliente.nome || cliente.empresa || 'Cliente';
+                            const option = document.createElement('option');
+                            option.value = cliente.id;
+                            option.textContent = nome;
+                            select.appendChild(option);
+                        });
+                    }
+                    select.value = currentValue;
+                }
+            } catch (e) {
+                console.error('Erro ao carregar clientes para filtro:', e);
+            }
+        }
+
+        // Abrir modal de contrato
+        async function openContratoModal() {
+            document.getElementById('contratoModalTitle').textContent = 'Novo Contrato';
+            document.getElementById('contratoForm').reset();
+            document.getElementById('contratoId').value = '';
+            
+            // Gerar número automático
+            const { data: ultimoContrato } = await supabase
+                .from('contratos')
+                .select('numero')
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+            
+            let proximoNumero = 1;
+            if (ultimoContrato?.numero) {
+                const num = parseInt(ultimoContrato.numero.replace(/\D/g, '')) || 0;
+                proximoNumero = num + 1;
+            }
+            document.getElementById('contratoNumero').value = `CTR-${String(proximoNumero).padStart(4, '0')}`;
+            
+            // Data de hoje
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('contratoDataInicio').value = hoje;
+            
+            // Carregar clientes, projetos e orçamentos
+            await Promise.all([
+                loadClientesForContratoSelect(),
+                loadProjetosForContratoSelect(),
+                loadOrcamentosForContratoSelect()
+            ]);
+            
+            const modal = document.getElementById('contratoModal');
+            openModal(modal);
+        }
+
+        // Carregar clientes para select
+        async function loadClientesForContratoSelect() {
+            try {
+                const { data: clientes } = await supabase
+                    .from('clientes')
+                    .select('id, nome, empresa')
+                    .order('nome');
+                
+                const select = document.getElementById('contratoClienteId');
+                if (select) {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">Selecione um cliente</option>';
+                    if (clientes) {
+                        clientes.forEach(cliente => {
+                            const nome = cliente.nome || cliente.empresa || 'Cliente';
+                            const option = document.createElement('option');
+                            option.value = cliente.id;
+                            option.textContent = nome;
+                            select.appendChild(option);
+                        });
+                    }
+                    select.value = currentValue;
+                }
+            } catch (e) {
+                console.error('Erro ao carregar clientes:', e);
+            }
+        }
+
+        // Carregar projetos para select
+        async function loadProjetosForContratoSelect() {
+            try {
+                const { data: projetos } = await supabase
+                    .from('projetos')
+                    .select('id, nome')
+                    .order('nome');
+                
+                const select = document.getElementById('contratoProjetoId');
+                if (select) {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">Nenhum</option>';
+                    if (projetos) {
+                        projetos.forEach(projeto => {
+                            const option = document.createElement('option');
+                            option.value = projeto.id;
+                            option.textContent = projeto.nome || 'Projeto';
+                            select.appendChild(option);
+                        });
+                    }
+                    select.value = currentValue;
+                }
+            } catch (e) {
+                console.error('Erro ao carregar projetos:', e);
+            }
+        }
+
+        // Carregar orçamentos para select
+        async function loadOrcamentosForContratoSelect() {
+            try {
+                const { data: orcamentos } = await supabase
+                    .from('orcamentos')
+                    .select('id, numero, descricao')
+                    .order('created_at', { ascending: false });
+                
+                const select = document.getElementById('contratoOrcamentoId');
+                if (select) {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">Nenhum</option>';
+                    if (orcamentos) {
+                        orcamentos.forEach(orcamento => {
+                            const option = document.createElement('option');
+                            option.value = orcamento.id;
+                            option.textContent = `#${orcamento.numero || orcamento.id} - ${(orcamento.descricao || '').substring(0, 30)}`;
+                            select.appendChild(option);
+                        });
+                    }
+                    select.value = currentValue;
+                }
+            } catch (e) {
+                console.error('Erro ao carregar orçamentos:', e);
+            }
+        }
+
+        // Toggle parcelas
+        function toggleParcelas() {
+            const parcelado = document.getElementById('contratoValorParcelado').value === 'true';
+            const parcelasGroup = document.getElementById('parcelasGroup');
+            if (parcelasGroup) {
+                parcelasGroup.style.display = parcelado ? 'block' : 'none';
+            }
+            if (parcelado) {
+                calcularParcela();
+            }
+        }
+
+        // Calcular valor da parcela
+        function calcularParcela() {
+            const valorTotal = parseFloat(document.getElementById('contratoValor').value) || 0;
+            const numParcelas = parseInt(document.getElementById('contratoNumeroParcelas').value) || 1;
+            const valorParcela = valorTotal / numParcelas;
+            document.getElementById('contratoValorParcela').value = valorParcela.toFixed(2);
+        }
+
+        // Fechar modal
+        function closeContratoModal() {
+            const modal = document.getElementById('contratoModal');
+            closeModal(modal);
+        }
+
+        // Editar contrato
+        async function editContrato(id) {
+            const contrato = allContratos.find(c => c.id === id);
+            if (!contrato) return;
+
+            document.getElementById('contratoModalTitle').textContent = 'Editar Contrato';
+            document.getElementById('contratoId').value = contrato.id;
+            document.getElementById('contratoNumero').value = contrato.numero || '';
+            document.getElementById('contratoTipo').value = contrato.tipo_contrato || 'prestacao_servicos';
+            document.getElementById('contratoObjeto').value = contrato.objeto || '';
+            document.getElementById('contratoDescricao').value = contrato.descricao || '';
+            document.getElementById('contratoValor').value = contrato.valor || '';
+            document.getElementById('contratoValorParcelado').value = contrato.valor_parcelado ? 'true' : 'false';
+            document.getElementById('contratoNumeroParcelas').value = contrato.numero_parcelas || 1;
+            document.getElementById('contratoValorParcela').value = contrato.valor_parcela || '';
+            document.getElementById('contratoStatus').value = contrato.status || 'rascunho';
+            document.getElementById('contratoDataInicio').value = contrato.data_inicio ? contrato.data_inicio.split('T')[0] : '';
+            document.getElementById('contratoDataVencimento').value = contrato.data_vencimento ? contrato.data_vencimento.split('T')[0] : '';
+            document.getElementById('contratoPrazoExecucao').value = contrato.prazo_execucao_dias || '';
+            document.getElementById('contratoDataAssinatura').value = contrato.data_assinatura ? contrato.data_assinatura.split('T')[0] : '';
+            document.getElementById('contratoLocalAssinatura').value = contrato.local_assinatura || '';
+            document.getElementById('contratoRenovacaoAutomatica').value = contrato.renovacao_automatica ? 'true' : 'false';
+            document.getElementById('contratoPeriodoRenovacao').value = contrato.periodo_renovacao || 30;
+            document.getElementById('contratoCondicoesPagamento').value = contrato.condicoes_pagamento || '';
+            document.getElementById('contratoContratadoNome').value = contrato.contratado_nome || '';
+            document.getElementById('contratoContratadoCnpj').value = contrato.contratado_cnpj || '';
+            document.getElementById('contratoContratadoEndereco').value = contrato.contratado_endereco || '';
+            document.getElementById('contratoClausulas').value = contrato.clausulas || '';
+            document.getElementById('contratoTermosCondicoes').value = contrato.termos_condicoes || '';
+            document.getElementById('contratoPenalidades').value = contrato.penalidades || '';
+            document.getElementById('contratoForo').value = contrato.foro || '';
+            document.getElementById('contratoObservacoes').value = contrato.observacoes || '';
+            
+            toggleParcelas();
+
+            await Promise.all([
+                loadClientesForContratoSelect(),
+                loadProjetosForContratoSelect(),
+                loadOrcamentosForContratoSelect()
+            ]);
+
+            document.getElementById('contratoClienteId').value = contrato.cliente_id || '';
+            document.getElementById('contratoProjetoId').value = contrato.projeto_id || '';
+            document.getElementById('contratoOrcamentoId').value = contrato.orcamento_id || '';
+
+            const modal = document.getElementById('contratoModal');
+            openModal(modal);
+        }
+
+        // Salvar contrato
+        document.getElementById('contratoForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('contratoId').value;
+
+            const contratoData = {
+                numero: document.getElementById('contratoNumero').value.trim(),
+                cliente_id: document.getElementById('contratoClienteId').value,
+                projeto_id: document.getElementById('contratoProjetoId').value || null,
+                orcamento_id: document.getElementById('contratoOrcamentoId').value || null,
+                tipo_contrato: document.getElementById('contratoTipo').value,
+                objeto: document.getElementById('contratoObjeto').value.trim(),
+                descricao: document.getElementById('contratoDescricao').value.trim() || null,
+                valor: parseFloat(document.getElementById('contratoValor').value) || 0,
+                valor_parcelado: document.getElementById('contratoValorParcelado').value === 'true',
+                numero_parcelas: parseInt(document.getElementById('contratoNumeroParcelas').value) || 1,
+                valor_parcela: parseFloat(document.getElementById('contratoValorParcela').value) || null,
+                status: document.getElementById('contratoStatus').value,
+                data_inicio: document.getElementById('contratoDataInicio').value,
+                data_vencimento: document.getElementById('contratoDataVencimento').value,
+                prazo_execucao_dias: parseInt(document.getElementById('contratoPrazoExecucao').value) || null,
+                data_assinatura: document.getElementById('contratoDataAssinatura').value || null,
+                local_assinatura: document.getElementById('contratoLocalAssinatura').value.trim() || null,
+                renovacao_automatica: document.getElementById('contratoRenovacaoAutomatica').value === 'true',
+                periodo_renovacao: parseInt(document.getElementById('contratoPeriodoRenovacao').value) || 30,
+                condicoes_pagamento: document.getElementById('contratoCondicoesPagamento').value.trim() || null,
+                contratado_nome: document.getElementById('contratoContratadoNome').value.trim() || null,
+                contratado_cnpj: document.getElementById('contratoContratadoCnpj').value.trim() || null,
+                contratado_endereco: document.getElementById('contratoContratadoEndereco').value.trim() || null,
+                clausulas: document.getElementById('contratoClausulas').value.trim() || null,
+                termos_condicoes: document.getElementById('contratoTermosCondicoes').value.trim() || null,
+                penalidades: document.getElementById('contratoPenalidades').value.trim() || null,
+                foro: document.getElementById('contratoForo').value.trim() || null,
+                observacoes: document.getElementById('contratoObservacoes').value.trim() || null
+            };
+
+            try {
+                if (id) {
+                    const { error } = await supabase
+                        .from('contratos')
+                        .update(contratoData)
+                        .eq('id', id);
+
+                    if (error) throw error;
+                    alert('Contrato atualizado com sucesso!');
+                } else {
+                    const { error } = await supabase
+                        .from('contratos')
+                        .insert([contratoData]);
+
+                    if (error) throw error;
+                    alert('Contrato criado com sucesso!');
+                }
+
+                closeContratoModal();
+                loadContratos();
+            } catch (error) {
+                console.error('Erro ao salvar contrato:', error);
+                alert('Erro ao salvar contrato: ' + (error.message || 'Erro desconhecido'));
+            }
+        });
+
+        // Ver detalhes do contrato
+        async function viewContratoDetails(id) {
+            const contrato = allContratos.find(c => c.id === id);
+            if (!contrato) {
+                alert('Contrato não encontrado');
+                return;
+            }
+
+            const cliente = contrato.cliente || {};
+            const projeto = contrato.projeto || {};
+            const orcamento = contrato.orcamento || {};
+
+                const statusMap = {
+                    'rascunho': { label: 'Rascunho', class: 'badge-rascunho' },
+                    'aguardando_assinatura': { label: 'Aguardando Assinatura', class: 'badge-enviado' },
+                    'ativo': { label: 'Ativo', class: 'badge-ativo' },
+                    'vencido': { label: 'Vencido', class: 'badge-inativo' },
+                    'renovado': { label: 'Renovado', class: 'badge-concluido' },
+                    'cancelado': { label: 'Cancelado', class: 'badge-cancelado' }
+                };
+
+                const status = statusMap[contrato.status] || { label: contrato.status, class: 'badge-rascunho' };
+                
+                const tipoMap = {
+                    'prestacao_servicos': 'Prestação de Serviços',
+                    'fornecimento': 'Fornecimento de Produtos',
+                    'locacao': 'Locação',
+                    'licenciamento': 'Licenciamento',
+                    'parceria': 'Parceria',
+                    'outro': 'Outro'
+                };
+                const tipoLabel = tipoMap[contrato.tipo_contrato] || contrato.tipo_contrato || 'Não especificado';
+
+            // Verificar se está vencido
+            const hoje = new Date();
+            const vencimento = new Date(contrato.data_vencimento);
+            const diasRestantes = Math.ceil((vencimento - hoje) / (1000 * 60 * 60 * 24));
+            const estaVencido = diasRestantes < 0;
+
+            const content = document.getElementById('contratoDetailsContent');
+            content.innerHTML = `
+                <div class="details-section">
+                    <div class="details-section-title">Informações do Contrato</div>
+                    <div class="details-grid">
+                        <div class="details-item">
+                            <div class="details-label">Número</div>
+                            <div class="details-value">${contrato.numero || '-'}</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Tipo</div>
+                            <div class="details-value">${tipoLabel}</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Status</div>
+                            <div class="details-value">
+                                <span class="badge ${status.class}">${status.label}</span>
+                            </div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Cliente</div>
+                            <div class="details-value">${cliente.nome || cliente.empresa || 'Não informado'}</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Valor Total</div>
+                            <div class="details-value" style="color: var(--primary); font-weight: 600;">${formatCurrency(contrato.valor || 0)}</div>
+                        </div>
+                        ${contrato.valor_parcelado ? `
+                        <div class="details-item">
+                            <div class="details-label">Pagamento</div>
+                            <div class="details-value">${contrato.numero_parcelas || 1}x de ${formatCurrency(contrato.valor_parcela || 0)}</div>
+                        </div>
+                        ` : ''}
+                        <div class="details-item">
+                            <div class="details-label">Data de Início</div>
+                            <div class="details-value">${formatDate(contrato.data_inicio)}</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Data de Vencimento</div>
+                            <div class="details-value" style="${estaVencido ? 'color: var(--danger);' : ''}">
+                                ${formatDate(contrato.data_vencimento)}
+                                ${estaVencido ? ' ⚠️ Vencido' : diasRestantes <= 30 ? ` ⏰ ${diasRestantes} dias restantes` : ''}
+                            </div>
+                        </div>
+                        ${contrato.prazo_execucao_dias ? `
+                        <div class="details-item">
+                            <div class="details-label">Prazo de Execução</div>
+                            <div class="details-value">${contrato.prazo_execucao_dias} dias</div>
+                        </div>
+                        ` : ''}
+                        ${contrato.data_assinatura ? `
+                        <div class="details-item">
+                            <div class="details-label">Data de Assinatura</div>
+                            <div class="details-value">${formatDate(contrato.data_assinatura)}</div>
+                        </div>
+                        ` : ''}
+                        ${contrato.local_assinatura ? `
+                        <div class="details-item">
+                            <div class="details-label">Local de Assinatura</div>
+                            <div class="details-value">${contrato.local_assinatura}</div>
+                        </div>
+                        ` : ''}
+                        ${projeto.id ? `
+                        <div class="details-item">
+                            <div class="details-label">Projeto</div>
+                            <div class="details-value">${projeto.nome || '-'}</div>
+                        </div>
+                        ` : ''}
+                        ${orcamento.id ? `
+                        <div class="details-item">
+                            <div class="details-label">Orçamento</div>
+                            <div class="details-value">#${orcamento.numero || orcamento.id}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                ${contrato.objeto ? `
+                <div class="details-section">
+                    <div class="details-section-title">Objeto do Contrato</div>
+                    <div class="details-item">
+                        <div class="details-value" style="white-space: pre-wrap;">${contrato.objeto}</div>
+                    </div>
+                </div>
+                ` : ''}
+
+                ${contrato.descricao ? `
+                <div class="details-section">
+                    <div class="details-section-title">Descrição/Resumo</div>
+                    <div class="details-item">
+                        <div class="details-value" style="white-space: pre-wrap;">${contrato.descricao}</div>
+                    </div>
+                </div>
+                ` : ''}
+
+                ${contrato.condicoes_pagamento ? `
+                <div class="details-section">
+                    <div class="details-section-title">Condições de Pagamento</div>
+                    <div class="details-item">
+                        <div class="details-value" style="white-space: pre-wrap;">${contrato.condicoes_pagamento}</div>
+                    </div>
+                </div>
+                ` : ''}
+
+                <div class="details-section">
+                    <div class="details-section-title">Configurações</div>
+                    <div class="details-grid">
+                        <div class="details-item">
+                            <div class="details-label">Renovação Automática</div>
+                            <div class="details-value">${contrato.renovacao_automatica ? '✅ Sim' : '❌ Não'}</div>
+                        </div>
+                        ${contrato.renovacao_automatica ? `
+                        <div class="details-item">
+                            <div class="details-label">Período de Renovação</div>
+                            <div class="details-value">${contrato.periodo_renovacao || 30} dias</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                ${contrato.clausulas ? `
+                <div class="details-section">
+                    <div class="details-section-title">Cláusulas Específicas</div>
+                    <div class="details-item">
+                        <div class="details-value" style="white-space: pre-wrap;">${contrato.clausulas}</div>
+                    </div>
+                </div>
+                ` : ''}
+
+                ${contrato.termos_condicoes ? `
+                <div class="details-section">
+                    <div class="details-section-title">Termos e Condições</div>
+                    <div class="details-item">
+                        <div class="details-value" style="white-space: pre-wrap;">${contrato.termos_condicoes}</div>
+                    </div>
+                </div>
+                ` : ''}
+
+                ${contrato.penalidades ? `
+                <div class="details-section">
+                    <div class="details-section-title">Penalidades</div>
+                    <div class="details-item">
+                        <div class="details-value" style="white-space: pre-wrap;">${contrato.penalidades}</div>
+                    </div>
+                </div>
+                ` : ''}
+
+                ${contrato.foro ? `
+                <div class="details-section">
+                    <div class="details-section-title">Foro</div>
+                    <div class="details-item">
+                        <div class="details-value">${contrato.foro}</div>
+                    </div>
+                </div>
+                ` : ''}
+
+                ${contrato.observacoes ? `
+                <div class="details-section">
+                    <div class="details-section-title">Observações</div>
+                    <div class="details-item">
+                        <div class="details-value" style="white-space: pre-wrap;">${contrato.observacoes}</div>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+
+            // Configurar botões
+            document.getElementById('editContratoFromDetailsBtn').onclick = () => {
+                closeContratoDetailsModal();
+                editContrato(id);
+            };
+
+            document.getElementById('deleteContratoFromDetailsBtn').onclick = () => {
+                if (confirm('Tem certeza que deseja excluir este contrato?')) {
+                    deleteContrato(id);
+                }
+            };
+
+            document.getElementById('renovarContratoBtn').onclick = () => {
+                renovarContrato(id);
+            };
+
+            document.getElementById('gerarPDFContratoBtn').onclick = () => {
+                gerarPDFContrato(id);
+            };
+
+            // Mostrar/ocultar botão renovar
+            if (contrato.status === 'ativo' && !estaVencido) {
+                document.getElementById('renovarContratoBtn').style.display = 'inline-block';
+            } else {
+                document.getElementById('renovarContratoBtn').style.display = 'none';
+            }
+
+            const modal = document.getElementById('contratoDetailsModal');
+            openModal(modal);
+        }
+
+        // Fechar modal de detalhes
+        function closeContratoDetailsModal() {
+            const modal = document.getElementById('contratoDetailsModal');
+            closeModal(modal);
+        }
+
+        // Excluir contrato
+        async function deleteContrato(id) {
+            if (!confirm('Tem certeza que deseja excluir este contrato?')) return;
+
+            try {
+                const { error } = await supabase
+                    .from('contratos')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+                alert('Contrato excluído com sucesso!');
+                closeContratoDetailsModal();
+                loadContratos();
+            } catch (error) {
+                console.error('Erro ao excluir contrato:', error);
+                alert('Erro ao excluir contrato: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Renovar contrato
+        async function renovarContrato(id) {
+            const contrato = allContratos.find(c => c.id === id);
+            if (!contrato) return;
+
+            if (!confirm(`Deseja renovar o contrato ${contrato.numero}?`)) return;
+
+            try {
+                const periodoRenovacao = contrato.periodo_renovacao || 30;
+                const dataVencimentoAtual = new Date(contrato.data_vencimento);
+                const novaDataVencimento = new Date(dataVencimentoAtual);
+                novaDataVencimento.setDate(novaDataVencimento.getDate() + periodoRenovacao);
+
+                const { error } = await supabase
+                    .from('contratos')
+                    .update({
+                        status: 'renovado',
+                        data_vencimento: novaDataVencimento.toISOString().split('T')[0],
+                        data_renovacao: new Date().toISOString()
+                    })
+                    .eq('id', id);
+
+                if (error) throw error;
+                alert('Contrato renovado com sucesso!');
+                closeContratoDetailsModal();
+                loadContratos();
+            } catch (error) {
+                console.error('Erro ao renovar contrato:', error);
+                alert('Erro ao renovar contrato: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Gerar PDF do Contrato
+        async function gerarPDFContrato(contratoId) {
+            try {
+                // Verificar se jsPDF está disponível
+                if (!window.jspdf) {
+                    alert('Biblioteca de PDF não carregada. Por favor, recarregue a página.');
+                    return;
+                }
+
+                // Buscar dados completos do contrato
+                let contrato = allContratos.find(c => c.id === contratoId);
+                if (!contrato) {
+                    const { data: contratoData, error } = await supabase
+                        .from('contratos')
+                        .select('*, cliente:clientes(*), projeto:projetos(*), orcamento:orcamentos(*)')
+                        .eq('id', contratoId)
+                        .single();
+                    
+                    if (error) throw error;
+                    if (!contratoData) {
+                        alert('Contrato não encontrado');
+                        return;
+                    }
+                    contrato = contratoData;
+                }
+
+                const cliente = contrato.cliente || {};
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                const margin = 20;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                let y = margin;
+
+                // Funções auxiliares
+                const formatCurrencyPDF = (value) => {
+                    if (!value && value !== 0) return 'R$ 0,00';
+                    return new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }).format(value);
+                };
+
+                const formatDatePDF = (dateStr) => {
+                    if (!dateStr) return '-';
+                    try {
+                        const date = new Date(dateStr);
+                        return date.toLocaleDateString('pt-BR');
+                    } catch {
+                        return dateStr;
+                    }
+                };
+
+                // ========== CABEÇALHO ==========
+                doc.setFillColor(255, 102, 0);
+                doc.rect(0, 0, pageWidth, 45, 'F');
+                
+                doc.setFontSize(20);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('CONTRATO', pageWidth / 2, 20, { align: 'center' });
+                
+                doc.setFontSize(14);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Nº ${contrato.numero || 'N/A'}`, pageWidth / 2, 35, { align: 'center' });
+                
+                y = 55;
+
+                // ========== PARTES CONTRATANTES ==========
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(0, 0, 0);
+                doc.text('PARTES CONTRATANTES', margin + 3, y + 4);
+                y += 15;
+
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+
+                // CONTRATANTE (Cliente)
+                doc.setFont(undefined, 'bold');
+                doc.text('CONTRATANTE:', margin, y);
+                y += 6;
+                doc.setFont(undefined, 'normal');
+                const contratanteNome = cliente.nome || cliente.empresa || 'Não informado';
+                doc.text(`${contratanteNome}`, margin + 5, y);
+                y += 5;
+                if (cliente.cpf_cnpj) {
+                    doc.text(`CPF/CNPJ: ${cliente.cpf_cnpj}`, margin + 5, y);
+                    y += 5;
+                }
+                if (cliente.endereco) {
+                    let enderecoCompleto = cliente.endereco;
+                    if (cliente.cidade) enderecoCompleto += `, ${cliente.cidade}`;
+                    if (cliente.estado) enderecoCompleto += ` - ${cliente.estado}`;
+                    doc.text(`Endereço: ${enderecoCompleto}`, margin + 5, y);
+                    y += 5;
+                }
+                if (cliente.telefone) {
+                    doc.text(`Telefone: ${cliente.telefone}`, margin + 5, y);
+                    y += 5;
+                }
+                if (cliente.email) {
+                    doc.text(`E-mail: ${cliente.email}`, margin + 5, y);
+                    y += 5;
+                }
+                y += 3;
+
+                // CONTRATADO (Sua Empresa)
+                doc.setFont(undefined, 'bold');
+                doc.text('CONTRATADO:', margin, y);
+                y += 6;
+                doc.setFont(undefined, 'normal');
+                const contratadoNome = contrato.contratado_nome || 'AUTOVIZION COMERCIAL';
+                const contratadoCnpj = contrato.contratado_cnpj || 'CNPJ não informado';
+                const contratadoEndereco = contrato.contratado_endereco || 'Endereço não informado';
+                
+                doc.text(`${contratadoNome}`, margin + 5, y);
+                y += 5;
+                doc.text(`CNPJ: ${contratadoCnpj}`, margin + 5, y);
+                y += 5;
+                doc.text(`Endereço: ${contratadoEndereco}`, margin + 5, y);
+                y += 10;
+
+                // ========== OBJETO DO CONTRATO ==========
+                if (y > pageHeight - 60) {
+                    doc.addPage();
+                    y = margin + 10;
+                }
+
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('OBJETO DO CONTRATO', margin + 3, y + 4);
+                y += 15;
+
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                const objeto = contrato.objeto || contrato.descricao || 'Não especificado';
+                const objetoLines = doc.splitTextToSize(objeto, pageWidth - (margin * 2));
+                doc.text(objetoLines, margin, y);
+                y += objetoLines.length * 5 + 5;
+
+                // ========== VALOR E CONDIÇÕES ==========
+                if (y > pageHeight - 80) {
+                    doc.addPage();
+                    y = margin + 10;
+                }
+
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('VALOR E CONDIÇÕES DE PAGAMENTO', margin + 3, y + 4);
+                y += 15;
+
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                
+                doc.setFont(undefined, 'bold');
+                doc.text('Valor Total:', margin, y);
+                doc.setFont(undefined, 'normal');
+                doc.text(formatCurrencyPDF(contrato.valor || 0), margin + 40, y);
+                y += 8;
+
+                if (contrato.valor_parcelado) {
+                    doc.text(`Pagamento Parcelado: ${contrato.numero_parcelas || 1}x de ${formatCurrencyPDF(contrato.valor_parcela || 0)}`, margin, y);
+                    y += 6;
+                } else {
+                    doc.text('Pagamento: À Vista', margin, y);
+                    y += 6;
+                }
+
+                if (contrato.condicoes_pagamento) {
+                    doc.text('Condições:', margin, y);
+                    y += 5;
+                    const condicoesLines = doc.splitTextToSize(contrato.condicoes_pagamento, pageWidth - (margin * 2));
+                    doc.text(condicoesLines, margin + 5, y);
+                    y += condicoesLines.length * 5 + 5;
+                }
+
+                // ========== PRAZO E DATAS ==========
+                if (y > pageHeight - 60) {
+                    doc.addPage();
+                    y = margin + 10;
+                }
+
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('PRAZO E DATAS', margin + 3, y + 4);
+                y += 15;
+
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                doc.text(`Data de Início: ${formatDatePDF(contrato.data_inicio)}`, margin, y);
+                y += 6;
+                doc.text(`Data de Vencimento: ${formatDatePDF(contrato.data_vencimento)}`, margin, y);
+                y += 6;
+                if (contrato.prazo_execucao_dias) {
+                    doc.text(`Prazo de Execução: ${contrato.prazo_execucao_dias} dias`, margin, y);
+                    y += 6;
+                }
+                if (contrato.data_assinatura) {
+                    doc.text(`Data de Assinatura: ${formatDatePDF(contrato.data_assinatura)}`, margin, y);
+                    y += 6;
+                }
+                if (contrato.local_assinatura) {
+                    doc.text(`Local de Assinatura: ${contrato.local_assinatura}`, margin, y);
+                    y += 6;
+                }
+                y += 5;
+
+                // ========== CLÁUSULAS ==========
+                if (contrato.clausulas) {
+                    if (y > pageHeight - 60) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+
+                    doc.setFillColor(240, 240, 240);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('CLÁUSULAS ESPECÍFICAS', margin + 3, y + 4);
+                    y += 15;
+
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    const clausulasLines = doc.splitTextToSize(contrato.clausulas, pageWidth - (margin * 2));
+                    doc.text(clausulasLines, margin, y);
+                    y += clausulasLines.length * 4 + 5;
+                }
+
+                // ========== TERMOS E CONDIÇÕES ==========
+                if (contrato.termos_condicoes) {
+                    if (y > pageHeight - 60) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+
+                    doc.setFillColor(240, 240, 240);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('TERMOS E CONDIÇÕES GERAIS', margin + 3, y + 4);
+                    y += 15;
+
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    const termosLines = doc.splitTextToSize(contrato.termos_condicoes, pageWidth - (margin * 2));
+                    doc.text(termosLines, margin, y);
+                    y += termosLines.length * 4 + 5;
+                }
+
+                // ========== PENALIDADES ==========
+                if (contrato.penalidades) {
+                    if (y > pageHeight - 60) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+
+                    doc.setFillColor(240, 240, 240);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('PENALIDADES', margin + 3, y + 4);
+                    y += 15;
+
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    const penalidadesLines = doc.splitTextToSize(contrato.penalidades, pageWidth - (margin * 2));
+                    doc.text(penalidadesLines, margin, y);
+                    y += penalidadesLines.length * 4 + 5;
+                }
+
+                // ========== FORO ==========
+                if (contrato.foro) {
+                    if (y > pageHeight - 40) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('FORO:', margin, y);
+                    doc.setFont(undefined, 'normal');
+                    doc.text(contrato.foro, margin + 20, y);
+                    y += 10;
+                }
+
+                // ========== ASSINATURAS ==========
+                if (y > pageHeight - 50) {
+                    doc.addPage();
+                    y = margin + 10;
+                }
+
+                y += 10;
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'bold');
+                doc.text('ASSINATURAS', pageWidth / 2, y, { align: 'center' });
+                y += 15;
+
+                // Linha para assinatura do contratante
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                doc.line(margin, y, margin + 80, y);
+                doc.text(contratanteNome, margin + 40, y - 2, { align: 'center' });
+                doc.text('CONTRATANTE', margin + 40, y + 8, { align: 'center' });
+                
+                // Linha para assinatura do contratado
+                doc.line(pageWidth - margin - 80, y, pageWidth - margin, y);
+                doc.text(contratadoNome, pageWidth - margin - 40, y - 2, { align: 'center' });
+                doc.text('CONTRATADO', pageWidth - margin - 40, y + 8, { align: 'center' });
+
+                // ========== RODAPÉ ==========
+                const contatoY = pageHeight - 8;
+                doc.setFontSize(7);
+                doc.setTextColor(128, 128, 128);
+                doc.setFont(undefined, 'normal');
+                doc.text('AUTOVIZION', margin, contatoY);
+                doc.text('|', margin + 25, contatoY);
+                doc.text('www.autovizon.com.br', margin + 30, contatoY);
+                doc.text('|', margin + 70, contatoY);
+                doc.text('autovizioncomercial@gmail.com', margin + 75, contatoY);
+                doc.text('|', margin + 130, contatoY);
+                doc.text('(14) 99683-3385', margin + 135, contatoY);
+
+                // Salvar PDF
+                const clienteNome = cliente.nome || cliente.empresa || 'Cliente';
+                const fileName = `Contrato_${contrato.numero || contratoId}_${clienteNome.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+                doc.save(fileName);
+
+                alert('PDF do contrato gerado com sucesso!');
+            } catch (error) {
+                console.error('Erro ao gerar PDF do contrato:', error);
+                alert('Erro ao gerar PDF: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Preview PDF (sem salvar)
+        async function previewContratoPDF() {
+            // Verificar se o formulário está preenchido
+            const objeto = document.getElementById('contratoObjeto').value;
+            const clienteId = document.getElementById('contratoClienteId').value;
+            
+            if (!objeto || !clienteId) {
+                alert('Por favor, preencha o Objeto do Contrato e selecione um Cliente antes de visualizar o PDF.');
+                return;
+            }
+
+            // Criar objeto temporário com dados do formulário
+            const contratoTemp = {
+                id: document.getElementById('contratoId').value || 'temp',
+                numero: document.getElementById('contratoNumero').value || 'CTR-0000',
+                cliente: {
+                    nome: document.getElementById('contratoClienteId').selectedOptions[0]?.text || 'Cliente',
+                    cpf_cnpj: '',
+                    endereco: '',
+                    cidade: '',
+                    estado: '',
+                    telefone: '',
+                    email: ''
+                },
+                objeto: objeto,
+                descricao: document.getElementById('contratoDescricao').value || '',
+                valor: parseFloat(document.getElementById('contratoValor').value) || 0,
+                valor_parcelado: document.getElementById('contratoValorParcelado').value === 'true',
+                numero_parcelas: parseInt(document.getElementById('contratoNumeroParcelas').value) || 1,
+                valor_parcela: parseFloat(document.getElementById('contratoValorParcela').value) || null,
+                data_inicio: document.getElementById('contratoDataInicio').value,
+                data_vencimento: document.getElementById('contratoDataVencimento').value,
+                prazo_execucao_dias: parseInt(document.getElementById('contratoPrazoExecucao').value) || null,
+                data_assinatura: document.getElementById('contratoDataAssinatura').value || null,
+                local_assinatura: document.getElementById('contratoLocalAssinatura').value || null,
+                condicoes_pagamento: document.getElementById('contratoCondicoesPagamento').value || '',
+                contratado_nome: document.getElementById('contratoContratadoNome').value || 'AUTOVIZION COMERCIAL',
+                contratado_cnpj: document.getElementById('contratoContratadoCnpj').value || '',
+                contratado_endereco: document.getElementById('contratoContratadoEndereco').value || '',
+                clausulas: document.getElementById('contratoClausulas').value || '',
+                termos_condicoes: document.getElementById('contratoTermosCondicoes').value || '',
+                penalidades: document.getElementById('contratoPenalidades').value || '',
+                foro: document.getElementById('contratoForo').value || ''
+            };
+
+            // Buscar dados do cliente se selecionado
+            if (clienteId) {
+                try {
+                    const { data: cliente } = await supabase
+                        .from('clientes')
+                        .select('*')
+                        .eq('id', clienteId)
+                        .single();
+                    
+                    if (cliente) {
+                        contratoTemp.cliente = cliente;
+                    }
+                } catch (e) {
+                    console.warn('Erro ao buscar cliente:', e);
+                }
+            }
+
+            // Gerar PDF com dados temporários
+            allContratos.push(contratoTemp);
+            await gerarPDFContrato(contratoTemp.id);
+            allContratos.pop();
         }
 
         // Verificar autenticação ao carregar
