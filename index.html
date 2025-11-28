@@ -442,6 +442,12 @@
             color: var(--text-gray);
         }
 
+        .template-card:hover {
+            border-color: var(--primary) !important;
+            background: rgba(255, 102, 0, 0.1) !important;
+            transform: translateY(-2px);
+        }
+
         .section-card {
             background: var(--secondary);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -3963,20 +3969,20 @@
                     <label class="form-label">Forma de Pagamento</label>
                     <div class="checkbox-group" style="background: var(--tertiary); padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
                         <div class="checkbox-item">
-                            <input type="checkbox" id="formaPagamentoCartao" value="Cartão de Crédito e Débito" onchange="atualizarFormaPagamento()">
-                            <label for="formaPagamentoCartao">Cartão de Crédito e Débito</label>
+                            <input type="checkbox" id="orcamentoFormaPagamentoCartao" value="Cartão de Crédito e Débito" onchange="atualizarFormaPagamento()">
+                            <label for="orcamentoFormaPagamentoCartao">Cartão de Crédito e Débito</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="formaPagamentoPix" value="PIX" onchange="atualizarFormaPagamento()">
-                            <label for="formaPagamentoPix">PIX</label>
+                            <input type="checkbox" id="orcamentoFormaPagamentoPix" value="PIX" onchange="atualizarFormaPagamento()">
+                            <label for="orcamentoFormaPagamentoPix">PIX</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="formaPagamentoDinheiro" value="Dinheiro" onchange="atualizarFormaPagamento()">
-                            <label for="formaPagamentoDinheiro">Dinheiro</label>
+                            <input type="checkbox" id="orcamentoFormaPagamentoDinheiro" value="Dinheiro" onchange="atualizarFormaPagamento()">
+                            <label for="orcamentoFormaPagamentoDinheiro">Dinheiro</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="formaPagamentoBoleto" value="Boleto" onchange="atualizarFormaPagamento()">
-                            <label for="formaPagamentoBoleto">Boleto</label>
+                            <input type="checkbox" id="orcamentoFormaPagamentoBoleto" value="Boleto" onchange="atualizarFormaPagamento()">
+                            <label for="orcamentoFormaPagamentoBoleto">Boleto</label>
                         </div>
                     </div>
                     <input type="hidden" id="orcamentoFormaPagamento" value="">
@@ -4278,8 +4284,52 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label">Serviços Incluídos *</label>
+                    <div class="checkbox-group" style="background: var(--tertiary); padding: 16px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 200px; overflow-y: auto;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="servicoSite" value="Criação e edição de site" onchange="atualizarObjetoContrato()">
+                            <label for="servicoSite">🌐 Criação e edição de site</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="servicoAutomacao" value="Automação para redes sociais" onchange="atualizarObjetoContrato()">
+                            <label for="servicoAutomacao">🤖 Automação para redes sociais</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="servicoAgenteIA" value="Criação de agente IA" onchange="atualizarObjetoContrato()">
+                            <label for="servicoAgenteIA">🧠 Criação de agente IA</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="servicoPlataforma" value="Desenvolvimento de plataforma própria" onchange="atualizarObjetoContrato()">
+                            <label for="servicoPlataforma">💻 Desenvolvimento de plataforma própria</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="servicoMarca" value="Criação de marca digital" onchange="atualizarObjetoContrato()">
+                            <label for="servicoMarca">🎨 Criação de marca digital</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="servicoRedes" value="Criação de redes sociais" onchange="atualizarObjetoContrato()">
+                            <label for="servicoRedes">📱 Criação de redes sociais</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="servicoSocialMedia" value="Serviço de social media" onchange="atualizarObjetoContrato()">
+                            <label for="servicoSocialMedia">📲 Serviço de social media</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="servicoAnalise" value="Análise estratégica" onchange="atualizarObjetoContrato()">
+                            <label for="servicoAnalise">📊 Análise estratégica</label>
+                        </div>
+                    </div>
+                    <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <small style="color: var(--text-gray); font-size: 12px;">Selecione os serviços que serão incluídos no contrato</small>
+                        <button type="button" onclick="abrirTemplatesObjeto()" class="btn" style="width: auto; padding: 6px 12px; font-size: 12px; background: rgba(255, 102, 0, 0.2); border: 1px solid var(--primary); color: var(--primary);">
+                            📋 Usar Template
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">Objeto do Contrato *</label>
-                    <textarea id="contratoObjeto" class="form-input" rows="4" placeholder="Descreva detalhadamente o objeto do contrato, serviços ou produtos que serão fornecidos..." required></textarea>
+                    <textarea id="contratoObjeto" class="form-input" rows="8" placeholder="O objeto será preenchido automaticamente ao selecionar os serviços acima, ou você pode usar um template profissional..." required></textarea>
                 </div>
 
                 <div class="form-group">
@@ -4343,15 +4393,62 @@
 
                 <div class="form-row">
                     <div class="form-group">
+                        <label class="form-label">Tipo de Pagamento</label>
+                        <select id="contratoTipoPagamento" class="form-input" onchange="toggleValorRecorrente()">
+                            <option value="unico">Pagamento Único</option>
+                            <option value="recorrente">Pagamento Recorrente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label">Renovação Automática</label>
                         <select id="contratoRenovacaoAutomatica" class="form-input">
                             <option value="false">Não</option>
                             <option value="true">Sim</option>
                         </select>
                     </div>
+                </div>
+
+                <!-- Campos para Pagamento Recorrente -->
+                <div id="camposValorRecorrente" style="display: none; background: var(--tertiary); padding: 16px; border-radius: 8px; margin: 16px 0; border: 1px solid rgba(255, 102, 0, 0.3);">
+                    <h3 style="color: var(--primary); margin-bottom: 12px; font-size: 16px;">💰 Valores Recorrentes</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Frequência de Cobrança *</label>
+                            <select id="contratoFrequenciaRecorrente" class="form-input">
+                                <option value="mensal">Mensal</option>
+                                <option value="trimestral">Trimestral (3 meses)</option>
+                                <option value="semestral">Semestral (6 meses)</option>
+                                <option value="anual">Anual (12 meses)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Valor Recorrente *</label>
+                            <input type="number" id="contratoValorRecorrente" class="form-input" step="0.01" min="0" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Data de Início da Cobrança</label>
+                            <input type="date" id="contratoDataInicioRecorrente" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Número de Ciclos</label>
+                            <input type="number" id="contratoNumeroCiclos" class="form-input" min="1" placeholder="Ilimitado (deixe vazio)">
+                            <small style="color: var(--text-gray); font-size: 11px;">Deixe vazio para cobrança ilimitada</small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Observações para Valores Recorrentes</label>
+                        <textarea id="contratoObservacoesRecorrente" class="form-input" rows="4" placeholder="Ex: Valor será reajustado anualmente pelo IPCA. Cobrança automática via cartão de crédito. Cliente pode cancelar com 30 dias de antecedência..."></textarea>
+                        <small style="color: var(--text-gray); font-size: 11px;">Informações importantes sobre o pagamento recorrente, reajustes, cancelamento, etc.</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Período de Renovação (dias)</label>
                         <input type="number" id="contratoPeriodoRenovacao" class="form-input" min="1" placeholder="30" value="30">
+                        <small style="color: var(--text-gray); font-size: 11px;">Aplicável apenas se Renovação Automática estiver ativa</small>
                     </div>
                 </div>
 
@@ -4379,18 +4476,33 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Cláusulas Específicas</label>
-                    <textarea id="contratoClausulas" class="form-input" rows="5" placeholder="Adicione cláusulas específicas do contrato. Ex:&#10;&#10;CLÁUSULA 1 - O contratado se compromete a...&#10;CLÁUSULA 2 - O contratante deverá..."></textarea>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label class="form-label" style="margin-bottom: 0;">Cláusulas Específicas</label>
+                        <button type="button" onclick="abrirTemplatesClausulas()" class="btn" style="width: auto; padding: 6px 12px; font-size: 12px; background: rgba(255, 102, 0, 0.2); border: 1px solid var(--primary); color: var(--primary);">
+                            📋 Templates
+                        </button>
+                    </div>
+                    <textarea id="contratoClausulas" class="form-input" rows="5" placeholder="Adicione cláusulas específicas do contrato. Use o botão Templates para facilitar..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Termos e Condições Gerais</label>
-                    <textarea id="contratoTermosCondicoes" class="form-input" rows="4" placeholder="Termos e condições gerais do contrato..."></textarea>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label class="form-label" style="margin-bottom: 0;">Termos e Condições Gerais</label>
+                        <button type="button" onclick="abrirTemplatesTermos()" class="btn" style="width: auto; padding: 6px 12px; font-size: 12px; background: rgba(255, 102, 0, 0.2); border: 1px solid var(--primary); color: var(--primary);">
+                            📋 Templates
+                        </button>
+                    </div>
+                    <textarea id="contratoTermosCondicoes" class="form-input" rows="4" placeholder="Termos e condições gerais do contrato. Use o botão Templates para facilitar..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Penalidades</label>
-                    <textarea id="contratoPenalidades" class="form-input" rows="3" placeholder="Descrição de penalidades em caso de descumprimento..."></textarea>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label class="form-label" style="margin-bottom: 0;">Penalidades</label>
+                        <button type="button" onclick="abrirTemplatesPenalidades()" class="btn" style="width: auto; padding: 6px 12px; font-size: 12px; background: rgba(255, 102, 0, 0.2); border: 1px solid var(--primary); color: var(--primary);">
+                            📋 Templates
+                        </button>
+                    </div>
+                    <textarea id="contratoPenalidades" class="form-input" rows="3" placeholder="Descrição de penalidades em caso de descumprimento. Use o botão Templates para facilitar..."></textarea>
                 </div>
 
                 <div class="form-group">
@@ -4409,6 +4521,214 @@
                     <button type="submit" class="btn btn-primary">Salvar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Templates de Objeto do Contrato -->
+    <div id="templatesObjetoModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title">📋 Templates Profissionais - Objeto do Contrato</h2>
+                <button class="btn-close" onclick="fecharTemplatesObjeto()">&times;</button>
+            </div>
+            <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                <div style="margin-bottom: 20px; color: var(--text-gray); font-size: 14px;">
+                    Selecione um template profissional para preencher automaticamente o campo "Objeto do Contrato". Você pode personalizar o texto após selecionar.
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <!-- Template 1: Criação e Edição de Site -->
+                    <div class="template-card" onclick="aplicarTemplate('criacao-site')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">🌐</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Criação e Edição de Site</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Desenvolvimento completo de website responsivo e moderno.</p>
+                    </div>
+
+                    <!-- Template 2: Automação para Redes Sociais -->
+                    <div class="template-card" onclick="aplicarTemplate('automacao-redes')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">🤖</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Automação para Redes Sociais</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Sistemas automatizados para gestão de redes sociais.</p>
+                    </div>
+
+                    <!-- Template 3: Criação de Agente IA -->
+                    <div class="template-card" onclick="aplicarTemplate('agente-ia')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">🧠</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Criação de Agente IA</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Assistente virtual inteligente personalizado.</p>
+                    </div>
+
+                    <!-- Template 4: Desenvolvimento de Plataforma -->
+                    <div class="template-card" onclick="aplicarTemplate('plataforma-propria')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">💻</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Desenvolvimento de Plataforma</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Plataforma digital personalizada e completa.</p>
+                    </div>
+
+                    <!-- Template 5: Criação de Marca Digital -->
+                    <div class="template-card" onclick="aplicarTemplate('marca-digital')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">🎨</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Criação de Marca Digital</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Identidade visual completa e profissional.</p>
+                    </div>
+
+                    <!-- Template 6: Social Media Completo -->
+                    <div class="template-card" onclick="aplicarTemplate('social-media-completo')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">📱</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Social Media Completo</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Gestão completa de redes sociais e conteúdo.</p>
+                    </div>
+
+                    <!-- Template 7: Análise Estratégica -->
+                    <div class="template-card" onclick="aplicarTemplate('analise-estrategica')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">📊</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Análise Estratégica</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Análises detalhadas e recomendações estratégicas.</p>
+                    </div>
+
+                    <!-- Template 8: Pacote Completo -->
+                    <div class="template-card" onclick="aplicarTemplate('pacote-completo')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">🚀</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Pacote Completo</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Todos os serviços em um contrato completo.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="fecharTemplatesObjeto()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Templates de Cláusulas -->
+    <div id="templatesClausulasModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title">📋 Templates de Cláusulas Específicas</h2>
+                <button class="btn-close" onclick="fecharTemplatesClausulas()">&times;</button>
+            </div>
+            <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                <div style="margin-bottom: 20px; color: var(--text-gray); font-size: 14px;">
+                    Selecione um template profissional de cláusulas. Você pode personalizar o texto após selecionar.
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <div class="template-card" onclick="aplicarTemplateClausulas('basico')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">📄</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Cláusulas Básicas</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Cláusulas essenciais para contratos de prestação de serviços.</p>
+                    </div>
+
+                    <div class="template-card" onclick="aplicarTemplateClausulas('completo')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">📑</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Cláusulas Completas</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Conjunto completo de cláusulas profissionais.</p>
+                    </div>
+
+                    <div class="template-card" onclick="aplicarTemplateClausulas('recorrente')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">🔄</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Cláusulas para Recorrentes</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Cláusulas específicas para contratos recorrentes.</p>
+                    </div>
+
+                    <div class="template-card" onclick="aplicarTemplateClausulas('propriedade')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">©️</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Propriedade Intelectual</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Cláusulas sobre direitos autorais e propriedade.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="fecharTemplatesClausulas()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Templates de Termos e Condições -->
+    <div id="templatesTermosModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title">📋 Templates de Termos e Condições</h2>
+                <button class="btn-close" onclick="fecharTemplatesTermos()">&times;</button>
+            </div>
+            <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                <div style="margin-bottom: 20px; color: var(--text-gray); font-size: 14px;">
+                    Selecione um template profissional de termos e condições. Você pode personalizar o texto após selecionar.
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <div class="template-card" onclick="aplicarTemplateTermos('basico')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">📋</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Termos Básicos</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Termos e condições essenciais.</p>
+                    </div>
+
+                    <div class="template-card" onclick="aplicarTemplateTermos('completo')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">📚</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Termos Completos</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Conjunto completo de termos e condições.</p>
+                    </div>
+
+                    <div class="template-card" onclick="aplicarTemplateTermos('cancelamento')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">🚫</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Cancelamento e Rescisão</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Termos sobre cancelamento e rescisão.</p>
+                    </div>
+
+                    <div class="template-card" onclick="aplicarTemplateTermos('garantia')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">🛡️</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Garantias e Suporte</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Termos sobre garantias e suporte técnico.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="fecharTemplatesTermos()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Templates de Penalidades -->
+    <div id="templatesPenalidadesModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title">📋 Templates de Penalidades</h2>
+                <button class="btn-close" onclick="fecharTemplatesPenalidades()">&times;</button>
+            </div>
+            <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                <div style="margin-bottom: 20px; color: var(--text-gray); font-size: 14px;">
+                    Selecione um template profissional de penalidades. Você pode personalizar o texto após selecionar.
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <div class="template-card" onclick="aplicarTemplatePenalidades('basico')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">⚠️</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Penalidades Básicas</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Penalidades essenciais para descumprimento.</p>
+                    </div>
+
+                    <div class="template-card" onclick="aplicarTemplatePenalidades('completo')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">⚖️</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Penalidades Completas</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Conjunto completo de penalidades e multas.</p>
+                    </div>
+
+                    <div class="template-card" onclick="aplicarTemplatePenalidades('atraso')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">⏰</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Atraso no Pagamento</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Penalidades por atraso no pagamento.</p>
+                    </div>
+
+                    <div class="template-card" onclick="aplicarTemplatePenalidades('descumprimento')" style="background: var(--secondary); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-size: 24px; margin-bottom: 12px;">❌</div>
+                        <h3 style="color: var(--primary); margin-bottom: 8px; font-size: 16px;">Descumprimento de Serviços</h3>
+                        <p style="color: var(--text-gray); font-size: 13px; line-height: 1.5;">Penalidades por descumprimento de serviços.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="fecharTemplatesPenalidades()">Fechar</button>
+            </div>
         </div>
     </div>
 
@@ -4573,24 +4893,24 @@
                     <label class="form-label">Formas de Pagamento</label>
                     <div class="checkbox-group" style="background: var(--tertiary); padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
                         <div class="checkbox-item">
-                            <input type="checkbox" id="formaPagamentoPix" value="PIX" onchange="atualizarFormasPagamento()">
-                            <label for="formaPagamentoPix">PIX</label>
+                            <input type="checkbox" id="documentoFormaPagamentoPix" value="PIX" onchange="atualizarFormasPagamento()">
+                            <label for="documentoFormaPagamentoPix">PIX</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="formaPagamentoCartao" value="Cartão de Crédito/Débito" onchange="atualizarFormasPagamento()">
-                            <label for="formaPagamentoCartao">Cartão de Crédito/Débito</label>
+                            <input type="checkbox" id="documentoFormaPagamentoCartao" value="Cartão de Crédito/Débito" onchange="atualizarFormasPagamento()">
+                            <label for="documentoFormaPagamentoCartao">Cartão de Crédito/Débito</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="formaPagamentoBoleto" value="Boleto" onchange="atualizarFormasPagamento()">
-                            <label for="formaPagamentoBoleto">Boleto</label>
+                            <input type="checkbox" id="documentoFormaPagamentoBoleto" value="Boleto" onchange="atualizarFormasPagamento()">
+                            <label for="documentoFormaPagamentoBoleto">Boleto</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="formaPagamentoDinheiro" value="Dinheiro" onchange="atualizarFormasPagamento()">
-                            <label for="formaPagamentoDinheiro">Dinheiro</label>
+                            <input type="checkbox" id="documentoFormaPagamentoDinheiro" value="Dinheiro" onchange="atualizarFormasPagamento()">
+                            <label for="documentoFormaPagamentoDinheiro">Dinheiro</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="formaPagamentoTransferencia" value="Transferência Bancária" onchange="atualizarFormasPagamento()">
-                            <label for="formaPagamentoTransferencia">Transferência Bancária</label>
+                            <input type="checkbox" id="documentoFormaPagamentoTransferencia" value="Transferência Bancária" onchange="atualizarFormasPagamento()">
+                            <label for="documentoFormaPagamentoTransferencia">Transferência Bancária</label>
                         </div>
                     </div>
                     <input type="hidden" id="documentoFinalizacaoFormasPagamento" value="">
@@ -7931,10 +8251,10 @@
             });
             
             // Limpar checkboxes de forma de pagamento
-            document.getElementById('formaPagamentoCartao').checked = false;
-            document.getElementById('formaPagamentoPix').checked = false;
-            document.getElementById('formaPagamentoDinheiro').checked = false;
-            document.getElementById('formaPagamentoBoleto').checked = false;
+            document.getElementById('orcamentoFormaPagamentoCartao').checked = false;
+            document.getElementById('orcamentoFormaPagamentoPix').checked = false;
+            document.getElementById('orcamentoFormaPagamentoDinheiro').checked = false;
+            document.getElementById('orcamentoFormaPagamentoBoleto').checked = false;
             document.getElementById('orcamentoFormaPagamento').value = '';
             
             carregarItensOrcamento([]);
@@ -8004,16 +8324,16 @@
         // Atualizar forma de pagamento (coletar checkboxes marcados)
         function atualizarFormaPagamento() {
             const formasSelecionadas = [];
-            if (document.getElementById('formaPagamentoCartao').checked) {
+            if (document.getElementById('orcamentoFormaPagamentoCartao').checked) {
                 formasSelecionadas.push('Cartão de Crédito e Débito');
             }
-            if (document.getElementById('formaPagamentoPix').checked) {
+            if (document.getElementById('orcamentoFormaPagamentoPix').checked) {
                 formasSelecionadas.push('PIX');
             }
-            if (document.getElementById('formaPagamentoDinheiro').checked) {
+            if (document.getElementById('orcamentoFormaPagamentoDinheiro').checked) {
                 formasSelecionadas.push('Dinheiro');
             }
-            if (document.getElementById('formaPagamentoBoleto').checked) {
+            if (document.getElementById('orcamentoFormaPagamentoBoleto').checked) {
                 formasSelecionadas.push('Boleto');
             }
             document.getElementById('orcamentoFormaPagamento').value = formasSelecionadas.join(', ');
@@ -8033,10 +8353,10 @@
                 submenu.classList.remove('active');
             });
             // Limpar checkboxes de forma de pagamento
-            document.getElementById('formaPagamentoCartao').checked = false;
-            document.getElementById('formaPagamentoPix').checked = false;
-            document.getElementById('formaPagamentoDinheiro').checked = false;
-            document.getElementById('formaPagamentoBoleto').checked = false;
+            document.getElementById('orcamentoFormaPagamentoCartao').checked = false;
+            document.getElementById('orcamentoFormaPagamentoPix').checked = false;
+            document.getElementById('orcamentoFormaPagamentoDinheiro').checked = false;
+            document.getElementById('orcamentoFormaPagamentoBoleto').checked = false;
             document.getElementById('orcamentoFormaPagamento').value = '';
         }
 
@@ -8085,16 +8405,16 @@
             // Marcar checkboxes de forma de pagamento
             if (formaPagamento) {
                 const formas = formaPagamento.split(',').map(f => f.trim());
-                document.getElementById('formaPagamentoCartao').checked = formas.includes('Cartão de Crédito e Débito');
-                document.getElementById('formaPagamentoPix').checked = formas.includes('PIX');
-                document.getElementById('formaPagamentoDinheiro').checked = formas.includes('Dinheiro');
-                document.getElementById('formaPagamentoBoleto').checked = formas.includes('Boleto');
+                document.getElementById('orcamentoFormaPagamentoCartao').checked = formas.includes('Cartão de Crédito e Débito');
+                document.getElementById('orcamentoFormaPagamentoPix').checked = formas.includes('PIX');
+                document.getElementById('orcamentoFormaPagamentoDinheiro').checked = formas.includes('Dinheiro');
+                document.getElementById('orcamentoFormaPagamentoBoleto').checked = formas.includes('Boleto');
                 atualizarFormaPagamento();
             } else {
-                document.getElementById('formaPagamentoCartao').checked = false;
-                document.getElementById('formaPagamentoPix').checked = false;
-                document.getElementById('formaPagamentoDinheiro').checked = false;
-                document.getElementById('formaPagamentoBoleto').checked = false;
+                document.getElementById('orcamentoFormaPagamentoCartao').checked = false;
+                document.getElementById('orcamentoFormaPagamentoPix').checked = false;
+                document.getElementById('orcamentoFormaPagamentoDinheiro').checked = false;
+                document.getElementById('orcamentoFormaPagamentoBoleto').checked = false;
                 document.getElementById('orcamentoFormaPagamento').value = '';
             }
 
@@ -13731,11 +14051,11 @@
         // Atualizar formas de pagamento
         function atualizarFormasPagamento() {
             const formasSelecionadas = [];
-            if (document.getElementById('formaPagamentoPix').checked) formasSelecionadas.push('PIX');
-            if (document.getElementById('formaPagamentoCartao').checked) formasSelecionadas.push('Cartão de Crédito/Débito');
-            if (document.getElementById('formaPagamentoBoleto').checked) formasSelecionadas.push('Boleto');
-            if (document.getElementById('formaPagamentoDinheiro').checked) formasSelecionadas.push('Dinheiro');
-            if (document.getElementById('formaPagamentoTransferencia').checked) formasSelecionadas.push('Transferência Bancária');
+            if (document.getElementById('documentoFormaPagamentoPix').checked) formasSelecionadas.push('PIX');
+            if (document.getElementById('documentoFormaPagamentoCartao').checked) formasSelecionadas.push('Cartão de Crédito/Débito');
+            if (document.getElementById('documentoFormaPagamentoBoleto').checked) formasSelecionadas.push('Boleto');
+            if (document.getElementById('documentoFormaPagamentoDinheiro').checked) formasSelecionadas.push('Dinheiro');
+            if (document.getElementById('documentoFormaPagamentoTransferencia').checked) formasSelecionadas.push('Transferência Bancária');
             document.getElementById('documentoFinalizacaoFormasPagamento').value = formasSelecionadas.join(', ');
         }
 
@@ -13754,11 +14074,11 @@
             entregasList = [];
             
             // Limpar checkboxes de formas de pagamento
-            document.getElementById('formaPagamentoPix').checked = false;
-            document.getElementById('formaPagamentoCartao').checked = false;
-            document.getElementById('formaPagamentoBoleto').checked = false;
-            document.getElementById('formaPagamentoDinheiro').checked = false;
-            document.getElementById('formaPagamentoTransferencia').checked = false;
+            document.getElementById('documentoFormaPagamentoPix').checked = false;
+            document.getElementById('documentoFormaPagamentoCartao').checked = false;
+            document.getElementById('documentoFormaPagamentoBoleto').checked = false;
+            document.getElementById('documentoFormaPagamentoDinheiro').checked = false;
+            document.getElementById('documentoFormaPagamentoTransferencia').checked = false;
             document.getElementById('documentoFinalizacaoFormasPagamento').value = '';
 
             // Preencher dados do projeto
@@ -13785,11 +14105,11 @@
                 if (orcamento && orcamento.forma_pagamento) {
                     const formas = orcamento.forma_pagamento.split(',').map(f => f.trim());
                     formas.forEach(forma => {
-                        if (forma.includes('PIX')) document.getElementById('formaPagamentoPix').checked = true;
-                        if (forma.includes('Cartão')) document.getElementById('formaPagamentoCartao').checked = true;
-                        if (forma.includes('Boleto')) document.getElementById('formaPagamentoBoleto').checked = true;
-                        if (forma.includes('Dinheiro')) document.getElementById('formaPagamentoDinheiro').checked = true;
-                        if (forma.includes('Transferência')) document.getElementById('formaPagamentoTransferencia').checked = true;
+                        if (forma.includes('PIX')) document.getElementById('documentoFormaPagamentoPix').checked = true;
+                        if (forma.includes('Cartão')) document.getElementById('documentoFormaPagamentoCartao').checked = true;
+                        if (forma.includes('Boleto')) document.getElementById('documentoFormaPagamentoBoleto').checked = true;
+                        if (forma.includes('Dinheiro')) document.getElementById('documentoFormaPagamentoDinheiro').checked = true;
+                        if (forma.includes('Transferência')) document.getElementById('documentoFormaPagamentoTransferencia').checked = true;
                     });
                     atualizarFormasPagamento();
                 }
@@ -17269,6 +17589,33 @@ Obrigado pela confiança! 🙏`;
             document.getElementById('contratoForm').reset();
             document.getElementById('contratoId').value = '';
             
+            // Limpar checkboxes de serviços
+            document.querySelectorAll('input[type="checkbox"][id^="servico"]').forEach(cb => {
+                cb.checked = false;
+            });
+            document.getElementById('contratoObjeto').value = '';
+            
+            // Limpar campos de valor recorrente
+            if (document.getElementById('contratoTipoPagamento')) {
+                document.getElementById('contratoTipoPagamento').value = 'unico';
+            }
+            if (document.getElementById('contratoFrequenciaRecorrente')) {
+                document.getElementById('contratoFrequenciaRecorrente').value = 'mensal';
+            }
+            if (document.getElementById('contratoValorRecorrente')) {
+                document.getElementById('contratoValorRecorrente').value = '';
+            }
+            if (document.getElementById('contratoDataInicioRecorrente')) {
+                document.getElementById('contratoDataInicioRecorrente').value = '';
+            }
+            if (document.getElementById('contratoNumeroCiclos')) {
+                document.getElementById('contratoNumeroCiclos').value = '';
+            }
+            if (document.getElementById('contratoObservacoesRecorrente')) {
+                document.getElementById('contratoObservacoesRecorrente').value = '';
+            }
+            toggleValorRecorrente();
+            
             // Gerar número automático
             const { data: ultimoContrato } = await supabase
                 .from('contratos')
@@ -17297,6 +17644,498 @@ Obrigado pela confiança! 🙏`;
             
             const modal = document.getElementById('contratoModal');
             openModal(modal);
+        }
+
+        // Atualizar objeto do contrato com serviços selecionados
+        function atualizarObjetoContrato() {
+            const servicos = [];
+            const servicosMap = {
+                'servicoSite': 'Criação e edição de site',
+                'servicoAutomacao': 'Automação para redes sociais',
+                'servicoAgenteIA': 'Criação de agente IA',
+                'servicoPlataforma': 'Desenvolvimento de plataforma própria',
+                'servicoMarca': 'Criação de marca digital',
+                'servicoRedes': 'Criação de redes sociais',
+                'servicoSocialMedia': 'Serviço de social media',
+                'servicoAnalise': 'Análise estratégica'
+            };
+
+            Object.keys(servicosMap).forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox && checkbox.checked) {
+                    servicos.push(servicosMap[id]);
+                }
+            });
+
+            if (servicos.length > 0) {
+                let objetoTexto = `PRESTAÇÃO DE SERVIÇOS DIGITAIS E TECNOLÓGICOS
+
+A AUTOVIZION COMERCIAL, pessoa jurídica devidamente constituída, inscrita no CNPJ sob o nº [CNPJ], com sede na [ENDEREÇO COMPLETO], doravante denominada CONTRATADA, se compromete a prestar ao CONTRATANTE, pessoa física/jurídica identificada neste contrato, os seguintes serviços digitais e tecnológicos:
+
+`;
+
+                servicos.forEach((servico, index) => {
+                    objetoTexto += `${index + 1}. ${servico.toUpperCase()}\n`;
+                    objetoTexto += `   ${getDescricaoServico(servico)}\n\n`;
+                });
+
+                objetoTexto += `Os serviços serão prestados com qualidade, eficiência e em conformidade com as melhores práticas do mercado, utilizando profissionais qualificados e tecnologias atualizadas para a execução das atividades contratadas.
+
+A CONTRATADA se compromete a manter sigilo absoluto sobre todas as informações confidenciais do CONTRATANTE, não divulgando dados comerciais, estratégicos ou operacionais sem prévia autorização escrita.
+
+Todos os materiais, códigos, designs e soluções desenvolvidas serão entregues com documentação completa, garantindo que o CONTRATANTE tenha total autonomia e conhecimento sobre os serviços prestados.`;
+
+                document.getElementById('contratoObjeto').value = objetoTexto;
+            } else {
+                document.getElementById('contratoObjeto').value = '';
+            }
+        }
+
+        // Obter descrição detalhada do serviço
+        function getDescricaoServico(servico) {
+            const descricoes = {
+                'Criação e edição de site': 'Desenvolvimento, criação e manutenção de website responsivo, incluindo design, programação, otimização e atualizações conforme necessário.',
+                'Automação para redes sociais': 'Configuração e implementação de sistemas automatizados para gestão e publicação de conteúdo em redes sociais, incluindo agendamento e monitoramento.',
+                'Criação de agente IA': 'Desenvolvimento e implementação de assistente virtual inteligente personalizado, utilizando inteligência artificial para atendimento, suporte e automação de processos.',
+                'Desenvolvimento de plataforma própria': 'Criação de plataforma digital personalizada, incluindo desenvolvimento completo, integrações, banco de dados e sistema de gestão conforme especificações.',
+                'Criação de marca digital': 'Desenvolvimento de identidade visual completa, incluindo logo, paleta de cores, tipografia, diretrizes de marca e aplicação em materiais digitais.',
+                'Criação de redes sociais': 'Criação e configuração de perfis profissionais em redes sociais, incluindo otimização de biografia, capas, conteúdo inicial e estratégia de presença digital.',
+                'Serviço de social media': 'Gestão completa de redes sociais, incluindo criação de conteúdo, publicação, engajamento com público, análise de métricas e estratégias de crescimento.',
+                'Análise estratégica': 'Realização de análises detalhadas de mercado, concorrência, público-alvo e oportunidades, fornecendo relatórios estratégicos e recomendações para tomada de decisão.'
+            };
+            return descricoes[servico] || 'Serviço profissional de alta qualidade, executado com excelência e comprometimento.';
+        }
+
+        // Abrir modal de templates de objeto
+        function abrirTemplatesObjeto() {
+            const modal = document.getElementById('templatesObjetoModal');
+            openModal(modal);
+        }
+
+        // Fechar modal de templates
+        function fecharTemplatesObjeto() {
+            const modal = document.getElementById('templatesObjetoModal');
+            closeModal(modal);
+        }
+
+        // ========== FUNÇÕES PARA TEMPLATES DE CLÁUSULAS ==========
+        function abrirTemplatesClausulas() {
+            const modal = document.getElementById('templatesClausulasModal');
+            openModal(modal);
+        }
+
+        function fecharTemplatesClausulas() {
+            const modal = document.getElementById('templatesClausulasModal');
+            closeModal(modal);
+        }
+
+        function aplicarTemplateClausulas(tipo) {
+            const templates = {
+                'basico': `CLÁUSULA 1 - DO OBJETO
+O CONTRATADO se compromete a prestar os serviços descritos neste contrato com qualidade, eficiência e em conformidade com as especificações acordadas.
+
+CLÁUSULA 2 - DO PRAZO
+Os serviços serão executados no prazo estabelecido neste contrato, contado a partir da data de início.
+
+CLÁUSULA 3 - DA QUALIDADE
+A CONTRATADA garante que todos os serviços serão prestados por profissionais qualificados e utilizando as melhores práticas do mercado.
+
+CLÁUSULA 4 - DO SIGILO
+As partes se comprometem a manter sigilo absoluto sobre todas as informações confidenciais compartilhadas durante a execução deste contrato.`,
+
+                'completo': `CLÁUSULA 1 - DO OBJETO E ESCOPO
+O CONTRATADO se compromete a prestar os serviços descritos neste contrato com qualidade, eficiência e em conformidade com as especificações acordadas. O escopo dos serviços inclui todas as atividades necessárias para a completa execução do objeto contratado.
+
+CLÁUSULA 2 - DO PRAZO E ENTREGA
+Os serviços serão executados no prazo estabelecido neste contrato, contado a partir da data de início. A CONTRATADA se compromete a cumprir todos os prazos acordados, comunicando previamente qualquer necessidade de alteração.
+
+CLÁUSULA 3 - DA QUALIDADE E PADRONIZAÇÃO
+A CONTRATADA garante que todos os serviços serão prestados por profissionais qualificados, utilizando as melhores práticas do mercado, tecnologias atualizadas e metodologias adequadas. Todos os materiais entregues estarão em conformidade com os padrões de qualidade estabelecidos.
+
+CLÁUSULA 4 - DO SIGILO E CONFIDENCIALIDADE
+As partes se comprometem a manter sigilo absoluto sobre todas as informações confidenciais, estratégicas, comerciais ou técnicas compartilhadas durante a execução deste contrato. Esta obrigação permanece válida mesmo após o término do contrato.
+
+CLÁUSULA 5 - DAS ALTERAÇÕES
+Qualquer alteração no escopo, prazo ou valor dos serviços deverá ser formalizada por escrito e aprovada por ambas as partes, mediante aditivo contratual.
+
+CLÁUSULA 6 - DA PROPRIEDADE INTELECTUAL
+Todos os materiais, códigos, designs e soluções desenvolvidas pela CONTRATADA serão de propriedade do CONTRATANTE após o pagamento integral do contrato, salvo disposição em contrário.
+
+CLÁUSULA 7 - DA COMUNICAÇÃO
+Todas as comunicações entre as partes deverão ser feitas por escrito, através dos canais oficiais estabelecidos, garantindo rastreabilidade e formalidade.`,
+
+                'recorrente': `CLÁUSULA 1 - DA NATUREZA RECORRENTE
+Este contrato estabelece uma relação de prestação de serviços de natureza recorrente, com cobranças periódicas conforme frequência estabelecida.
+
+CLÁUSULA 2 - DO VALOR E REAJUSTE
+O valor recorrente será reajustado anualmente pelo índice IPCA ou outro índice acordado entre as partes. O reajuste será aplicado automaticamente, com comunicação prévia de 30 dias ao CONTRATANTE.
+
+CLÁUSULA 3 - DA RENOVAÇÃO
+Este contrato será renovado automaticamente por períodos sucessivos, salvo manifestação contrária de qualquer das partes com antecedência mínima de 30 dias do término do período vigente.
+
+CLÁUSULA 4 - DO CANCELAMENTO
+O CONTRATANTE poderá cancelar este contrato a qualquer momento, mediante comunicação escrita com antecedência mínima de 30 dias, sem ônus adicional, desde que não haja pendências financeiras.
+
+CLÁUSULA 5 - DAS OBRIGAÇÕES RECORRENTES
+A CONTRATADA se compromete a manter a qualidade e continuidade dos serviços durante todo o período de vigência do contrato, incluindo atualizações, melhorias e suporte técnico conforme acordado.`,
+
+                'propriedade': `CLÁUSULA 1 - DA PROPRIEDADE INTELECTUAL
+Todos os materiais, códigos, designs, textos, imagens, vídeos, sistemas e demais criações desenvolvidas pela CONTRATADA no âmbito deste contrato serão de propriedade exclusiva do CONTRATANTE após o pagamento integral.
+
+CLÁUSULA 2 - DOS DIREITOS AUTORAIS
+A CONTRATADA cede ao CONTRATANTE todos os direitos autorais sobre as obras criadas, incluindo direitos de uso, reprodução, distribuição, modificação e comercialização, sem limitações territoriais ou temporais.
+
+CLÁUSULA 3 - DAS FERRAMENTAS E TECNOLOGIAS
+Ferramentas, tecnologias, bibliotecas e frameworks de terceiros utilizados no desenvolvimento permanecerão sob suas respectivas licenças originais. A CONTRATADA garante que todas as licenças necessárias estão em conformidade.
+
+CLÁUSULA 4 - DO MATERIAL PRÓPRIO
+Materiais, códigos e soluções pré-existentes de propriedade da CONTRATADA poderão ser utilizados, desde que não comprometam a propriedade intelectual do CONTRATANTE sobre o trabalho desenvolvido especificamente para este contrato.
+
+CLÁUSULA 5 - DA PROTEÇÃO
+Ambas as partes se comprometem a proteger e respeitar os direitos de propriedade intelectual um do outro, não utilizando materiais protegidos sem autorização prévia e por escrito.`
+            };
+
+            const template = templates[tipo];
+            if (template) {
+                document.getElementById('contratoClausulas').value = template;
+                fecharTemplatesClausulas();
+            }
+        }
+
+        // ========== FUNÇÕES PARA TEMPLATES DE TERMOS ==========
+        function abrirTemplatesTermos() {
+            const modal = document.getElementById('templatesTermosModal');
+            openModal(modal);
+        }
+
+        function fecharTemplatesTermos() {
+            const modal = document.getElementById('templatesTermosModal');
+            closeModal(modal);
+        }
+
+        function aplicarTemplateTermos(tipo) {
+            const templates = {
+                'basico': `TERMO 1 - DAS OBRIGAÇÕES GERAIS
+As partes se comprometem a cumprir fielmente todas as obrigações estabelecidas neste contrato, agindo de boa-fé e colaborando mutuamente para o sucesso da relação contratual.
+
+TERMO 2 - DA RESCISÃO
+Este contrato poderá ser rescindido por qualquer das partes mediante comunicação escrita com antecedência mínima de 30 dias, ou imediatamente em caso de descumprimento grave das obrigações contratuais.
+
+TERMO 3 - DAS DISPUTAS
+Qualquer controvérsia oriunda deste contrato será resolvida preferencialmente através de negociação amigável entre as partes.`,
+
+                'completo': `TERMO 1 - DAS OBRIGAÇÕES GERAIS
+As partes se comprometem a cumprir fielmente todas as obrigações estabelecidas neste contrato, agindo de boa-fé, transparência e colaborando mutuamente para o sucesso da relação contratual. Todas as comunicações deverão ser feitas por escrito.
+
+TERMO 2 - DA FORÇA MAIOR
+Nenhuma das partes será responsabilizada por atrasos ou descumprimentos decorrentes de casos fortuitos, força maior ou eventos imprevisíveis, tais como: desastres naturais, pandemias, greves, alterações legislativas, falhas de sistemas de terceiros, entre outros.
+
+TERMO 3 - DA RESCISÃO
+Este contrato poderá ser rescindido por qualquer das partes mediante comunicação escrita com antecedência mínima de 30 dias, ou imediatamente em caso de: (a) descumprimento grave das obrigações contratuais; (b) declaração de falência ou insolvência; (c) prática de atos que comprometam a reputação da outra parte.
+
+TERMO 4 - DAS ALTERAÇÕES CONTRATUAIS
+Qualquer alteração neste contrato deverá ser formalizada por escrito, mediante aditivo contratual assinado por ambas as partes, não sendo válidas alterações verbais ou informais.
+
+TERMO 5 - DA COMUNICAÇÃO
+Todas as comunicações oficiais entre as partes deverão ser feitas por escrito, através de e-mail, correspondência ou plataforma oficial, garantindo rastreabilidade e formalidade.
+
+TERMO 6 - DA CONFIDENCIALIDADE
+As partes se comprometem a manter sigilo sobre todas as informações confidenciais compartilhadas, não divulgando dados comerciais, estratégicos, técnicos ou operacionais sem prévia autorização escrita.
+
+TERMO 7 - DAS DISPUTAS E MEDIAÇÃO
+Qualquer controvérsia oriunda deste contrato será resolvida preferencialmente através de negociação amigável. Caso não seja possível, as partes poderão recorrer à mediação ou arbitragem antes de acionar o Poder Judiciário.`,
+
+                'cancelamento': `TERMO 1 - DO DIREITO DE CANCELAMENTO
+O CONTRATANTE poderá cancelar este contrato a qualquer momento, mediante comunicação escrita com antecedência mínima de 30 dias, sem ônus adicional, desde que não haja pendências financeiras ou obrigações em aberto.
+
+TERMO 2 - DO CANCELAMENTO PELA CONTRATADA
+A CONTRATADA poderá cancelar este contrato mediante comunicação escrita com antecedência mínima de 60 dias, ou imediatamente em caso de: (a) inadimplência superior a 30 dias; (b) descumprimento grave das obrigações do CONTRATANTE; (c) uso indevido dos serviços prestados.
+
+TERMO 3 - DAS CONSEQUÊNCIAS DO CANCELAMENTO
+Em caso de cancelamento, o CONTRATANTE terá direito aos serviços já pagos e não utilizados, calculados proporcionalmente. Materiais e entregas já realizadas permanecerão de propriedade do CONTRATANTE.
+
+TERMO 4 - DA CONTINUIDADE DOS SERVIÇOS
+Após o cancelamento, a CONTRATADA se compromete a manter os serviços ativos pelo período de transição acordado, garantindo continuidade e migração adequada quando necessário.
+
+TERMO 5 - DO REEMBOLSO
+Em caso de cancelamento pelo CONTRATANTE dentro dos primeiros 7 dias, será concedido reembolso integral dos valores pagos, deduzidos apenas os custos já incorridos pela CONTRATADA.`,
+
+                'garantia': `TERMO 1 - DAS GARANTIAS
+A CONTRATADA garante que todos os serviços serão executados com qualidade profissional, utilizando profissionais qualificados, tecnologias atualizadas e seguindo as melhores práticas do mercado.
+
+TERMO 2 - DO SUPORTE TÉCNICO
+A CONTRATADA se compromete a fornecer suporte técnico adequado durante o período de vigência do contrato, incluindo correção de problemas, atualizações necessárias e orientações para utilização.
+
+TERMO 3 - DA CORREÇÃO DE DEFEITOS
+Em caso de defeitos ou não conformidades identificados, a CONTRATADA se compromete a corrigir os problemas sem custo adicional, dentro de prazo razoável, desde que comunicados dentro do período de garantia.
+
+TERMO 4 - DO PERÍODO DE GARANTIA
+Os serviços prestados terão garantia de 90 dias contados a partir da entrega, durante os quais a CONTRATADA corrigirá defeitos e não conformidades sem custo adicional.
+
+TERMO 5 - DAS LIMITAÇÕES
+A garantia não cobre: (a) alterações ou modificações realizadas por terceiros; (b) problemas decorrentes de uso inadequado; (c) falhas em sistemas ou serviços de terceiros; (d) atualizações ou mudanças solicitadas pelo CONTRATANTE após a entrega.`
+            };
+
+            const template = templates[tipo];
+            if (template) {
+                document.getElementById('contratoTermosCondicoes').value = template;
+                fecharTemplatesTermos();
+            }
+        }
+
+        // ========== FUNÇÕES PARA TEMPLATES DE PENALIDADES ==========
+        function abrirTemplatesPenalidades() {
+            const modal = document.getElementById('templatesPenalidadesModal');
+            openModal(modal);
+        }
+
+        function fecharTemplatesPenalidades() {
+            const modal = document.getElementById('templatesPenalidadesModal');
+            closeModal(modal);
+        }
+
+        function aplicarTemplatePenalidades(tipo) {
+            const templates = {
+                'basico': `PENALIDADE POR ATRASO NO PAGAMENTO
+Em caso de atraso no pagamento, será aplicada multa de 2% (dois por cento) sobre o valor em atraso, além de juros de mora de 1% (um por cento) ao mês, calculados proporcionalmente.
+
+PENALIDADE POR DESCUMPRIMENTO
+Em caso de descumprimento das obrigações contratuais por qualquer das partes, a parte inadimplente pagará à outra multa equivalente a 10% (dez por cento) do valor total do contrato.`,
+
+                'completo': `PENALIDADE POR ATRASO NO PAGAMENTO
+Em caso de atraso no pagamento de qualquer parcela ou valor devido, o CONTRATANTE pagará à CONTRATADA:
+a) Multa de 2% (dois por cento) sobre o valor em atraso;
+b) Juros de mora de 1% (um por cento) ao mês, calculados proporcionalmente;
+c) Correção monetária pelo índice IPCA ou outro índice acordado.
+
+PENALIDADE POR DESCUMPRIMENTO DE SERVIÇOS
+Em caso de descumprimento das obrigações de prestação de serviços pela CONTRATADA, será aplicada:
+a) Multa de 10% (dez por cento) do valor total do contrato;
+b) Redução proporcional do valor a ser pago, correspondente aos serviços não executados ou executados de forma inadequada;
+c) Obrigação de correção dos problemas sem custo adicional.
+
+PENALIDADE POR CANCELAMENTO INDEVIDO
+Em caso de cancelamento unilateral sem justa causa, a parte que cancelar pagará à outra multa equivalente a 20% (vinte por cento) do valor total do contrato, além das obrigações já assumidas.
+
+PENALIDADE POR QUEBRA DE SIGILO
+Em caso de violação da cláusula de sigilo e confidencialidade, a parte infratora pagará multa de R$ 50.000,00 (cinquenta mil reais) ou 50% (cinquenta por cento) do valor do contrato, o que for maior, além de responder por perdas e danos.
+
+PENALIDADE POR USO INDEVIDO
+Em caso de uso indevido dos materiais, códigos ou soluções desenvolvidas, a parte infratora pagará multa de 100% (cem por cento) do valor do contrato, além de responder por perdas e danos e violação de propriedade intelectual.`,
+
+                'atraso': `PENALIDADE POR ATRASO NO PAGAMENTO
+
+Em caso de atraso no pagamento de qualquer parcela ou valor devido, o CONTRATANTE pagará à CONTRATADA as seguintes penalidades:
+
+a) MULTA: 2% (dois por cento) sobre o valor em atraso, calculada a partir do primeiro dia de atraso;
+
+b) JUROS DE MORA: 1% (um por cento) ao mês, calculados proporcionalmente sobre o valor em atraso, capitalizados mensalmente;
+
+c) CORREÇÃO MONETÁRIA: Aplicação do índice IPCA ou outro índice acordado entre as partes, para atualização do valor;
+
+d) SUSPENSÃO DE SERVIÇOS: A CONTRATADA poderá suspender a prestação dos serviços após 15 (quinze) dias de atraso, mediante comunicação prévia, sem prejuízo da cobrança dos valores devidos;
+
+e) RESCISÃO: Após 30 (trinta) dias de atraso, a CONTRATADA poderá rescindir o contrato, sem prejuízo da cobrança de todas as penalidades e valores devidos.
+
+As penalidades serão aplicadas cumulativamente, não se excluindo mutuamente.`,
+
+                'descumprimento': `PENALIDADE POR DESCUMPRIMENTO DE SERVIÇOS
+
+Em caso de descumprimento das obrigações de prestação de serviços pela CONTRATADA, serão aplicadas as seguintes penalidades:
+
+a) MULTA: 10% (dez por cento) do valor total do contrato, aplicável em caso de descumprimento grave ou repetido;
+
+b) REDUÇÃO PROPORCIONAL: Redução do valor a ser pago, correspondente aos serviços não executados, executados de forma inadequada ou fora do prazo estabelecido;
+
+c) CORREÇÃO SEM CUSTO: Obrigação de corrigir, refazer ou completar os serviços sem custo adicional para o CONTRATANTE, dentro de prazo razoável estabelecido;
+
+d) RESCISÃO: O CONTRATANTE poderá rescindir o contrato em caso de descumprimento grave ou repetido, sem prejuízo do recebimento de multa e ressarcimento de prejuízos;
+
+e) PERDAS E DANOS: A CONTRATADA responderá por todos os prejuízos causados ao CONTRATANTE em decorrência do descumprimento, incluindo lucros cessantes e danos morais quando aplicável.
+
+As penalidades serão aplicadas de forma proporcional à gravidade do descumprimento, podendo ser aplicadas cumulativamente quando necessário.`
+            };
+
+            const template = templates[tipo];
+            if (template) {
+                document.getElementById('contratoPenalidades').value = template;
+                fecharTemplatesPenalidades();
+            }
+        }
+
+        // Aplicar template ao campo de objeto
+        function aplicarTemplate(tipo) {
+            const templates = {
+                'criacao-site': `PRESTAÇÃO DE SERVIÇOS - CRIAÇÃO E EDIÇÃO DE SITE
+
+A AUTOVIZION COMERCIAL, pessoa jurídica devidamente constituída, inscrita no CNPJ sob o nº [CNPJ], com sede na [ENDEREÇO COMPLETO], doravante denominada CONTRATADA, se compromete a prestar ao CONTRATANTE, pessoa física/jurídica identificada neste contrato, os seguintes serviços:
+
+1. CRIAÇÃO E EDIÇÃO DE SITE
+   Desenvolvimento completo de website responsivo e moderno, incluindo:
+   - Design personalizado e profissional
+   - Programação e desenvolvimento front-end e back-end
+   - Otimização para mecanismos de busca (SEO)
+   - Integração com sistemas e ferramentas necessárias
+   - Responsividade para dispositivos móveis
+   - Manutenção e atualizações conforme necessário
+
+Os serviços serão prestados com qualidade, eficiência e em conformidade com as melhores práticas do mercado digital, utilizando tecnologias atualizadas e profissionais qualificados.
+
+A CONTRATADA se compromete a manter sigilo absoluto sobre todas as informações confidenciais do CONTRATANTE, não divulgando dados comerciais, estratégicos ou operacionais sem prévia autorização escrita.
+
+Todos os códigos, designs e materiais desenvolvidos serão entregues com documentação completa, garantindo que o CONTRATANTE tenha total autonomia sobre o website desenvolvido.`,
+
+                'automacao-redes': `PRESTAÇÃO DE SERVIÇOS - AUTOMAÇÃO PARA REDES SOCIAIS
+
+A AUTOVIZION COMERCIAL, pessoa jurídica devidamente constituída, inscrita no CNPJ sob o nº [CNPJ], com sede na [ENDEREÇO COMPLETO], doravante denominada CONTRATADA, se compromete a prestar ao CONTRATANTE, pessoa física/jurídica identificada neste contrato, os seguintes serviços:
+
+1. AUTOMAÇÃO PARA REDES SOCIAIS
+   Configuração e implementação de sistemas automatizados para gestão e publicação de conteúdo em redes sociais, incluindo:
+   - Configuração de ferramentas de automação
+   - Agendamento de publicações
+   - Monitoramento e análise de métricas
+   - Respostas automatizadas quando aplicável
+   - Integração entre diferentes plataformas sociais
+   - Otimização de horários de publicação
+
+A CONTRATADA desenvolverá e implementará soluções de automação personalizadas, visando aumentar a eficiência e os resultados da presença digital do CONTRATANTE.
+
+Todos os sistemas serão configurados com segurança e seguindo as melhores práticas de cada plataforma, garantindo conformidade com as políticas de uso.`,
+
+                'agente-ia': `PRESTAÇÃO DE SERVIÇOS - CRIAÇÃO DE AGENTE IA
+
+A AUTOVIZION COMERCIAL, pessoa jurídica devidamente constituída, inscrita no CNPJ sob o nº [CNPJ], com sede na [ENDEREÇO COMPLETO], doravante denominada CONTRATADA, se compromete a prestar ao CONTRATANTE, pessoa física/jurídica identificada neste contrato, os seguintes serviços:
+
+1. CRIAÇÃO DE AGENTE IA
+   Desenvolvimento e implementação de assistente virtual inteligente personalizado, incluindo:
+   - Análise de necessidades e definição de funcionalidades
+   - Desenvolvimento do agente utilizando inteligência artificial
+   - Treinamento e configuração personalizada
+   - Integração com sistemas e plataformas do CONTRATANTE
+   - Implementação de fluxos de conversação
+   - Suporte para atendimento, vendas ou automação de processos
+   - Monitoramento e otimização contínua
+
+O agente IA será desenvolvido utilizando tecnologias de ponta em inteligência artificial, garantindo respostas precisas, naturais e alinhadas com a identidade da marca do CONTRATANTE.
+
+A CONTRATADA se compromete a fornecer documentação completa, treinamento e suporte para utilização e manutenção do agente desenvolvido.`,
+
+                'plataforma-propria': `PRESTAÇÃO DE SERVIÇOS - DESENVOLVIMENTO DE PLATAFORMA PRÓPRIA
+
+A AUTOVIZION COMERCIAL, pessoa jurídica devidamente constituída, inscrita no CNPJ sob o nº [CNPJ], com sede na [ENDEREÇO COMPLETO], doravante denominada CONTRATADA, se compromete a prestar ao CONTRATANTE, pessoa física/jurídica identificada neste contrato, os seguintes serviços:
+
+1. DESENVOLVIMENTO DE PLATAFORMA PRÓPRIA
+   Criação de plataforma digital personalizada e completa, incluindo:
+   - Análise de requisitos e especificações técnicas
+   - Arquitetura e design da plataforma
+   - Desenvolvimento completo (front-end e back-end)
+   - Banco de dados e sistema de gestão
+   - Integrações com sistemas externos quando necessário
+   - Testes e validações
+   - Documentação técnica completa
+   - Treinamento para utilização
+   - Suporte para implantação
+
+A plataforma será desenvolvida utilizando as melhores práticas de desenvolvimento, tecnologias atualizadas e metodologias ágeis, garantindo qualidade, segurança, performance e escalabilidade.
+
+Todos os códigos, documentações e acessos serão entregues ao CONTRATANTE, garantindo total autonomia e propriedade sobre a plataforma desenvolvida.`,
+
+                'marca-digital': `PRESTAÇÃO DE SERVIÇOS - CRIAÇÃO DE MARCA DIGITAL
+
+A AUTOVIZION COMERCIAL, pessoa jurídica devidamente constituída, inscrita no CNPJ sob o nº [CNPJ], com sede na [ENDEREÇO COMPLETO], doravante denominada CONTRATADA, se compromete a prestar ao CONTRATANTE, pessoa física/jurídica identificada neste contrato, os seguintes serviços:
+
+1. CRIAÇÃO DE MARCA DIGITAL
+   Desenvolvimento de identidade visual completa e profissional, incluindo:
+   - Criação de logo e variações
+   - Definição de paleta de cores
+   - Seleção e customização de tipografia
+   - Desenvolvimento de elementos gráficos
+   - Diretrizes de marca e manual de uso
+   - Aplicação da marca em materiais digitais
+   - Versões para diferentes aplicações (redes sociais, site, impressos, etc.)
+
+A identidade visual será desenvolvida de forma estratégica, refletindo os valores, posicionamento e objetivos do CONTRATANTE, criando uma marca forte e memorável.
+
+Todos os arquivos e materiais desenvolvidos serão entregues em formatos adequados para uso digital e impresso, garantindo consistência em todas as aplicações.`,
+
+                'social-media-completo': `PRESTAÇÃO DE SERVIÇOS - SOCIAL MEDIA COMPLETO
+
+A AUTOVIZION COMERCIAL, pessoa jurídica devidamente constituída, inscrita no CNPJ sob o nº [CNPJ], com sede na [ENDEREÇO COMPLETO], doravante denominada CONTRATADA, se compromete a prestar ao CONTRATANTE, pessoa física/jurídica identificada neste contrato, os seguintes serviços:
+
+1. CRIAÇÃO DE REDES SOCIAIS
+   Criação e configuração de perfis profissionais em redes sociais, incluindo otimização de biografia, capas, conteúdo inicial e estratégia de presença digital.
+
+2. SERVIÇO DE SOCIAL MEDIA
+   Gestão completa de redes sociais, incluindo:
+   - Criação de conteúdo estratégico e engajador
+   - Publicação e agendamento de posts
+   - Engajamento com público e comunidade
+   - Análise de métricas e relatórios de performance
+   - Estratégias de crescimento e alcance
+   - Gestão de comentários e mensagens
+   - Campanhas e anúncios quando aplicável
+
+A CONTRATADA desenvolverá estratégias personalizadas de social media, alinhadas aos objetivos do CONTRATANTE, visando aumentar visibilidade, engajamento e resultados.
+
+Todos os conteúdos criados serão desenvolvidos com qualidade profissional, mantendo consistência com a identidade visual e os valores da marca do CONTRATANTE.`,
+
+                'analise-estrategica': `PRESTAÇÃO DE SERVIÇOS - ANÁLISE ESTRATÉGICA
+
+A AUTOVIZION COMERCIAL, pessoa jurídica devidamente constituída, inscrita no CNPJ sob o nº [CNPJ], com sede na [ENDEREÇO COMPLETO], doravante denominada CONTRATADA, se compromete a prestar ao CONTRATANTE, pessoa física/jurídica identificada neste contrato, os seguintes serviços:
+
+1. ANÁLISE ESTRATÉGICA
+   Realização de análises detalhadas e fornecimento de recomendações estratégicas, incluindo:
+   - Análise de mercado e concorrência
+   - Análise de público-alvo e personas
+   - Análise de oportunidades e ameaças
+   - Análise de performance digital
+   - Análise de posicionamento de marca
+   - Identificação de oportunidades de crescimento
+   - Elaboração de relatórios estratégicos completos
+   - Recomendações e plano de ação
+
+A CONTRATADA realizará análises profundas utilizando metodologias comprovadas, ferramentas especializadas e conhecimento técnico atualizado, fornecendo insights valiosos para tomada de decisão.
+
+Todos os relatórios e análises serão desenvolvidos com rigor técnico, profissionalismo e confidencialidade, fornecendo ao CONTRATANTE subsídios estratégicos para crescimento e desenvolvimento do negócio.`,
+
+                'pacote-completo': `PRESTAÇÃO DE SERVIÇOS DIGITAIS E TECNOLÓGICOS - PACOTE COMPLETO
+
+A AUTOVIZION COMERCIAL, pessoa jurídica devidamente constituída, inscrita no CNPJ sob o nº [CNPJ], com sede na [ENDEREÇO COMPLETO], doravante denominada CONTRATADA, se compromete a prestar ao CONTRATANTE, pessoa física/jurídica identificada neste contrato, o seguinte pacote completo de serviços digitais e tecnológicos:
+
+1. CRIAÇÃO E EDIÇÃO DE SITE
+   Desenvolvimento completo de website responsivo, incluindo design, programação, SEO e manutenção.
+
+2. AUTOMAÇÃO PARA REDES SOCIAIS
+   Configuração de sistemas automatizados para gestão e publicação em redes sociais.
+
+3. CRIAÇÃO DE AGENTE IA
+   Desenvolvimento de assistente virtual inteligente personalizado para atendimento e automação.
+
+4. DESENVOLVIMENTO DE PLATAFORMA PRÓPRIA
+   Criação de plataforma digital personalizada e completa conforme especificações.
+
+5. CRIAÇÃO DE MARCA DIGITAL
+   Desenvolvimento de identidade visual completa, incluindo logo, cores, tipografia e diretrizes.
+
+6. CRIAÇÃO DE REDES SOCIAIS
+   Criação e configuração de perfis profissionais em redes sociais.
+
+7. SERVIÇO DE SOCIAL MEDIA
+   Gestão completa de redes sociais, incluindo conteúdo, publicação, engajamento e análise.
+
+8. ANÁLISE ESTRATÉGICA
+   Análises detalhadas de mercado, concorrência e oportunidades, com relatórios e recomendações.
+
+Os serviços serão prestados de forma integrada e coordenada, garantindo sinergia entre todas as soluções desenvolvidas e máxima eficiência para o CONTRATANTE.
+
+A CONTRATADA se compromete a manter sigilo absoluto sobre todas as informações confidenciais do CONTRATANTE e a entregar todos os materiais, códigos e documentações desenvolvidas, garantindo total autonomia ao CONTRATANTE.`
+            };
+
+            const template = templates[tipo];
+            if (template) {
+                document.getElementById('contratoObjeto').value = template;
+                fecharTemplatesObjeto();
+            }
         }
 
         // Carregar clientes para select
@@ -17393,6 +18232,46 @@ Obrigado pela confiança! 🙏`;
             }
         }
 
+        // Toggle valor recorrente
+        function toggleValorRecorrente() {
+            const tipoPagamento = document.getElementById('contratoTipoPagamento').value;
+            const camposRecorrente = document.getElementById('camposValorRecorrente');
+            const parcelasGroup = document.getElementById('parcelasGroup');
+            const valorParcelado = document.getElementById('contratoValorParcelado');
+            const dataInicioRecorrente = document.getElementById('contratoDataInicioRecorrente');
+            const dataInicio = document.getElementById('contratoDataInicio');
+            
+            if (camposRecorrente) {
+                camposRecorrente.style.display = tipoPagamento === 'recorrente' ? 'block' : 'none';
+            }
+            
+            // Se for recorrente, desabilitar parcelas
+            if (tipoPagamento === 'recorrente') {
+                if (parcelasGroup) parcelasGroup.style.display = 'none';
+                if (valorParcelado) valorParcelado.value = 'false';
+                
+                // Se a data de início recorrente estiver vazia, usar a data de início do contrato
+                if (dataInicioRecorrente && !dataInicioRecorrente.value && dataInicio && dataInicio.value) {
+                    dataInicioRecorrente.value = dataInicio.value;
+                }
+            }
+        }
+        
+        // Sincronizar data de início recorrente com data de início do contrato
+        document.addEventListener('DOMContentLoaded', function() {
+            const dataInicio = document.getElementById('contratoDataInicio');
+            const dataInicioRecorrente = document.getElementById('contratoDataInicioRecorrente');
+            
+            if (dataInicio && dataInicioRecorrente) {
+                dataInicio.addEventListener('change', function() {
+                    const tipoPagamento = document.getElementById('contratoTipoPagamento');
+                    if (tipoPagamento && tipoPagamento.value === 'recorrente' && !dataInicioRecorrente.value) {
+                        dataInicioRecorrente.value = dataInicio.value;
+                    }
+                });
+            }
+        });
+
         // Calcular valor da parcela
         function calcularParcela() {
             const valorTotal = parseFloat(document.getElementById('contratoValor').value) || 0;
@@ -17405,6 +18284,11 @@ Obrigado pela confiança! 🙏`;
         function closeContratoModal() {
             const modal = document.getElementById('contratoModal');
             closeModal(modal);
+            
+            // Limpar checkboxes de serviços
+            document.querySelectorAll('input[type="checkbox"][id^="servico"]').forEach(cb => {
+                cb.checked = false;
+            });
         }
 
         // Editar contrato
@@ -17422,6 +18306,22 @@ Obrigado pela confiança! 🙏`;
             document.getElementById('contratoValorParcelado').value = contrato.valor_parcelado ? 'true' : 'false';
             document.getElementById('contratoNumeroParcelas').value = contrato.numero_parcelas || 1;
             document.getElementById('contratoValorParcela').value = contrato.valor_parcela || '';
+            document.getElementById('contratoTipoPagamento').value = contrato.tipo_pagamento || 'unico';
+            if (document.getElementById('contratoFrequenciaRecorrente')) {
+                document.getElementById('contratoFrequenciaRecorrente').value = contrato.frequencia_recorrente || 'mensal';
+            }
+            if (document.getElementById('contratoValorRecorrente')) {
+                document.getElementById('contratoValorRecorrente').value = contrato.valor_recorrente || '';
+            }
+            if (document.getElementById('contratoDataInicioRecorrente')) {
+                document.getElementById('contratoDataInicioRecorrente').value = contrato.data_inicio_recorrente ? contrato.data_inicio_recorrente.split('T')[0] : '';
+            }
+            if (document.getElementById('contratoNumeroCiclos')) {
+                document.getElementById('contratoNumeroCiclos').value = contrato.numero_ciclos || '';
+            }
+            if (document.getElementById('contratoObservacoesRecorrente')) {
+                document.getElementById('contratoObservacoesRecorrente').value = contrato.observacoes_recorrente || '';
+            }
             document.getElementById('contratoStatus').value = contrato.status || 'rascunho';
             document.getElementById('contratoDataInicio').value = contrato.data_inicio ? contrato.data_inicio.split('T')[0] : '';
             document.getElementById('contratoDataVencimento').value = contrato.data_vencimento ? contrato.data_vencimento.split('T')[0] : '';
@@ -17441,6 +18341,7 @@ Obrigado pela confiança! 🙏`;
             document.getElementById('contratoObservacoes').value = contrato.observacoes || '';
             
             toggleParcelas();
+            toggleValorRecorrente();
 
             await Promise.all([
                 loadClientesForContratoSelect(),
@@ -17474,6 +18375,14 @@ Obrigado pela confiança! 🙏`;
                 valor_parcelado: document.getElementById('contratoValorParcelado').value === 'true',
                 numero_parcelas: parseInt(document.getElementById('contratoNumeroParcelas').value) || 1,
                 valor_parcela: parseFloat(document.getElementById('contratoValorParcela').value) || null,
+                // Campos de valor recorrente - salvos nas observações por enquanto
+                tipo_pagamento: document.getElementById('contratoTipoPagamento').value || 'unico',
+                // Nota: Campos recorrentes serão salvos nas observações até que as colunas sejam criadas no banco
+                // frequencia_recorrente: document.getElementById('contratoFrequenciaRecorrente')?.value || null,
+                // valor_recorrente: parseFloat(document.getElementById('contratoValorRecorrente')?.value) || null,
+                // data_inicio_recorrente: document.getElementById('contratoDataInicioRecorrente')?.value || null,
+                // numero_ciclos: document.getElementById('contratoNumeroCiclos')?.value ? parseInt(document.getElementById('contratoNumeroCiclos').value) : null,
+                // observacoes_recorrente: document.getElementById('contratoObservacoesRecorrente')?.value.trim() || null,
                 status: document.getElementById('contratoStatus').value,
                 data_inicio: document.getElementById('contratoDataInicio').value,
                 data_vencimento: document.getElementById('contratoDataVencimento').value,
@@ -17490,7 +18399,28 @@ Obrigado pela confiança! 🙏`;
                 termos_condicoes: document.getElementById('contratoTermosCondicoes').value.trim() || null,
                 penalidades: document.getElementById('contratoPenalidades').value.trim() || null,
                 foro: document.getElementById('contratoForo').value.trim() || null,
-                observacoes: document.getElementById('contratoObservacoes').value.trim() || null
+                observacoes: (() => {
+                    const obs = document.getElementById('contratoObservacoes').value.trim() || '';
+                    const obsRecorrente = document.getElementById('contratoObservacoesRecorrente')?.value.trim() || '';
+                    const tipoPagamento = document.getElementById('contratoTipoPagamento').value;
+                    
+                    if (tipoPagamento === 'recorrente' && obsRecorrente) {
+                        const freq = document.getElementById('contratoFrequenciaRecorrente')?.value || '';
+                        const valor = document.getElementById('contratoValorRecorrente')?.value || '';
+                        const data = document.getElementById('contratoDataInicioRecorrente')?.value || '';
+                        const ciclos = document.getElementById('contratoNumeroCiclos')?.value || '';
+                        
+                        let infoRecorrente = '\n\n=== INFORMAÇÕES DE PAGAMENTO RECORRENTE ===\n';
+                        if (freq) infoRecorrente += `Frequência: ${freq}\n`;
+                        if (valor) infoRecorrente += `Valor Recorrente: R$ ${valor}\n`;
+                        if (data) infoRecorrente += `Data de Início: ${data}\n`;
+                        if (ciclos) infoRecorrente += `Número de Ciclos: ${ciclos}\n`;
+                        if (obsRecorrente) infoRecorrente += `Observações: ${obsRecorrente}\n`;
+                        
+                        return (obs + infoRecorrente).trim();
+                    }
+                    return obs;
+                })()
             };
 
             try {
@@ -17925,7 +18855,7 @@ Obrigado pela confiança! 🙏`;
                 }
                 y += 3;
 
-                // CONTRATADO (Sua Empresa)
+                // CONTRATADO (AUTOVIZION)
                 doc.setFont(undefined, 'bold');
                 doc.text('CONTRATADO:', margin, y);
                 y += 6;
@@ -17960,7 +18890,29 @@ Obrigado pela confiança! 🙏`;
                 const objeto = contrato.objeto || contrato.descricao || 'Não especificado';
                 const objetoLines = doc.splitTextToSize(objeto, pageWidth - (margin * 2));
                 doc.text(objetoLines, margin, y);
-                y += objetoLines.length * 5 + 5;
+                y += objetoLines.length * 5 + 10;
+
+                // ========== DESCRIÇÃO DETALHADA ==========
+                if (contrato.descricao && contrato.descricao !== objeto) {
+                    if (y > pageHeight - 60) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+
+                    doc.setFillColor(240, 240, 240);
+                    doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                    
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('DESCRIÇÃO DETALHADA', margin + 3, y + 4);
+                    y += 15;
+
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(10);
+                    const descricaoLines = doc.splitTextToSize(contrato.descricao, pageWidth - (margin * 2));
+                    doc.text(descricaoLines, margin, y);
+                    y += descricaoLines.length * 5 + 10;
+                }
 
                 // ========== VALOR E CONDIÇÕES ==========
                 if (y > pageHeight - 80) {
@@ -17985,16 +18937,61 @@ Obrigado pela confiança! 🙏`;
                 doc.text(formatCurrencyPDF(contrato.valor || 0), margin + 40, y);
                 y += 8;
 
-                if (contrato.valor_parcelado) {
-                    doc.text(`Pagamento Parcelado: ${contrato.numero_parcelas || 1}x de ${formatCurrencyPDF(contrato.valor_parcela || 0)}`, margin, y);
+                // Tipo de pagamento
+                if (contrato.tipo_pagamento === 'recorrente') {
+                    doc.setFont(undefined, 'bold');
+                    doc.text('Tipo de Pagamento: RECORRENTE', margin, y);
                     y += 6;
+                    doc.setFont(undefined, 'normal');
+                    
+                    const frequenciaMap = {
+                        'mensal': 'Mensal',
+                        'trimestral': 'Trimestral (3 meses)',
+                        'semestral': 'Semestral (6 meses)',
+                        'anual': 'Anual (12 meses)'
+                    };
+                    const frequencia = frequenciaMap[contrato.frequencia_recorrente] || contrato.frequencia_recorrente || 'Mensal';
+                    
+                    doc.text(`Frequência: ${frequencia}`, margin, y);
+                    y += 6;
+                    
+                    if (contrato.valor_recorrente) {
+                        doc.text(`Valor Recorrente: ${formatCurrencyPDF(contrato.valor_recorrente)}`, margin, y);
+                        y += 6;
+                    }
+                    
+                    if (contrato.data_inicio_recorrente) {
+                        doc.text(`Início da Cobrança: ${formatDatePDF(contrato.data_inicio_recorrente)}`, margin, y);
+                        y += 6;
+                    }
+                    
+                    if (contrato.numero_ciclos) {
+                        doc.text(`Número de Ciclos: ${contrato.numero_ciclos}`, margin, y);
+                        y += 6;
+                    } else {
+                        doc.text('Número de Ciclos: Ilimitado', margin, y);
+                        y += 6;
+                    }
+                    
+                    if (contrato.observacoes_recorrente) {
+                        doc.text('Observações sobre Pagamento Recorrente:', margin, y);
+                        y += 5;
+                        const obsRecorrenteLines = doc.splitTextToSize(contrato.observacoes_recorrente, pageWidth - (margin * 2));
+                        doc.text(obsRecorrenteLines, margin + 5, y);
+                        y += obsRecorrenteLines.length * 5 + 5;
+                    }
                 } else {
-                    doc.text('Pagamento: À Vista', margin, y);
-                    y += 6;
+                    if (contrato.valor_parcelado) {
+                        doc.text(`Pagamento Parcelado: ${contrato.numero_parcelas || 1}x de ${formatCurrencyPDF(contrato.valor_parcela || 0)}`, margin, y);
+                        y += 6;
+                    } else {
+                        doc.text('Pagamento: À Vista', margin, y);
+                        y += 6;
+                    }
                 }
 
                 if (contrato.condicoes_pagamento) {
-                    doc.text('Condições:', margin, y);
+                    doc.text('Condições de Pagamento:', margin, y);
                     y += 5;
                     const condicoesLines = doc.splitTextToSize(contrato.condicoes_pagamento, pageWidth - (margin * 2));
                     doc.text(condicoesLines, margin + 5, y);
@@ -18101,6 +19098,71 @@ Obrigado pela confiança! 🙏`;
                     y += penalidadesLines.length * 4 + 5;
                 }
 
+                // ========== RESPONSABILIDADES ==========
+                if (y > pageHeight - 80) {
+                    doc.addPage();
+                    y = margin + 10;
+                }
+
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('RESPONSABILIDADES DAS PARTES', margin + 3, y + 4);
+                y += 15;
+
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                const responsabilidades = `CONTRATADA (AUTOVIZION COMERCIAL):
+• Prestar os serviços contratados com qualidade, eficiência e profissionalismo
+• Cumprir os prazos estabelecidos para execução dos serviços
+• Manter sigilo absoluto sobre informações confidenciais do CONTRATANTE
+• Fornecer documentação completa dos serviços prestados
+• Garantir a qualidade e funcionamento adequado das soluções desenvolvidas
+• Prestar suporte técnico conforme acordado
+
+CONTRATANTE:
+• Fornecer todas as informações necessárias para execução dos serviços
+• Realizar os pagamentos conforme condições estabelecidas
+• Colaborar ativamente no processo de desenvolvimento
+• Fornecer feedback e aprovações em tempo hábil
+• Respeitar os prazos estabelecidos para fornecimento de materiais e informações`;
+
+                const responsabilidadesLines = doc.splitTextToSize(responsabilidades, pageWidth - (margin * 2));
+                doc.text(responsabilidadesLines, margin, y);
+                y += responsabilidadesLines.length * 4 + 10;
+
+                // ========== GARANTIAS ==========
+                if (y > pageHeight - 60) {
+                    doc.addPage();
+                    y = margin + 10;
+                }
+
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin, y - 3, pageWidth - (margin * 2), 10, 'F');
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('GARANTIAS', margin + 3, y + 4);
+                y += 15;
+
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                const garantias = `A CONTRATADA garante que:
+• Todos os serviços serão executados por profissionais qualificados
+• As soluções desenvolvidas estarão em conformidade com as especificações acordadas
+• Será fornecida documentação completa e adequada
+• Os materiais entregues estarão livres de vírus e malwares
+• Será mantido sigilo sobre informações confidenciais
+• As soluções desenvolvidas serão originais e não violarão direitos de terceiros
+
+Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas identificados sem custo adicional, dentro de prazo razoável.`;
+
+                const garantiasLines = doc.splitTextToSize(garantias, pageWidth - (margin * 2));
+                doc.text(garantiasLines, margin, y);
+                y += garantiasLines.length * 4 + 10;
+
                 // ========== FORO ==========
                 if (contrato.foro) {
                     if (y > pageHeight - 40) {
@@ -18113,6 +19175,18 @@ Obrigado pela confiança! 🙏`;
                     doc.text('FORO:', margin, y);
                     doc.setFont(undefined, 'normal');
                     doc.text(contrato.foro, margin + 20, y);
+                    y += 10;
+                } else {
+                    // Foro padrão se não especificado
+                    if (y > pageHeight - 40) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('FORO:', margin, y);
+                    doc.setFont(undefined, 'normal');
+                    doc.text('Fica eleito o foro da comarca de [CIDADE], Estado de [ESTADO], para dirimir quaisquer controvérsias oriundas deste contrato.', margin + 20, y);
                     y += 10;
                 }
 
@@ -18128,17 +19202,24 @@ Obrigado pela confiança! 🙏`;
                 doc.text('ASSINATURAS', pageWidth / 2, y, { align: 'center' });
                 y += 15;
 
-                // Linha para assinatura do contratante
+                // Linha para assinatura do contratante (CLIENTE) - ESQUERDA
                 doc.setFont(undefined, 'normal');
                 doc.setFontSize(9);
-                doc.line(margin, y, margin + 80, y);
-                doc.text(contratanteNome, margin + 40, y - 2, { align: 'center' });
-                doc.text('CONTRATANTE', margin + 40, y + 8, { align: 'center' });
+                const linhaY = y;
+                doc.line(margin, linhaY, margin + 80, linhaY);
+                // Nome abaixo da linha
+                doc.text(contratanteNome, margin + 40, linhaY + 6, { align: 'center' });
+                // Label abaixo do nome
+                doc.text('CONTRATANTE', margin + 40, linhaY + 14, { align: 'center' });
                 
-                // Linha para assinatura do contratado
-                doc.line(pageWidth - margin - 80, y, pageWidth - margin, y);
-                doc.text(contratadoNome, pageWidth - margin - 40, y - 2, { align: 'center' });
-                doc.text('CONTRATADO', pageWidth - margin - 40, y + 8, { align: 'center' });
+                // Linha para assinatura do contratado (AUTOVIZION) - DIREITA
+                doc.line(pageWidth - margin - 80, linhaY, pageWidth - margin, linhaY);
+                // Sempre usar AUTOVIZION COMERCIAL como contratado
+                const nomeAutovizion = 'AUTOVIZION COMERCIAL';
+                // Nome abaixo da linha
+                doc.text(nomeAutovizion, pageWidth - margin - 40, linhaY + 6, { align: 'center' });
+                // Label abaixo do nome
+                doc.text('CONTRATADO', pageWidth - margin - 40, linhaY + 14, { align: 'center' });
 
                 // ========== RODAPÉ ==========
                 const contatoY = pageHeight - 8;
