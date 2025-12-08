@@ -2525,6 +2525,57 @@
                 width: 100%;
             }
         }
+
+        /* Orion Voice Interface */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes listening {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(255, 102, 0, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 20px rgba(255, 102, 0, 0);
+            }
+        }
+
+        #orionListeningIndicator.listening {
+            animation: listening 1.5s infinite;
+        }
+
+        .orion-command-history {
+            background: var(--tertiary);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .orion-command-item {
+            padding: 8px;
+            margin-bottom: 8px;
+            background: var(--secondary);
+            border-radius: 6px;
+            font-size: 13px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .orion-command-item.user {
+            border-left-color: var(--primary);
+        }
+
+        .orion-command-item.orion {
+            border-left-color: var(--success);
+        }
     </style>
 </head>
 <body>
@@ -2613,10 +2664,6 @@
                 <span>🔑</span>
                 <span>Plataformas</span>
             </a>
-            <a href="#" class="menu-item" data-page="tarefas" onclick="closeSidebarMobile()">
-                <span>✅</span>
-                <span>Tarefas & Hábitos</span>
-            </a>
             <a href="#" class="menu-item" data-page="analises" onclick="closeSidebarMobile()">
                 <span>📊</span>
                 <span>Análises Avançadas</span>
@@ -2624,6 +2671,10 @@
             <a href="#" class="menu-item" data-page="precificacao" onclick="closeSidebarMobile()">
                 <span>💵</span>
                 <span>Precificação</span>
+            </a>
+            <a href="#" class="menu-item" data-page="orion" onclick="closeSidebarMobile()">
+                <span>🤖</span>
+                <span>Orion - Assistente</span>
             </a>
         </div>
 
@@ -3590,6 +3641,291 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Orion - Assistente Pessoal Content -->
+            <div id="orionContent" class="page-content" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h1 class="page-title">🤖 Orion - Assistente Pessoal</h1>
+                        <p class="page-subtitle">Seu assistente completo com comandos de voz tipo Jarvis</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div id="orionStatus" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--tertiary); border-radius: 8px;">
+                            <div id="orionStatusIndicator" style="width: 12px; height: 12px; border-radius: 50%; background: var(--danger);"></div>
+                            <span id="orionStatusText" style="font-size: 14px; color: var(--text-gray);">Desativado</span>
+                        </div>
+                        <button id="orionMicButton" class="btn btn-primary" onclick="toggleOrionVoice()" style="position: relative;">
+                            <span id="orionMicIcon">🎤</span>
+                            <span id="orionMicText">Ativar Voz</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Interface de Voz do Orion -->
+                <div id="orionVoiceInterface" class="section-card" style="margin-bottom: 24px; display: none;">
+                    <div style="text-align: center; padding: 20px;">
+                        <div id="orionListeningIndicator" style="width: 80px; height: 80px; border-radius: 50%; background: var(--primary); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 32px; animation: pulse 2s infinite;">
+                            🎤
+                        </div>
+                        <div id="orionListeningText" style="font-size: 18px; font-weight: 600; color: var(--primary); margin-bottom: 8px;">Ouvindo...</div>
+                        <div id="orionCommandText" style="font-size: 14px; color: var(--text-gray); min-height: 20px;">Aguardando comando...</div>
+                    </div>
+                </div>
+
+                <!-- Navegação por Abas -->
+                <div style="display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); overflow-x: auto;">
+                    <button class="btn btn-secondary orion-tab active" onclick="showOrionTab('orionDashboard', this)" style="border-radius: 8px 8px 0 0; margin-bottom: -1px; border-bottom: 2px solid var(--primary);">
+                        📊 Dashboard
+                    </button>
+                    <button class="btn btn-secondary orion-tab" onclick="showOrionTab('orionCompromissos', this)" style="border-radius: 8px 8px 0 0; margin-bottom: -1px;">
+                        📅 Compromissos
+                    </button>
+                    <button class="btn btn-secondary orion-tab" onclick="showOrionTab('orionFinancas', this)" style="border-radius: 8px 8px 0 0; margin-bottom: -1px;">
+                        💰 Finanças Pessoais
+                    </button>
+                </div>
+
+                <!-- Dashboard do Orion -->
+                <div id="orionDashboard" class="orion-tab-content">
+                    <div class="cards-grid" style="margin-bottom: 24px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">Tarefas Concluídas Hoje</div>
+                                    <div class="card-value" id="orionTasksCompletedToday">0</div>
+                                </div>
+                                <div class="card-icon">✅</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">Sequência de Hábitos</div>
+                                    <div class="card-value" id="orionHabitStreak">0</div>
+                                </div>
+                                <div class="card-icon">🔥</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">Compromissos Hoje</div>
+                                    <div class="card-value" id="orionEventsToday">0</div>
+                                </div>
+                                <div class="card-icon">📅</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">Saldo do Mês</div>
+                                    <div class="card-value" id="orionMonthBalance">R$ 0</div>
+                                </div>
+                                <div class="card-icon">💰</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarefas e Hábitos Integrados -->
+                    <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px;">
+                        <div class="section-card">
+                            <div class="card-header" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+                                <div class="card-title">✅ Minhas Tarefas</div>
+                                <button class="btn btn-primary btn-sm" onclick="openOrionTaskModal()">+ Nova</button>
+                            </div>
+                            <div id="orionAllTasks" style="max-height: 500px; overflow-y: auto;">
+                                <!-- Tarefas serão inseridas aqui -->
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="card-header" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+                                <div class="card-title">🔄 Meus Hábitos</div>
+                                <button class="btn btn-primary btn-sm" onclick="openOrionHabitModal()">+ Novo</button>
+                            </div>
+                            <div id="orionAllHabits" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; max-height: 500px; overflow-y: auto;">
+                                <!-- Hábitos serão inseridos aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compromissos do Orion -->
+                <div id="orionCompromissos" class="orion-tab-content" style="display: none;">
+                    <div class="section-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div class="card-title">Calendário</div>
+                            <button class="btn btn-primary" onclick="openOrionEventModal()">+ Novo Compromisso</button>
+                        </div>
+                        <div id="orionCalendar" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;">
+                            <!-- Calendário será inserido aqui -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Finanças Pessoais do Orion -->
+                <div id="orionFinancas" class="orion-tab-content" style="display: none;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                        <div class="card">
+                            <div class="card-title" style="font-size: 12px; color: var(--text-gray); margin-bottom: 8px;">Receitas do Mês</div>
+                            <div class="card-value" id="orionMonthIncome" style="color: var(--success);">R$ 0</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title" style="font-size: 12px; color: var(--text-gray); margin-bottom: 8px;">Despesas do Mês</div>
+                            <div class="card-value" id="orionMonthExpenses" style="color: var(--danger);">R$ 0</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title" style="font-size: 12px; color: var(--text-gray); margin-bottom: 8px;">Saldo Total</div>
+                            <div class="card-value" id="orionTotalBalance">R$ 0</div>
+                        </div>
+                    </div>
+                    <div class="section-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div class="card-title">Últimas Transações</div>
+                            <button class="btn btn-primary" onclick="openOrionTransactionModal()">+ Nova Transação</button>
+                        </div>
+                        <div id="orionTransactionsList">
+                            <!-- Transações serão inseridas aqui -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais do Orion -->
+    <!-- Modal Nova Tarefa Orion -->
+    <div id="orionTaskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="orionTaskModalTitle">Nova Tarefa</h2>
+                <button class="btn-close" onclick="closeModal(document.getElementById('orionTaskModal'))">&times;</button>
+            </div>
+            <form id="orionTaskForm" onsubmit="saveOrionTask(event)">
+                <input type="hidden" id="orionTaskId">
+                <div class="form-group">
+                    <label class="form-label">Título</label>
+                    <input type="text" class="form-input" id="orionTaskTitle" placeholder="Digite o título da tarefa" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea class="form-input" id="orionTaskDescription" rows="3" placeholder="Adicione uma descrição (opcional)"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Prioridade</label>
+                    <select class="form-input" id="orionTaskPriority">
+                        <option value="low">Baixa</option>
+                        <option value="medium">Média</option>
+                        <option value="high">Alta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Data de Vencimento</label>
+                    <input type="date" class="form-input" id="orionTaskDueDate">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal(document.getElementById('orionTaskModal'))">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Tarefa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Novo Hábito Orion -->
+    <div id="orionHabitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="orionHabitModalTitle">Novo Hábito</h2>
+                <button class="btn-close" onclick="closeModal(document.getElementById('orionHabitModal'))">&times;</button>
+            </div>
+            <form id="orionHabitForm" onsubmit="saveOrionHabit(event)">
+                <input type="hidden" id="orionHabitId">
+                <div class="form-group">
+                    <label class="form-label">Nome do Hábito</label>
+                    <input type="text" class="form-input" id="orionHabitName" placeholder="Ex: Beber água, Exercitar-se" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ícone</label>
+                    <input type="text" class="form-input" id="orionHabitIcon" placeholder="🎯 (emoji)" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal(document.getElementById('orionHabitModal'))">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar Hábito</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Novo Compromisso Orion -->
+    <div id="orionEventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="orionEventModalTitle">Novo Compromisso</h2>
+                <button class="btn-close" onclick="closeModal(document.getElementById('orionEventModal'))">&times;</button>
+            </div>
+            <form id="orionEventForm" onsubmit="saveOrionEvent(event)">
+                <input type="hidden" id="orionEventId">
+                <div class="form-group">
+                    <label class="form-label">Título</label>
+                    <input type="text" class="form-input" id="orionEventTitle" placeholder="Digite o título do compromisso" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Data</label>
+                    <input type="date" class="form-input" id="orionEventDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Hora</label>
+                    <input type="time" class="form-input" id="orionEventTime">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea class="form-input" id="orionEventDescription" rows="3" placeholder="Adicione uma descrição (opcional)"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal(document.getElementById('orionEventModal'))">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Compromisso</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nova Transação Orion -->
+    <div id="orionTransactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="orionTransactionModalTitle">Nova Transação</h2>
+                <button class="btn-close" onclick="closeModal(document.getElementById('orionTransactionModal'))">&times;</button>
+            </div>
+            <form id="orionTransactionForm" onsubmit="saveOrionTransaction(event)">
+                <input type="hidden" id="orionTransactionId">
+                <div class="form-group">
+                    <label class="form-label">Tipo</label>
+                    <select class="form-input" id="orionTransactionType" required>
+                        <option value="income">Receita</option>
+                        <option value="expense">Despesa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Título</label>
+                    <input type="text" class="form-input" id="orionTransactionTitle" placeholder="Ex: Salário, Compras do mês" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Valor (R$)</label>
+                    <input type="number" step="0.01" class="form-input" id="orionTransactionAmount" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Data</label>
+                    <input type="date" class="form-input" id="orionTransactionDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Categoria</label>
+                    <input type="text" class="form-input" id="orionTransactionCategory" placeholder="Ex: Salário, Alimentação, Transporte">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal(document.getElementById('orionTransactionModal'))">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Transação</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -10206,6 +10542,95 @@
                 closeSidebarMobile();
             }
         });
+
+        // ========== NAVEGAÇÃO ENTRE PÁGINAS ==========
+        // Event listeners para menu items
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.menu-item[data-page]').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = item.getAttribute('data-page');
+                    navigateToPage(page);
+                });
+            });
+        });
+
+        // Função de navegação
+        function navigateToPage(page) {
+            // Esconder todas as páginas
+            document.querySelectorAll('.page-content').forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Remover active de todos os menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Mostrar página selecionada
+            const pageContent = document.getElementById(page + 'Content');
+            if (pageContent) {
+                pageContent.style.display = 'block';
+            }
+
+            // Adicionar active ao menu item
+            const menuItem = document.querySelector(`.menu-item[data-page="${page}"]`);
+            if (menuItem) {
+                menuItem.classList.add('active');
+            }
+
+            // Atualizar título do header
+            const headerTitle = document.querySelector('.header-title');
+            if (headerTitle) {
+                const pageTitles = {
+                    'dashboard': 'Dashboard',
+                    'clientes': 'Clientes',
+                    'orcamentos': 'Orçamentos',
+                    'projetos': 'Projetos',
+                    'ideias': 'Análises & Ideias',
+                    'templates': 'Templates de Mensagens',
+                    'financeiro': 'Financeiro',
+                    'contratos': 'Contratos',
+                    'plataformas': 'Plataformas',
+                    'tarefas': 'Tarefas & Hábitos',
+                    'analises': 'Análises Avançadas',
+                    'precificacao': 'Precificação',
+                    'orion': 'Orion - Assistente'
+                };
+                headerTitle.textContent = pageTitles[page] || 'Dashboard';
+            }
+
+            // Carregar dados específicos da página
+            if (page === 'orion') {
+                loadOrionPage();
+            } else if (page === 'dashboard') {
+                loadDashboardData();
+            } else if (page === 'clientes') {
+                loadClientes();
+            } else if (page === 'orcamentos') {
+                loadOrcamentos();
+            } else if (page === 'projetos') {
+                loadProjetos();
+            } else if (page === 'financeiro') {
+                loadReceitas();
+                loadDespesas();
+            } else if (page === 'contratos') {
+                loadContratos();
+            } else if (page === 'plataformas') {
+                loadPlataformas();
+            } else if (page === 'tarefas') {
+                loadTarefas();
+                loadHabitos();
+            } else if (page === 'analises') {
+                loadAnalisesAvancadas();
+            } else if (page === 'precificacao') {
+                loadPrecificacao();
+            } else if (page === 'ideias') {
+                loadIdeias();
+            } else if (page === 'templates') {
+                loadTemplates();
+            }
+        }
 
         // ========== CONFIGURAÇÃO DA PLATAFORMA ==========
         // Configure aqui o nome e logo da sua plataforma
@@ -20237,17 +20662,16 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
     </style>
 
     <script>
-        // ========== ASSISTENTE ORION ==========
+        // ========== ASSISTENTE ORION (LEGADO - MANTIDO PARA COMPATIBILIDADE) ==========
         let orionRecognition = null;
         let orionSynthesis = null;
-        let orionIsListening = false;
-        let orionIsActive = false;
+        // Variáveis orionIsListening e orionIsActive foram movidas para a seção do Orion abaixo
         let orionHistory = [];
         let orionIsStarting = false; // Flag para evitar múltiplas inicializações simultâneas
         let orionRestartTimeout = null; // Timeout para reiniciar
 
-        // Inicializar Orion
-        function initOrion() {
+        // Inicializar Orion (LEGADO - função antiga mantida para compatibilidade)
+        function initOrionLegacy() {
             // Verificar suporte a APIs de voz
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -20269,7 +20693,7 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
 
                 orionRecognition.onstart = () => {
                     console.log('✅ Reconhecimento iniciado com sucesso!');
-                    orionIsListening = true;
+                    // orionIsListening será gerenciado pela nova implementação
                     orionIsStarting = false; // Resetar flag
                     updateOrionStatus('Ouvindo...', 'listening');
                     
@@ -20768,7 +21192,92 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
                 return;
             }
 
-            // ========== COMANDOS DE NAVEGAÇÃO ==========
+            // ========== COMANDOS DE NAVEGAÇÃO DIRETOS (sem precisar dizer "ir para") ==========
+            // Dashboard
+            if (hasAnyKeywords(normalizedCommand, ['dashboard', 'painel', 'início', 'inicio', 'home', 'principal'])) {
+                navigateToPage('dashboard');
+                orionSpeak('Abrindo dashboard');
+                return;
+            }
+            
+            // Clientes
+            if (hasAnyKeywords(normalizedCommand, ['cliente', 'clientes'])) {
+                navigateToPage('clientes');
+                orionSpeak('Abrindo página de clientes');
+                return;
+            }
+            
+            // Orçamentos
+            if (hasAnyKeywords(normalizedCommand, ['orçamento', 'orcamento', 'orçamentos', 'orcamentos', 'proposta', 'propostas'])) {
+                navigateToPage('orcamentos');
+                orionSpeak('Abrindo página de orçamentos');
+                return;
+            }
+            
+            // Projetos
+            if (hasAnyKeywords(normalizedCommand, ['projeto', 'projetos'])) {
+                navigateToPage('projetos');
+                orionSpeak('Abrindo página de projetos');
+                return;
+            }
+            
+            // Análises & Ideias
+            if (hasAnyKeywords(normalizedCommand, ['ideia', 'ideias', 'análise e ideia', 'analise e ideia', 'análises e ideias', 'analises e ideias'])) {
+                navigateToPage('ideias');
+                orionSpeak('Abrindo página de análises e ideias');
+                return;
+            }
+            
+            // Templates de Mensagens
+            if (hasAnyKeywords(normalizedCommand, ['template', 'templates', 'template de mensagem', 'templates de mensagem', 'template de mensagens', 'templates de mensagens', 'mensagem template', 'mensagens template'])) {
+                navigateToPage('templates');
+                orionSpeak('Abrindo página de templates de mensagens');
+                return;
+            }
+            
+            // Financeiro
+            if (hasAnyKeywords(normalizedCommand, ['financeiro', 'financeira', 'finanças', 'financas', 'dinheiro', 'receitas', 'despesas'])) {
+                navigateToPage('financeiro');
+                orionSpeak('Abrindo página financeira');
+                return;
+            }
+            
+            // Contratos
+            if (hasAnyKeywords(normalizedCommand, ['contrato', 'contratos'])) {
+                navigateToPage('contratos');
+                orionSpeak('Abrindo página de contratos');
+                return;
+            }
+            
+            // Plataformas
+            if (hasAnyKeywords(normalizedCommand, ['plataforma', 'plataformas', 'assinatura', 'assinaturas', 'assinaturas de plataforma'])) {
+                navigateToPage('plataformas');
+                orionSpeak('Abrindo página de plataformas');
+                return;
+            }
+            
+            // Tarefas & Hábitos
+            if (hasAnyKeywords(normalizedCommand, ['tarefa', 'tarefas', 'tarefa e hábito', 'tarefas e habitos', 'tarefas e hábitos', 'hábito', 'habito', 'hábitos', 'habitos'])) {
+                navigateToPage('tarefas');
+                orionSpeak('Abrindo página de tarefas e hábitos');
+                return;
+            }
+            
+            // Análises Avançadas
+            if (hasAnyKeywords(normalizedCommand, ['análise avançada', 'analise avancada', 'análises avançadas', 'analises avancadas', 'análise', 'analise', 'análises', 'analises', 'insight', 'insights', 'relatório', 'relatorio', 'relatórios', 'relatorios', 'estatística', 'estatistica', 'estatísticas', 'estatisticas'])) {
+                navigateToPage('analises');
+                orionSpeak('Abrindo análises avançadas');
+                return;
+            }
+            
+            // Precificação
+            if (hasAnyKeywords(normalizedCommand, ['precificação', 'precificacao', 'preço', 'preco', 'preços', 'precos', 'tabela de preços', 'tabela de precos'])) {
+                navigateToPage('precificacao');
+                orionSpeak('Abrindo página de precificação');
+                return;
+            }
+
+            // ========== COMANDOS DE NAVEGAÇÃO COM PALAVRAS-CHAVE (compatibilidade) ==========
             const navKeywords = ['ir para', 'abrir', 'mostrar', 'vai para', 'vou para', 'mostra', 'abre', 'acessar', 'acessa'];
             if (hasAnyKeywords(normalizedCommand, navKeywords)) {
                 if (hasAnyKeywords(normalizedCommand, ['dashboard', 'painel', 'início', 'inicio', 'home'])) {
@@ -20963,13 +21472,7 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
                 return;
             }
 
-            // ========== COMANDOS DE PRECIFICAÇÃO ==========
-            if (hasAnyKeywords(normalizedCommand, ['precificação', 'precificacao', 'preço', 'preco', 'preços', 'precos', 'tabela de preços'])) {
-                navigateToPage('precificacao');
-                orionSpeak('Abrindo página de precificação');
-                return;
-            }
-            
+            // ========== COMANDOS DE PRECIFICAÇÃO (CRIAÇÃO) ==========
             if (hasAnyKeywords(normalizedCommand, ['criar serviço', 'novo serviço', 'adicionar serviço', 'cadastrar serviço'])) {
                 if (typeof openPrecificacaoModal === 'function') {
                     openPrecificacaoModal();
@@ -21051,12 +21554,6 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
                 return;
             }
 
-            // ========== COMANDOS DE TEMPLATES ==========
-            if (hasAnyKeywords(normalizedCommand, ['template', 'templates', 'mensagem', 'mensagens'])) {
-                navigateToPage('templates');
-                orionSpeak('Abrindo página de templates de mensagens');
-                return;
-            }
 
             // ========== COMANDOS DE STATUS ==========
             if (hasAnyKeywords(normalizedCommand, ['status', 'situação', 'situacao', 'como está', 'como esta'])) {
@@ -21276,19 +21773,8 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
             }
         }
 
-        // Inicializar quando a página carregar
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initOrion);
-        } else {
-            initOrion();
-        }
-
-        // Carregar vozes quando disponíveis
-        if ('speechSynthesis' in window) {
-            speechSynthesis.onvoiceschanged = () => {
-                // Vozes carregadas
-            };
-        }
+        // Inicialização do Orion será feita apenas quando a página Orion for carregada
+        // através da função loadOrionPage() chamada por navigateToPage()
 
         // Atalho de teclado: Ctrl + O para ativar Orion
         document.addEventListener('keydown', (e) => {
@@ -22767,6 +23253,1121 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
         window.atualizarCalculadora = atualizarCalculadora;
         window.calcularPreco = calcularPreco;
         window.atualizarCamposPrecificacao = atualizarCamposPrecificacao;
+
+        // ========== ORION - ASSISTENTE PESSOAL ==========
+        // Dados do Orion (armazenados no localStorage)
+        let orionTasks = JSON.parse(localStorage.getItem('orion_tasks') || '[]');
+        let orionHabits = JSON.parse(localStorage.getItem('orion_habits') || '[]');
+        let orionEvents = JSON.parse(localStorage.getItem('orion_events') || '[]');
+        let orionTransactions = JSON.parse(localStorage.getItem('orion_transactions') || '[]');
+        let orionHabitCompletions = JSON.parse(localStorage.getItem('orion_habit_completions') || '{}');
+
+        // Sistema de Voz do Orion
+        let orionVoiceRecognition = null;
+        let orionIsActive = false;
+        let orionIsListening = false;
+        let orionContinuousMode = false;
+
+        // Inicializar reconhecimento de voz
+        function initOrionVoice() {
+            // Verificar compatibilidade do navegador
+            const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+            const isEdge = /Edg/.test(navigator.userAgent);
+            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+            
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                const errorMsg = 'Reconhecimento de voz não está disponível neste navegador. Por favor, use Chrome, Edge ou Safari.';
+                console.error('Reconhecimento de voz não suportado neste navegador');
+                
+                // Mostrar mensagem ao usuário
+                const commandText = document.getElementById('orionCommandText');
+                if (commandText) {
+                    commandText.textContent = errorMsg;
+                    commandText.style.color = 'var(--danger)';
+                }
+                
+                // Tentar falar a mensagem se possível
+                if ('speechSynthesis' in window) {
+                    orionSpeak(errorMsg);
+                }
+                
+                return false;
+            }
+
+            try {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                orionVoiceRecognition = new SpeechRecognition();
+                orionVoiceRecognition.lang = 'pt-BR';
+                orionVoiceRecognition.continuous = true;
+                orionVoiceRecognition.interimResults = false;
+                
+                console.log('Reconhecimento de voz inicializado com sucesso');
+                return true;
+            } catch (error) {
+                console.error('Erro ao inicializar reconhecimento de voz:', error);
+                const errorMsg = 'Erro ao inicializar reconhecimento de voz. Verifique as permissões do navegador.';
+                const commandText = document.getElementById('orionCommandText');
+                if (commandText) {
+                    commandText.textContent = errorMsg;
+                    commandText.style.color = 'var(--danger)';
+                }
+                return false;
+            }
+            
+            // Solicitar permissão de microfone uma vez ao inicializar
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(() => {
+                        console.log('Permissão de microfone concedida permanentemente');
+                    })
+                    .catch((err) => {
+                        console.warn('Permissão de microfone:', err);
+                    });
+            }
+
+            orionVoiceRecognition.onstart = () => {
+                console.log('Reconhecimento iniciado com sucesso!');
+                orionIsListening = true;
+                updateOrionUI();
+                
+                const listeningText = document.getElementById('orionListeningText');
+                if (listeningText) listeningText.textContent = 'Ouvindo...';
+            };
+
+            orionVoiceRecognition.onresult = (event) => {
+                let finalTranscript = '';
+                
+                // Processar todos os resultados
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const result = event.results[i];
+                    const transcript = result[0].transcript.trim();
+                    
+                    if (result.isFinal) {
+                        finalTranscript += transcript + ' ';
+                    }
+                }
+                
+                if (finalTranscript.trim()) {
+                    console.log('Comando final detectado:', finalTranscript.trim());
+                    processOrionCommand(finalTranscript.trim());
+                }
+            };
+
+            orionVoiceRecognition.onerror = (event) => {
+                console.error('Erro no reconhecimento de voz:', event.error);
+                
+                // Erros que não devem interromper o fluxo
+                if (event.error === 'no-speech' || event.error === 'audio-capture') {
+                    // Continuar ouvindo silenciosamente
+                    if (orionIsActive && orionContinuousMode) {
+                        setTimeout(() => {
+                            if (orionIsActive && !orionIsListening) {
+                                try {
+                                    orionVoiceRecognition.start();
+                                } catch (e) {
+                                    console.warn('Erro ao reiniciar reconhecimento:', e);
+                                }
+                            }
+                        }, 500);
+                    }
+                } else if (event.error === 'not-allowed') {
+                    orionSpeak('Permissão de microfone negada. Por favor, permita o acesso ao microfone nas configurações do navegador.');
+                    orionIsActive = false;
+                    updateOrionUI();
+                }
+            };
+
+            orionVoiceRecognition.onend = () => {
+                console.log('Reconhecimento finalizado - reiniciando automaticamente...');
+                orionIsListening = false;
+                updateOrionUI();
+                
+                if (orionIsActive && orionContinuousMode) {
+                    // Reiniciar automaticamente se estiver ativo
+                    setTimeout(() => {
+                        if (orionIsActive && !orionIsListening) {
+                            try {
+                                console.log('Reiniciando reconhecimento de voz...');
+                                orionVoiceRecognition.start();
+                            } catch (e) {
+                                console.warn('Erro ao reiniciar reconhecimento:', e);
+                                // Tentar novamente após mais tempo
+                                setTimeout(() => {
+                                    if (orionIsActive) {
+                                        try {
+                                            orionVoiceRecognition.start();
+                                        } catch (e2) {
+                                            console.error('Erro ao reiniciar reconhecimento (segunda tentativa):', e2);
+                                        }
+                                    }
+                                }, 1000);
+                            }
+                        }
+                    }, 300);
+                }
+            };
+        }
+
+        // Processar comandos do Orion
+        function processOrionCommand(command) {
+            const cmd = command.toLowerCase().trim();
+            
+            console.log('Comando recebido:', command);
+            console.log('Comando normalizado:', cmd);
+            
+            // Atualizar texto do comando na interface
+            const commandText = document.getElementById('orionCommandText');
+            if (commandText) {
+                commandText.textContent = `Você: ${command}`;
+            }
+            
+            // Comandos de ativação (mais flexíveis e variados)
+            const activationPatterns = [
+                'orion ativar', 'orion ligar', 'orion ativa', 'orion liga',
+                'acorda nenem', 'o papai chegou', 'papai chegou',
+                'orion tá aí', 'orion ta ai', 'orion tá aqui', 'orion ta aqui',
+                'olha eu tá aí', 'olha eu ta ai', 'olha eu tô aí', 'olha eu to ai',
+                'orion acorda', 'orion acordar', 'orion ligue', 'orion ative'
+            ];
+            
+            const isActivation = activationPatterns.some(pattern => cmd.includes(pattern));
+            if (isActivation) {
+                console.log('Comando de ativação detectado');
+                activateOrion();
+                return;
+            }
+
+            // Comandos de desativação
+            const deactivationPatterns = [
+                'orion desligar', 'orion desativar', 'orion desliga', 'orion desativa',
+                'orion descansar', 'orion descansa', 'orion dormir', 'orion durma'
+            ];
+            
+            const isDeactivation = deactivationPatterns.some(pattern => cmd.includes(pattern));
+            if (isDeactivation) {
+                console.log('Comando de desativação detectado');
+                deactivateOrion();
+                return;
+            }
+
+            // Se não estiver ativo, ignorar outros comandos (exceto ativação)
+            if (!orionIsActive) {
+                console.log('Orion não está ativo, ignorando comando');
+                return;
+            }
+
+            // Comando de checagem de tarefas
+            const checkPatterns = [
+                'checagem', 'checar', 'verificar', 'verifica',
+                'faça uma checagem', 'fazer checagem', 'fazer uma checagem',
+                'checar tarefas', 'verificar tarefas', 'checar todas as tarefas',
+                'verificar todas as tarefas', 'tarefas todas', 'todas as tarefas'
+            ];
+            
+            const isCheck = checkPatterns.some(pattern => cmd.includes(pattern));
+            if (isCheck) {
+                console.log('Comando de checagem detectado');
+                checkAllTasks();
+                return;
+            }
+
+            // Criar nova tarefa
+            const createTaskPatterns = [
+                'criar tarefa', 'nova tarefa', 'adicionar tarefa',
+                'criar uma tarefa', 'adicionar uma tarefa', 'criar a tarefa'
+            ];
+            
+            const isCreateTask = createTaskPatterns.some(pattern => cmd.includes(pattern));
+            if (isCreateTask) {
+                console.log('Comando de criar tarefa detectado');
+                const taskText = extractTaskFromCommand(cmd);
+                if (taskText) {
+                    createTaskByVoice(taskText);
+                } else {
+                    orionSpeak('Qual é o título da tarefa?');
+                }
+                return;
+            }
+
+            // Marcar hábito como completo
+            const completeHabitPatterns = [
+                'marcar hábito', 'completar hábito', 'marcar o hábito', 'completar o hábito',
+                'marcar hábito', 'completar hábito'
+            ];
+            
+            const isCompleteHabit = completeHabitPatterns.some(pattern => cmd.includes(pattern));
+            if (isCompleteHabit) {
+                console.log('Comando de completar hábito detectado');
+                const habitName = extractHabitFromCommand(cmd);
+                if (habitName) {
+                    completeHabitByVoice(habitName);
+                } else {
+                    orionSpeak('Qual hábito você quer marcar?');
+                }
+                return;
+            }
+
+            // Resposta padrão tipo Jarvis
+            console.log('Comando não reconhecido:', cmd);
+            const errorMessages = [
+                'Desculpe, não compreendi o comando. Pode repetir?',
+                'Comando não reconhecido. Pode reformular?',
+                'Não entendi. Pode repetir o comando?',
+                'Comando não identificado. Tente novamente.'
+            ];
+            const randomMessage = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+            orionSpeak(randomMessage);
+        }
+
+        // Extrair texto da tarefa do comando
+        function extractTaskFromCommand(cmd) {
+            const patterns = [
+                /(?:criar|nova|adicionar)\s+tarefa\s+(.+)/i,
+                /tarefa\s+(.+)/i
+            ];
+            
+            for (const pattern of patterns) {
+                const match = cmd.match(pattern);
+                if (match && match[1]) {
+                    return match[1].trim();
+                }
+            }
+            return null;
+        }
+
+        // Extrair nome do hábito do comando
+        function extractHabitFromCommand(cmd) {
+            const match = cmd.match(/(?:marcar|completar)\s+hábito\s+(.+)/i);
+            if (match && match[1]) {
+                return match[1].trim();
+            }
+            return null;
+        }
+
+        // Ativar Orion - Mensagens tipo Jarvis
+        function activateOrion() {
+            console.log('Ativando Orion...');
+            
+            // Verificar se o reconhecimento de voz está disponível
+            if (!orionVoiceRecognition) {
+                console.warn('Reconhecimento de voz não inicializado. Tentando inicializar...');
+                const initialized = initOrionVoice();
+                if (!initialized) {
+                    const errorMsg = 'Reconhecimento de voz não está disponível. Por favor, utilize Chrome, Edge ou Safari para ativar os comandos de voz.';
+                    orionSpeak(errorMsg);
+                    const commandText = document.getElementById('orionCommandText');
+                    if (commandText) {
+                        commandText.textContent = errorMsg;
+                        commandText.style.color = 'var(--danger)';
+                    }
+                    return;
+                }
+            }
+            
+            orionIsActive = true;
+            orionContinuousMode = true;
+            updateOrionUI();
+            
+            // Mensagens de ativação tipo Jarvis (elegantes e profissionais)
+            const activationMessages = [
+                'Orion ativado. Estou ouvindo seus comandos.',
+                'Sistema ativado. Pronto para receber instruções.',
+                'Orion online. Como posso ajudá-lo?',
+                'Ativado. Aguardando seus comandos.',
+                'Sistema operacional. Estou à sua disposição.'
+            ];
+            
+            const randomMessage = activationMessages[Math.floor(Math.random() * activationMessages.length)];
+            
+            setTimeout(() => {
+                orionSpeak(randomMessage);
+            }, 300);
+            
+            // Iniciar reconhecimento de voz
+            if (orionVoiceRecognition) {
+                // Aguardar um pouco antes de iniciar
+                setTimeout(() => {
+                    try {
+                        console.log('Iniciando reconhecimento de voz...');
+                        orionVoiceRecognition.start();
+                    } catch (e) {
+                        console.error('Erro ao iniciar reconhecimento:', e);
+                        // Tentar novamente após um delay
+                        setTimeout(() => {
+                            try {
+                                orionVoiceRecognition.start();
+                            } catch (e2) {
+                                console.error('Erro ao reiniciar reconhecimento:', e2);
+                                const errorMsg = 'Não consegui acessar o microfone. Verifique as permissões do navegador.';
+                                orionSpeak(errorMsg);
+                                const commandText = document.getElementById('orionCommandText');
+                                if (commandText) {
+                                    commandText.textContent = errorMsg;
+                                    commandText.style.color = 'var(--danger)';
+                                }
+                            }
+                        }, 1000);
+                    }
+                }, 500);
+            } else {
+                const errorMsg = 'Reconhecimento de voz não disponível. Use Chrome, Edge ou Safari.';
+                orionSpeak(errorMsg);
+            }
+        }
+
+        // Desativar Orion - Mensagens tipo Jarvis
+        function deactivateOrion() {
+            console.log('Desativando Orion...');
+            orionIsActive = false;
+            orionContinuousMode = false;
+            if (orionVoiceRecognition) {
+                try {
+                    orionVoiceRecognition.stop();
+                } catch (e) {
+                    console.error('Erro ao parar reconhecimento:', e);
+                }
+            }
+            updateOrionUI();
+            console.log('Orion desativado com sucesso');
+            
+            // Mensagens de desativação tipo Jarvis
+            const deactivationMessages = [
+                'Orion desativado. Descansando.',
+                'Sistema em modo de espera.',
+                'Orion offline. Até logo.',
+                'Desativado. Retornando ao modo de espera.',
+                'Sistema desligado. Até a próxima.'
+            ];
+            
+            const randomMessage = deactivationMessages[Math.floor(Math.random() * deactivationMessages.length)];
+            orionSpeak(randomMessage);
+        }
+
+        // Toggle voz do Orion
+        function toggleOrionVoice() {
+            if (orionIsActive) {
+                deactivateOrion();
+            } else {
+                activateOrion();
+            }
+        }
+
+        // Atualizar UI do Orion
+        function updateOrionUI() {
+            const statusIndicator = document.getElementById('orionStatusIndicator');
+            const statusText = document.getElementById('orionStatusText');
+            const micButton = document.getElementById('orionMicButton');
+            const micIcon = document.getElementById('orionMicIcon');
+            const micText = document.getElementById('orionMicText');
+            const voiceInterface = document.getElementById('orionVoiceInterface');
+            const listeningIndicator = document.getElementById('orionListeningIndicator');
+
+            if (orionIsActive) {
+                if (statusIndicator) statusIndicator.style.background = 'var(--success)';
+                if (statusText) statusText.textContent = 'Ativo';
+                if (micButton) micButton.style.background = 'var(--danger)';
+                if (micIcon) micIcon.textContent = '🔴';
+                if (micText) micText.textContent = 'Desativar Voz';
+                if (voiceInterface) voiceInterface.style.display = 'block';
+                if (listeningIndicator && orionIsListening) {
+                    listeningIndicator.classList.add('listening');
+                }
+            } else {
+                if (statusIndicator) statusIndicator.style.background = 'var(--danger)';
+                if (statusText) statusText.textContent = 'Desativado';
+                if (micButton) micButton.style.background = 'var(--primary)';
+                if (micIcon) micIcon.textContent = '🎤';
+                if (micText) micText.textContent = 'Ativar Voz';
+                if (voiceInterface) voiceInterface.style.display = 'none';
+                if (listeningIndicator) listeningIndicator.classList.remove('listening');
+            }
+        }
+
+        // Síntese de voz tipo Jarvis (voz masculina elegante e profissional)
+        let orionVoices = [];
+        let orionSelectedVoice = null;
+
+        // Carregar vozes disponíveis - Priorizar vozes masculinas tipo Jarvis
+        function loadOrionVoices() {
+            if (!('speechSynthesis' in window)) return;
+            
+            orionVoices = window.speechSynthesis.getVoices();
+            
+            // Prioridade 1: Vozes masculinas brasileiras mais naturais (tipo Jarvis)
+            const jarvisVoices = orionVoices.filter(v => {
+                const name = v.name.toLowerCase();
+                const lang = v.lang.toLowerCase();
+                return lang.includes('pt') && (
+                    name.includes('daniel') ||      // Microsoft Daniel - melhor opção
+                    name.includes('david') ||      // Microsoft David
+                    (name.includes('microsoft') && !name.includes('zira') && !name.includes('heloisa'))
+                );
+            });
+            
+            // Prioridade 2: Vozes Google masculinas
+            const googleVoices = orionVoices.filter(v => {
+                const name = v.name.toLowerCase();
+                const lang = v.lang.toLowerCase();
+                return lang.includes('pt') && name.includes('google') && !name.includes('female');
+            });
+            
+            // Prioridade 3: Qualquer voz masculina em português
+            const maleVoices = orionVoices.filter(v => {
+                const name = v.name.toLowerCase();
+                const lang = v.lang.toLowerCase();
+                return lang.includes('pt') && (
+                    !name.includes('zira') && 
+                    !name.includes('heloisa') && 
+                    !name.includes('female') &&
+                    !name.includes('maria')
+                );
+            });
+            
+            // Selecionar a melhor voz disponível
+            if (jarvisVoices.length > 0) {
+                orionSelectedVoice = jarvisVoices[0];
+                console.log('🎙️ Usando voz Jarvis:', orionSelectedVoice.name, '-', orionSelectedVoice.lang);
+            } else if (googleVoices.length > 0) {
+                orionSelectedVoice = googleVoices[0];
+                console.log('🎙️ Usando voz Google:', orionSelectedVoice.name, '-', orionSelectedVoice.lang);
+            } else if (maleVoices.length > 0) {
+                orionSelectedVoice = maleVoices[0];
+                console.log('🎙️ Usando voz masculina:', orionSelectedVoice.name, '-', orionSelectedVoice.lang);
+            } else if (orionVoices.length > 0) {
+                // Fallback para qualquer voz em português
+                const ptVoices = orionVoices.filter(v => v.lang.toLowerCase().includes('pt'));
+                orionSelectedVoice = ptVoices[0] || orionVoices[0];
+                if (orionSelectedVoice) {
+                    console.log('🎙️ Usando voz disponível:', orionSelectedVoice.name, '-', orionSelectedVoice.lang);
+                }
+            }
+        }
+
+        // Carregar vozes quando disponíveis
+        if ('speechSynthesis' in window) {
+            loadOrionVoices();
+            window.speechSynthesis.onvoiceschanged = () => {
+                loadOrionVoices();
+            };
+        }
+
+        // Síntese de voz tipo Jarvis - Voz elegante, profissional e masculina
+        function orionSpeak(text) {
+            if (!('speechSynthesis' in window)) {
+                console.warn('Síntese de voz não suportada');
+                return;
+            }
+
+            console.log('🎤 Iniciando fala Jarvis:', text);
+
+            // Aguardar um pouco antes de cancelar para evitar interrupções
+            setTimeout(() => {
+                // Cancelar qualquer fala anterior
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'pt-BR';
+                
+                // Configurações tipo Jarvis - Voz masculina, elegante e profissional
+                utterance.rate = 0.88;  // Velocidade um pouco mais lenta (mais elegante)
+                utterance.pitch = 0.85; // Tom mais baixo (voz masculina profunda tipo Jarvis)
+                utterance.volume = 1.0;  // Volume máximo
+
+                // Usar voz selecionada (priorizar Daniel/David para som tipo Jarvis)
+                if (orionSelectedVoice) {
+                    utterance.voice = orionSelectedVoice;
+                }
+
+                utterance.onstart = () => {
+                    console.log('✅ Fala Jarvis iniciada');
+                    const commandText = document.getElementById('orionCommandText');
+                    if (commandText) {
+                        commandText.textContent = `Orion: ${text}`;
+                        commandText.style.color = 'var(--primary)';
+                    }
+                };
+
+                utterance.onend = () => {
+                    console.log('✅ Fala Jarvis concluída');
+                    const commandText = document.getElementById('orionCommandText');
+                    if (commandText && !orionIsListening) {
+                        commandText.textContent = 'Aguardando comando...';
+                        commandText.style.color = 'var(--text-gray)';
+                    }
+                };
+
+                utterance.onerror = (event) => {
+                    console.error('❌ Erro na fala:', event.error);
+                };
+
+                window.speechSynthesis.speak(utterance);
+            }, 150);
+        }
+
+        // Checar todas as tarefas - Respostas tipo Jarvis
+        function checkAllTasks() {
+            const today = new Date().toDateString();
+            const pendingTasks = orionTasks.filter(t => !t.completed);
+            const completedToday = orionTasks.filter(t => {
+                if (t.completed && t.completedAt) {
+                    return new Date(t.completedAt).toDateString() === today;
+                }
+                return false;
+            }).length;
+
+            let message = '';
+            if (pendingTasks.length === 0) {
+                const successMessages = [
+                    'Excelente. Você não possui tarefas pendentes no momento.',
+                    'Perfeito. Todas as tarefas foram concluídas.',
+                    'Status: todas as tarefas estão em dia.',
+                    'Não há tarefas pendentes. Ótimo trabalho.'
+                ];
+                message = successMessages[Math.floor(Math.random() * successMessages.length)];
+            } else {
+                message = `Você possui ${pendingTasks.length} tarefa${pendingTasks.length > 1 ? 's' : ''} pendente${pendingTasks.length > 1 ? 's' : ''}. `;
+                if (completedToday > 0) {
+                    message += `Hoje você completou ${completedToday} tarefa${completedToday > 1 ? 's' : ''}. `;
+                }
+                message += 'Deseja que eu liste as tarefas pendentes?';
+            }
+            
+            orionSpeak(message);
+            renderOrionTasks();
+        }
+
+        // Criar tarefa por voz - Respostas tipo Jarvis
+        function createTaskByVoice(title) {
+            const task = {
+                id: Date.now(),
+                title: title,
+                description: '',
+                priority: 'medium',
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+            orionTasks.push(task);
+            localStorage.setItem('orion_tasks', JSON.stringify(orionTasks));
+            
+            const confirmMessages = [
+                `Tarefa "${title}" criada com sucesso.`,
+                `Tarefa "${title}" adicionada ao sistema.`,
+                `Confirmado. Tarefa "${title}" foi criada.`,
+                `Tarefa "${title}" registrada com sucesso.`
+            ];
+            const randomMessage = confirmMessages[Math.floor(Math.random() * confirmMessages.length)];
+            orionSpeak(randomMessage);
+            
+            renderOrionTasks();
+            renderOrionDashboard();
+        }
+
+        // Completar hábito por voz - Respostas tipo Jarvis
+        function completeHabitByVoice(habitName) {
+            const habit = orionHabits.find(h => 
+                h.name.toLowerCase().includes(habitName.toLowerCase()) ||
+                habitName.toLowerCase().includes(h.name.toLowerCase())
+            );
+            
+            if (habit) {
+                toggleOrionHabit(habit.id);
+                const successMessages = [
+                    `Hábito "${habit.name}" marcado como completo. Excelente trabalho.`,
+                    `Confirmado. Hábito "${habit.name}" registrado.`,
+                    `Hábito "${habit.name}" concluído. Parabéns.`,
+                    `Perfeito. Hábito "${habit.name}" atualizado no sistema.`
+                ];
+                const randomMessage = successMessages[Math.floor(Math.random() * successMessages.length)];
+                orionSpeak(randomMessage);
+            } else {
+                const errorMessages = [
+                    `Não encontrei o hábito "${habitName}" no sistema.`,
+                    `Hábito "${habitName}" não localizado.`,
+                    `Não foi possível localizar o hábito "${habitName}".`
+                ];
+                const randomMessage = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+                orionSpeak(randomMessage);
+            }
+        }
+
+        // Navegação entre abas do Orion
+        function showOrionTab(tabName, clickedElement) {
+            document.querySelectorAll('.orion-tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            document.querySelectorAll('.orion-tab').forEach(tab => {
+                tab.classList.remove('active');
+                tab.style.borderBottom = 'none';
+            });
+
+            const tabContent = document.getElementById(tabName);
+            if (tabContent) {
+                tabContent.style.display = 'block';
+            }
+
+            // Atualizar botão ativo
+            if (clickedElement) {
+                clickedElement.classList.add('active');
+                clickedElement.style.borderBottom = '2px solid var(--primary)';
+            } else {
+                // Se não foi passado o elemento, encontrar pelo tabName
+                const tabButton = document.querySelector(`.orion-tab[onclick*="${tabName}"]`);
+                if (tabButton) {
+                    tabButton.classList.add('active');
+                    tabButton.style.borderBottom = '2px solid var(--primary)';
+                }
+            }
+
+            // Carregar dados quando a aba é aberta
+            if (tabName === 'orionDashboard') {
+                renderOrionDashboard();
+            } else if (tabName === 'orionTarefas') {
+                renderOrionTasks();
+            } else if (tabName === 'orionHabitos') {
+                renderOrionHabits();
+            } else if (tabName === 'orionCompromissos') {
+                renderOrionCalendar();
+            } else if (tabName === 'orionFinancas') {
+                renderOrionTransactions();
+                updateOrionFinanceStats();
+            }
+        }
+
+        // Renderizar Tarefas do Orion (atualizado)
+        function renderOrionTasks() {
+            const allTasksHtml = orionTasks.map(task => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--tertiary); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px;">
+                    <div style="width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; ${task.completed ? 'background: var(--primary); border-color: var(--primary);' : ''}" onclick="toggleOrionTask(${task.id})">
+                        ${task.completed ? '✓' : ''}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 500; ${task.completed ? 'text-decoration: line-through; color: var(--text-gray);' : ''}">${task.title}</div>
+                        ${task.dueDate ? '<div style="font-size: 12px; color: var(--text-gray); margin-top: 4px;">📅 ' + new Date(task.dueDate).toLocaleDateString('pt-BR') + '</div>' : ''}
+                    </div>
+                    <div style="padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: ${task.priority === 'high' ? 'rgba(239, 68, 68, 0.2)' : task.priority === 'medium' ? 'rgba(251, 191, 36, 0.2)' : 'rgba(16, 185, 129, 0.2)'}; color: ${task.priority === 'high' ? 'var(--danger)' : task.priority === 'medium' ? 'var(--warning)' : 'var(--success)'};">
+                        ${task.priority === 'high' ? 'Alta' : task.priority === 'medium' ? 'Média' : 'Baixa'}
+                    </div>
+                    <button onclick="deleteOrionTask(${task.id})" style="background: transparent; border: none; color: var(--danger); cursor: pointer; padding: 8px;">🗑️</button>
+                </div>
+            `).join('');
+
+            document.getElementById('orionAllTasks').innerHTML = allTasksHtml || '<div class="empty-state">Nenhuma tarefa ainda. Crie sua primeira tarefa ou use o comando de voz!</div>';
+        }
+
+        // Renderizar Dashboard do Orion
+        function renderOrionDashboard() {
+            const today = new Date().toDateString();
+            const tasksCompleted = orionTasks.filter(t => {
+                if (t.completed) {
+                    if (t.completedAt) {
+                        return new Date(t.completedAt).toDateString() === today;
+                    }
+                    return true;
+                }
+                return false;
+            }).length;
+
+            let maxStreak = 0;
+            orionHabits.forEach(habit => {
+                const streak = getOrionHabitStreak(habit.id);
+                if (streak > maxStreak) maxStreak = streak;
+            });
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayEvents = orionEvents.filter(e => e.date === todayStr).length;
+
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const monthTransactions = orionTransactions.filter(t => {
+                const transDate = new Date(t.date);
+                return transDate.getMonth() === currentMonth && transDate.getFullYear() === currentYear;
+            });
+
+            const income = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const expenses = monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            const balance = income - expenses;
+
+            document.getElementById('orionTasksCompletedToday').textContent = tasksCompleted;
+            document.getElementById('orionHabitStreak').textContent = maxStreak;
+            document.getElementById('orionEventsToday').textContent = todayEvents;
+            document.getElementById('orionMonthBalance').textContent = `R$ ${balance.toFixed(2)}`;
+
+            // Renderizar todas as tarefas no dashboard (não apenas de hoje)
+            renderOrionTasks();
+
+            // Renderizar todos os hábitos no dashboard
+            renderOrionHabits();
+        }
+
+
+        function toggleOrionTask(id) {
+            const task = orionTasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                if (task.completed) {
+                    task.completedAt = new Date().toISOString();
+                } else {
+                    task.completedAt = null;
+                }
+                localStorage.setItem('orion_tasks', JSON.stringify(orionTasks));
+                renderOrionTasks();
+                renderOrionDashboard();
+            }
+        }
+
+        function deleteOrionTask(id) {
+            if (!confirm('Tem certeza que deseja excluir esta tarefa?')) return;
+            orionTasks = orionTasks.filter(t => t.id !== id);
+            localStorage.setItem('orion_tasks', JSON.stringify(orionTasks));
+            renderOrionTasks();
+            renderOrionDashboard();
+        }
+
+        function openOrionTaskModal() {
+            document.getElementById('orionTaskModalTitle').textContent = 'Nova Tarefa';
+            document.getElementById('orionTaskForm').reset();
+            document.getElementById('orionTaskId').value = '';
+            document.getElementById('orionTaskDueDate').value = new Date().toISOString().split('T')[0];
+            openModal(document.getElementById('orionTaskModal'));
+        }
+
+        // Hábitos do Orion
+        function getOrionHabitStreak(habitId) {
+            let streak = 0;
+            const today = new Date();
+            for (let i = 0; i < 365; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const key = `${habitId}_${dateStr}`;
+                if (orionHabitCompletions[key]) {
+                    streak++;
+                } else if (i > 0) {
+                    break;
+                }
+            }
+            return streak;
+        }
+
+        function renderOrionHabits() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            const allHabitsHtml = orionHabits.map(habit => {
+                const isCompleted = orionHabitCompletions[`${habit.id}_${today}`];
+                const streak = getOrionHabitStreak(habit.id);
+                
+                return `
+                    <div style="background: var(--tertiary); border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; ${isCompleted ? 'background: rgba(255, 102, 0, 0.1); border-color: var(--primary);' : ''}" onclick="toggleOrionHabit(${habit.id})">
+                        <div style="font-size: 48px; margin-bottom: 12px;">${habit.icon || '🎯'}</div>
+                        <div style="font-weight: 500; margin-bottom: 8px;">${habit.name}</div>
+                        <div style="font-size: 12px; color: var(--text-gray);">🔥 ${streak} dias</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('orionAllHabits').innerHTML = allHabitsHtml || '<div class="empty-state" style="grid-column: 1 / -1;">Nenhum hábito ainda. Crie seu primeiro hábito!</div>';
+        }
+
+        function toggleOrionHabit(habitId) {
+            const today = new Date().toISOString().split('T')[0];
+            const key = `${habitId}_${today}`;
+            
+            if (orionHabitCompletions[key]) {
+                delete orionHabitCompletions[key];
+            } else {
+                orionHabitCompletions[key] = true;
+            }
+            
+            localStorage.setItem('orion_habit_completions', JSON.stringify(orionHabitCompletions));
+            renderOrionHabits();
+            renderOrionDashboard();
+        }
+
+        function openOrionHabitModal() {
+            document.getElementById('orionHabitModalTitle').textContent = 'Novo Hábito';
+            document.getElementById('orionHabitForm').reset();
+            document.getElementById('orionHabitId').value = '';
+            openModal(document.getElementById('orionHabitModal'));
+        }
+
+        // Calendário do Orion
+        function renderOrionCalendar() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+
+            let calendarHtml = '';
+            
+            const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            weekDays.forEach(day => {
+                calendarHtml += `<div style="background: var(--secondary); font-weight: 600; text-align: center; padding: 8px; border-radius: 8px;">${day}</div>`;
+            });
+
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                calendarHtml += '<div></div>';
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isToday = today.toDateString() === new Date(year, month, day).toDateString();
+                const hasEvent = orionEvents.some(e => e.date === dateStr);
+                
+                calendarHtml += `
+                    <div style="aspect-ratio: 1; background: ${isToday ? 'var(--primary)' : 'var(--tertiary)'}; border: 1px solid var(--border); border-radius: 12px; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <div style="font-weight: 600; margin-bottom: 4px;">${day}</div>
+                        ${hasEvent ? '<div style="width: 6px; height: 6px; background: var(--primary); border-radius: 50%; margin-top: 4px;"></div>' : ''}
+                    </div>
+                `;
+            }
+
+            document.getElementById('orionCalendar').innerHTML = calendarHtml;
+        }
+
+        function openOrionEventModal() {
+            document.getElementById('orionEventModalTitle').textContent = 'Novo Compromisso';
+            document.getElementById('orionEventForm').reset();
+            document.getElementById('orionEventId').value = '';
+            document.getElementById('orionEventDate').value = new Date().toISOString().split('T')[0];
+            openModal(document.getElementById('orionEventModal'));
+        }
+
+        // Transações do Orion
+        function renderOrionTransactions() {
+            const sortedTransactions = [...orionTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const transactionsHtml = sortedTransactions.slice(0, 10).map(transaction => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border);">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 500; margin-bottom: 4px;">${transaction.title} ${transaction.category ? '• ' + transaction.category : ''}</div>
+                        <div style="font-size: 12px; color: var(--text-gray);">${new Date(transaction.date).toLocaleDateString('pt-BR')}</div>
+                    </div>
+                    <div style="font-weight: 600; color: ${transaction.type === 'income' ? 'var(--success)' : 'var(--danger)'};">
+                        ${transaction.type === 'income' ? '+' : '-'} R$ ${Math.abs(transaction.amount).toFixed(2)}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('orionTransactionsList').innerHTML = transactionsHtml || '<div class="empty-state">Nenhuma transação registrada ainda</div>';
+        }
+
+        function updateOrionFinanceStats() {
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const monthTransactions = orionTransactions.filter(t => {
+                const transDate = new Date(t.date);
+                return transDate.getMonth() === currentMonth && transDate.getFullYear() === currentYear;
+            });
+
+            const income = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const expenses = monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            const balance = income - expenses;
+
+            document.getElementById('orionMonthIncome').textContent = `R$ ${income.toFixed(2)}`;
+            document.getElementById('orionMonthExpenses').textContent = `R$ ${expenses.toFixed(2)}`;
+            document.getElementById('orionTotalBalance').textContent = `R$ ${balance.toFixed(2)}`;
+            document.getElementById('orionTotalBalance').style.color = balance >= 0 ? 'var(--success)' : 'var(--danger)';
+        }
+
+        function openOrionTransactionModal() {
+            document.getElementById('orionTransactionModalTitle').textContent = 'Nova Transação';
+            document.getElementById('orionTransactionForm').reset();
+            document.getElementById('orionTransactionId').value = '';
+            document.getElementById('orionTransactionDate').value = new Date().toISOString().split('T')[0];
+            openModal(document.getElementById('orionTransactionModal'));
+        }
+
+        // Inicializar Orion quando a página é carregada
+        function initOrion() {
+            // Verificar se estamos na página do Orion
+            const orionContent = document.getElementById('orionContent');
+            if (!orionContent || orionContent.style.display === 'none') {
+                return; // Não inicializar se não estiver na página do Orion
+            }
+            
+            if (orionTasks.length === 0 && orionHabits.length === 0) {
+                // Dados de exemplo
+                orionTasks = [
+                    {
+                        id: 1,
+                        title: 'Bem-vindo ao Orion!',
+                        description: 'Esta é sua primeira tarefa',
+                        priority: 'medium',
+                        completed: false,
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                orionHabits = [
+                    {
+                        id: 1,
+                        name: 'Beber Água',
+                        icon: '💧',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        name: 'Exercitar-se',
+                        icon: '💪',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('orion_tasks', JSON.stringify(orionTasks));
+                localStorage.setItem('orion_habits', JSON.stringify(orionHabits));
+            }
+
+            // Inicializar sistema de voz (verificar compatibilidade)
+            const voiceInitialized = initOrionVoice();
+            if (voiceInitialized) {
+                loadOrionVoices();
+            }
+            updateOrionUI();
+        }
+
+        // Salvar Tarefa do Orion
+        function saveOrionTask(e) {
+            e.preventDefault();
+            const id = document.getElementById('orionTaskId').value;
+            const task = {
+                id: id || Date.now(),
+                title: document.getElementById('orionTaskTitle').value,
+                description: document.getElementById('orionTaskDescription').value,
+                priority: document.getElementById('orionTaskPriority').value,
+                dueDate: document.getElementById('orionTaskDueDate').value,
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+
+            if (id) {
+                const index = orionTasks.findIndex(t => t.id == id);
+                if (index !== -1) {
+                    orionTasks[index] = { ...orionTasks[index], ...task };
+                }
+            } else {
+                orionTasks.push(task);
+            }
+
+            localStorage.setItem('orion_tasks', JSON.stringify(orionTasks));
+            closeModal(document.getElementById('orionTaskModal'));
+            renderOrionTasks();
+            renderOrionDashboard();
+        }
+
+        // Salvar Hábito do Orion
+        function saveOrionHabit(e) {
+            e.preventDefault();
+            const id = document.getElementById('orionHabitId').value;
+            const habit = {
+                id: id || Date.now(),
+                name: document.getElementById('orionHabitName').value,
+                icon: document.getElementById('orionHabitIcon').value,
+                createdAt: new Date().toISOString()
+            };
+
+            if (id) {
+                const index = orionHabits.findIndex(h => h.id == id);
+                if (index !== -1) {
+                    orionHabits[index] = { ...orionHabits[index], ...habit };
+                }
+            } else {
+                orionHabits.push(habit);
+            }
+
+            localStorage.setItem('orion_habits', JSON.stringify(orionHabits));
+            closeModal(document.getElementById('orionHabitModal'));
+            renderOrionHabits();
+            renderOrionDashboard();
+        }
+
+        // Salvar Compromisso do Orion
+        function saveOrionEvent(e) {
+            e.preventDefault();
+            const id = document.getElementById('orionEventId').value;
+            const event = {
+                id: id || Date.now(),
+                title: document.getElementById('orionEventTitle').value,
+                date: document.getElementById('orionEventDate').value,
+                time: document.getElementById('orionEventTime').value,
+                description: document.getElementById('orionEventDescription').value,
+                createdAt: new Date().toISOString()
+            };
+
+            if (id) {
+                const index = orionEvents.findIndex(e => e.id == id);
+                if (index !== -1) {
+                    orionEvents[index] = { ...orionEvents[index], ...event };
+                }
+            } else {
+                orionEvents.push(event);
+            }
+
+            localStorage.setItem('orion_events', JSON.stringify(orionEvents));
+            closeModal(document.getElementById('orionEventModal'));
+            renderOrionCalendar();
+            renderOrionDashboard();
+        }
+
+        // Salvar Transação do Orion
+        function saveOrionTransaction(e) {
+            e.preventDefault();
+            const id = document.getElementById('orionTransactionId').value;
+            const transaction = {
+                id: id || Date.now(),
+                type: document.getElementById('orionTransactionType').value,
+                title: document.getElementById('orionTransactionTitle').value,
+                amount: parseFloat(document.getElementById('orionTransactionAmount').value),
+                date: document.getElementById('orionTransactionDate').value,
+                category: document.getElementById('orionTransactionCategory').value,
+                createdAt: new Date().toISOString()
+            };
+
+            if (id) {
+                const index = orionTransactions.findIndex(t => t.id == id);
+                if (index !== -1) {
+                    orionTransactions[index] = { ...orionTransactions[index], ...transaction };
+                }
+            } else {
+                orionTransactions.push(transaction);
+            }
+
+            localStorage.setItem('orion_transactions', JSON.stringify(orionTransactions));
+            closeModal(document.getElementById('orionTransactionModal'));
+            renderOrionTransactions();
+            updateOrionFinanceStats();
+            renderOrionDashboard();
+        }
+
+        // Expor funções globalmente
+        window.showOrionTab = showOrionTab;
+        window.openOrionTaskModal = openOrionTaskModal;
+        window.openOrionHabitModal = openOrionHabitModal;
+        window.openOrionEventModal = openOrionEventModal;
+        window.openOrionTransactionModal = openOrionTransactionModal;
+        window.toggleOrionTask = toggleOrionTask;
+        window.toggleOrionHabit = toggleOrionHabit;
+        window.deleteOrionTask = deleteOrionTask;
+        window.saveOrionTask = saveOrionTask;
+        window.saveOrionHabit = saveOrionHabit;
+        window.saveOrionEvent = saveOrionEvent;
+        window.saveOrionTransaction = saveOrionTransaction;
+        window.toggleOrionVoice = toggleOrionVoice;
+        window.activateOrion = activateOrion;
+        window.deactivateOrion = deactivateOrion;
+
+        // Inicializar Orion quando a página Orion for carregada
+        function loadOrionPage() {
+            initOrion();
+            renderOrionDashboard();
+            renderOrionTasks();
+            renderOrionHabits();
+            renderOrionCalendar();
+            renderOrionTransactions();
+            updateOrionFinanceStats();
+        }
+
+        // Expor função de navegação
+        window.navigateToPage = navigateToPage;
     </script>
 </body>
 </html>
