@@ -1295,6 +1295,10 @@
         }
 
         /* Tabs Financeiro */
+        .custos-tab-content {
+            display: block;
+        }
+
         .financeiro-tab {
             display: block;
         }
@@ -2672,6 +2676,10 @@
                 <span>💵</span>
                 <span>Precificação</span>
             </a>
+            <a href="#" class="menu-item" data-page="custos" onclick="closeSidebarMobile()">
+                <span>💳</span>
+                <span>Custos de Projetos</span>
+            </a>
             <a href="#" class="menu-item" data-page="orion" onclick="closeSidebarMobile()">
                 <span>🤖</span>
                 <span>Orion - Assistente</span>
@@ -3312,6 +3320,190 @@
                         </table>
                         <div id="contratosEmpty" class="empty-state" style="display: none;">
                             Nenhum contrato encontrado
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Página Custos de Projetos -->
+            <div id="custosContent" class="page-content" style="display: none;">
+                <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 class="page-title">💳 Custos de Projetos</h1>
+                        <p class="page-subtitle">Gerencie custos compartilhados e específicos de projetos</p>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-primary" onclick="openCustoCompartilhadoModal()">+ Custo Compartilhado</button>
+                        <button class="btn btn-secondary" onclick="openCustoProjetoModal()">+ Custo por Projeto</button>
+                    </div>
+                </div>
+
+                <!-- Cards de Resumo -->
+                <div class="cards-grid" style="margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Custos Compartilhados</div>
+                                <div class="card-value" id="totalCustosCompartilhados" style="color: var(--warning);">R$ 0,00</div>
+                            </div>
+                            <div class="card-icon">🔗</div>
+                        </div>
+                        <div class="card-footer">Total mensal</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Custos por Projeto</div>
+                                <div class="card-value" id="totalCustosProjetos" style="color: var(--primary);">R$ 0,00</div>
+                            </div>
+                            <div class="card-icon">📁</div>
+                        </div>
+                        <div class="card-footer">Total acumulado</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Projetos Ativos</div>
+                                <div class="card-value" id="projetosAtivosCount">0</div>
+                            </div>
+                            <div class="card-icon">✅</div>
+                        </div>
+                        <div class="card-footer">Para rateio</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Custo Médio/Projeto</div>
+                                <div class="card-value" id="custoMedioProjeto">R$ 0,00</div>
+                            </div>
+                            <div class="card-icon">📊</div>
+                        </div>
+                        <div class="card-footer">Com rateio</div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="section-card">
+                    <div style="display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                        <button class="btn btn-secondary" id="tabCustosCompartilhados" onclick="switchCustosTab('compartilhados')" style="border-radius: 8px 8px 0 0; margin-bottom: -1px; border-bottom: 2px solid var(--primary);">
+                            🔗 Custos Compartilhados
+                        </button>
+                        <button class="btn btn-secondary" id="tabCustosProjetos" onclick="switchCustosTab('projetos')" style="border-radius: 8px 8px 0 0; margin-bottom: -1px;">
+                            📁 Custos por Projeto
+                        </button>
+                        <button class="btn btn-secondary" id="tabCustosRelatorios" onclick="switchCustosTab('relatorios')" style="border-radius: 8px 8px 0 0; margin-bottom: -1px;">
+                            📊 Relatórios
+                        </button>
+                    </div>
+
+                    <!-- Tab: Custos Compartilhados -->
+                    <div id="custosCompartilhadosView" class="custos-tab-content">
+                        <div class="search-bar" style="margin-bottom: 16px;">
+                            <input 
+                                type="text" 
+                                id="custoCompartilhadoSearch" 
+                                class="search-input" 
+                                placeholder="Buscar custo compartilhado..."
+                                onkeyup="filterCustosCompartilhados()"
+                            >
+                            <select id="custoCompartilhadoStatusFilter" class="form-input" style="width: 200px;" onchange="filterCustosCompartilhados()">
+                                <option value="">Todos os status</option>
+                                <option value="ativo">Ativo</option>
+                                <option value="inativo">Inativo</option>
+                            </select>
+                        </div>
+
+                        <div class="table-container">
+                            <div id="custosCompartilhadosLoading" class="loading active">
+                                <div class="spinner"></div>
+                                <p>Carregando custos compartilhados...</p>
+                            </div>
+                            <table id="custosCompartilhadosTable" style="display: none;">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Valor Mensal</th>
+                                        <th>Projetos Ativos</th>
+                                        <th>Rateio/Projeto</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="custosCompartilhadosTableBody">
+                                </tbody>
+                            </table>
+                            <div id="custosCompartilhadosEmpty" class="empty-state" style="display: none;">
+                                Nenhum custo compartilhado encontrado
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Custos por Projeto -->
+                    <div id="custosProjetosView" class="custos-tab-content" style="display: none;">
+                        <div class="search-bar" style="margin-bottom: 16px;">
+                            <input 
+                                type="text" 
+                                id="custoProjetoSearch" 
+                                class="search-input" 
+                                placeholder="Buscar custo por projeto..."
+                                onkeyup="filterCustosProjetos()"
+                            >
+                            <select id="custoProjetoProjetoFilter" class="form-input" style="width: 200px;" onchange="filterCustosProjetos()">
+                                <option value="">Todos os projetos</option>
+                            </select>
+                        </div>
+
+                        <div class="table-container">
+                            <div id="custosProjetosLoading" class="loading active">
+                                <div class="spinner"></div>
+                                <p>Carregando custos por projeto...</p>
+                            </div>
+                            <table id="custosProjetosTable" style="display: none;">
+                                <thead>
+                                    <tr>
+                                        <th>Projeto</th>
+                                        <th>Descrição</th>
+                                        <th>Valor</th>
+                                        <th>Data</th>
+                                        <th>Tipo</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="custosProjetosTableBody">
+                                </tbody>
+                            </table>
+                            <div id="custosProjetosEmpty" class="empty-state" style="display: none;">
+                                Nenhum custo por projeto encontrado
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Relatórios -->
+                    <div id="custosRelatoriosView" class="custos-tab-content" style="display: none;">
+                        <div class="section-card" style="margin-bottom: 24px;">
+                            <h2 class="section-title">📊 Resumo por Projeto</h2>
+                            <div class="table-container">
+                                <table id="relatorioCustosTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Projeto</th>
+                                            <th>Custos Específicos</th>
+                                            <th>Rateio Compartilhado</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="relatorioCustosTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <h2 class="section-title">📈 Gráfico de Custos</h2>
+                            <canvas id="graficoCustos" style="max-height: 400px;"></canvas>
                         </div>
                     </div>
                 </div>
@@ -5945,6 +6137,119 @@
         </div>
     </div>
 
+    <!-- Modais de Custos de Projetos -->
+    <!-- Modal Custo Compartilhado -->
+    <div id="custoCompartilhadoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="custoCompartilhadoModalTitle">Novo Custo Compartilhado</h2>
+                <button class="btn-close" onclick="closeCustoCompartilhadoModal()">&times;</button>
+            </div>
+            <form id="custoCompartilhadoForm">
+                <input type="hidden" id="custoCompartilhadoId">
+                
+                <div class="form-group">
+                    <label class="form-label">Nome do Custo *</label>
+                    <input type="text" id="custoCompartilhadoNome" class="form-input" placeholder="Ex: Supabase, Cursor, Domínio..." required>
+                    <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                        💡 Nome da ferramenta ou serviço compartilhado entre projetos
+                    </small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Valor Mensal *</label>
+                        <input type="number" id="custoCompartilhadoValor" class="form-input" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status *</label>
+                        <select id="custoCompartilhadoStatus" class="form-input" required>
+                            <option value="ativo">Ativo</option>
+                            <option value="inativo">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea id="custoCompartilhadoDescricao" class="form-input" rows="3" placeholder="Descrição adicional sobre o custo..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Observações</label>
+                    <textarea id="custoCompartilhadoObservacoes" class="form-input" rows="2" placeholder="Observações adicionais..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCustoCompartilhadoModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Custo por Projeto -->
+    <div id="custoProjetoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="custoProjetoModalTitle">Novo Custo por Projeto</h2>
+                <button class="btn-close" onclick="closeCustoProjetoModal()">&times;</button>
+            </div>
+            <form id="custoProjetoForm">
+                <input type="hidden" id="custoProjetoId">
+                
+                <div class="form-group">
+                    <label class="form-label">Projeto *</label>
+                    <select id="custoProjetoProjetoId" class="form-input" required>
+                        <option value="">Selecione um projeto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Descrição *</label>
+                    <input type="text" id="custoProjetoDescricao" class="form-input" placeholder="Ex: Serviço de hospedagem, API externa..." required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Valor *</label>
+                        <input type="number" id="custoProjetoValor" class="form-input" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data *</label>
+                        <input type="date" id="custoProjetoData" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tipo *</label>
+                        <select id="custoProjetoTipo" class="form-input" required>
+                            <option value="unico">Pagamento Único</option>
+                            <option value="mensal">Mensal</option>
+                            <option value="anual">Anual</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Categoria</label>
+                        <input type="text" id="custoProjetoCategoria" class="form-input" placeholder="Ex: Hospedagem, API, Ferramenta...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Observações</label>
+                    <textarea id="custoProjetoObservacoes" class="form-input" rows="2" placeholder="Observações adicionais..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCustoProjetoModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- jsPDF para geração de PDF -->
@@ -5958,12 +6263,18 @@
         const SUPABASE_URL = 'https://zhzhpctsndrcedukivhk.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoemhwY3RzbmRyY2VkdWtpdmhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5OTA2NjMsImV4cCI6MjA3ODU2NjY2M30.POJaM5AK2RPvczhIAPEjA7bvLxQxnN9rJC4f_oR5bC8';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-            auth: {
-                persistSession: false,
-                autoRefreshToken: false
-            }
-        });
+        // Inicializar cliente Supabase (com proteção contra redeclaração)
+        if (!window.supabaseClient && window.supabase && window.supabase.createClient) {
+            window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                auth: {
+                    persistSession: false,
+                    autoRefreshToken: false
+                }
+            });
+        }
+        
+        // Criar alias local para compatibilidade (usar var para permitir redeclaração sem erro)
+        var supabase = window.supabaseClient;
 
         // Verificar se usuário está logado (localStorage)
         function checkAuth() {
@@ -10595,6 +10906,7 @@
                     'tarefas': 'Tarefas & Hábitos',
                     'analises': 'Análises Avançadas',
                     'precificacao': 'Precificação',
+                    'custos': 'Custos de Projetos',
                     'orion': 'Orion - Assistente'
                 };
                 headerTitle.textContent = pageTitles[page] || 'Dashboard';
@@ -10629,6 +10941,8 @@
                 loadIdeias();
             } else if (page === 'templates') {
                 loadTemplates();
+            } else if (page === 'custos') {
+                loadCustosPage();
             }
         }
 
@@ -16263,6 +16577,599 @@ Obrigado pela confiança! 🙏`;
                 console.error('Erro no preview:', error);
                 alert('Erro ao gerar preview: ' + (error.message || 'Erro desconhecido'));
             }
+        }
+
+        // ========== CUSTOS DE PROJETOS ==========
+        let allCustosCompartilhados = [];
+        let allCustosProjetos = [];
+        let filteredCustosCompartilhados = [];
+        let filteredCustosProjetos = [];
+
+        // Função para alternar entre tabs
+        function switchCustosTab(tab) {
+            // Atualizar botões
+            document.querySelectorAll('[id^="tabCustos"]').forEach(btn => {
+                btn.style.borderBottom = 'none';
+                btn.style.background = 'var(--tertiary)';
+            });
+            
+            const activeBtn = document.getElementById(`tabCustos${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+            if (activeBtn) {
+                activeBtn.style.borderBottom = '2px solid var(--primary)';
+                activeBtn.style.background = 'var(--secondary)';
+            }
+
+            // Mostrar/ocultar conteúdo
+            document.querySelectorAll('[id$="View"]').forEach(view => {
+                if (view.id.includes('custos')) {
+                    view.style.display = 'none';
+                }
+            });
+
+            if (tab === 'compartilhados') {
+                document.getElementById('custosCompartilhadosView').style.display = 'block';
+                loadCustosCompartilhados();
+            } else if (tab === 'projetos') {
+                document.getElementById('custosProjetosView').style.display = 'block';
+                loadCustosProjetos();
+            } else if (tab === 'relatorios') {
+                document.getElementById('custosRelatoriosView').style.display = 'block';
+                loadRelatorioCustos();
+            }
+        }
+
+        // Carregar custos compartilhados
+        async function loadCustosCompartilhados() {
+            const loading = document.getElementById('custosCompartilhadosLoading');
+            const table = document.getElementById('custosCompartilhadosTable');
+            const empty = document.getElementById('custosCompartilhadosEmpty');
+            
+            if (loading) loading.classList.add('active');
+            if (table) table.style.display = 'none';
+            if (empty) empty.style.display = 'none';
+
+            try {
+                const { data, error } = await supabase
+                    .from('custos_compartilhados')
+                    .select('*')
+                    .order('nome', { ascending: true });
+
+                if (error) throw error;
+
+                allCustosCompartilhados = data || [];
+                filteredCustosCompartilhados = [...allCustosCompartilhados];
+                
+                updateResumoCustos();
+                renderCustosCompartilhados();
+            } catch (error) {
+                console.error('Erro ao carregar custos compartilhados:', error);
+                // Se a tabela não existir, criar estrutura básica
+                if (error.code === 'PGRST116') {
+                    allCustosCompartilhados = [];
+                    filteredCustosCompartilhados = [];
+                    renderCustosCompartilhados();
+                }
+            } finally {
+                if (loading) loading.classList.remove('active');
+            }
+        }
+
+        // Renderizar custos compartilhados
+        function renderCustosCompartilhados() {
+            const tbody = document.getElementById('custosCompartilhadosTableBody');
+            const table = document.getElementById('custosCompartilhadosTable');
+            const empty = document.getElementById('custosCompartilhadosEmpty');
+
+            if (!tbody) return;
+
+            if (filteredCustosCompartilhados.length === 0) {
+                if (table) table.style.display = 'none';
+                if (empty) empty.style.display = 'block';
+                return;
+            }
+
+            if (table) table.style.display = 'table';
+            if (empty) empty.style.display = 'none';
+
+            // Calcular projetos ativos para rateio
+            const projetosAtivos = allProjetos.filter(p => 
+                p.status === 'em_andamento' || p.status === 'planejamento'
+            ).length;
+
+            tbody.innerHTML = filteredCustosCompartilhados.map(custo => {
+                const rateioPorProjeto = projetosAtivos > 0 
+                    ? (custo.valor_mensal / projetosAtivos).toFixed(2)
+                    : '0.00';
+
+                return `
+                    <tr>
+                        <td>${custo.nome || ''}</td>
+                        <td>${formatCurrency(custo.valor_mensal || 0)}</td>
+                        <td>${projetosAtivos}</td>
+                        <td>${formatCurrency(parseFloat(rateioPorProjeto))}</td>
+                        <td>
+                            <span class="badge ${custo.status === 'ativo' ? 'badge-ativo' : 'badge-inativo'}">
+                                ${custo.status === 'ativo' ? 'Ativo' : 'Inativo'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-action" onclick="editCustoCompartilhado('${custo.id}')" style="border-color: var(--primary); color: var(--primary);">Editar</button>
+                            <button class="btn-action" onclick="deleteCustoCompartilhado('${custo.id}')" style="border-color: var(--danger); color: var(--danger);">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filtrar custos compartilhados
+        function filterCustosCompartilhados() {
+            const search = document.getElementById('custoCompartilhadoSearch')?.value.toLowerCase() || '';
+            const statusFilter = document.getElementById('custoCompartilhadoStatusFilter')?.value || '';
+
+            filteredCustosCompartilhados = allCustosCompartilhados.filter(custo => {
+                const matchSearch = !search || 
+                    (custo.nome && custo.nome.toLowerCase().includes(search)) ||
+                    (custo.descricao && custo.descricao.toLowerCase().includes(search));
+                
+                const matchStatus = !statusFilter || custo.status === statusFilter;
+                
+                return matchSearch && matchStatus;
+            });
+
+            renderCustosCompartilhados();
+        }
+
+        // Abrir modal de custo compartilhado
+        async function openCustoCompartilhadoModal(id = null) {
+            const modal = document.getElementById('custoCompartilhadoModal');
+            const form = document.getElementById('custoCompartilhadoForm');
+            const title = document.getElementById('custoCompartilhadoModalTitle');
+
+            if (id) {
+                title.textContent = 'Editar Custo Compartilhado';
+                const custo = allCustosCompartilhados.find(c => c.id === id);
+                if (custo) {
+                    document.getElementById('custoCompartilhadoId').value = custo.id;
+                    document.getElementById('custoCompartilhadoNome').value = custo.nome || '';
+                    document.getElementById('custoCompartilhadoValor').value = custo.valor_mensal || '';
+                    document.getElementById('custoCompartilhadoStatus').value = custo.status || 'ativo';
+                    document.getElementById('custoCompartilhadoDescricao').value = custo.descricao || '';
+                    document.getElementById('custoCompartilhadoObservacoes').value = custo.observacoes || '';
+                }
+            } else {
+                title.textContent = 'Novo Custo Compartilhado';
+                form.reset();
+                document.getElementById('custoCompartilhadoId').value = '';
+                document.getElementById('custoCompartilhadoStatus').value = 'ativo';
+            }
+
+            if (modal) modal.style.display = 'flex';
+        }
+
+        // Fechar modal de custo compartilhado
+        function closeCustoCompartilhadoModal() {
+            const modal = document.getElementById('custoCompartilhadoModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // Salvar custo compartilhado
+        document.getElementById('custoCompartilhadoForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('custoCompartilhadoId').value;
+            const custoData = {
+                nome: document.getElementById('custoCompartilhadoNome').value.trim(),
+                valor_mensal: parseFloat(document.getElementById('custoCompartilhadoValor').value) || 0,
+                status: document.getElementById('custoCompartilhadoStatus').value,
+                descricao: document.getElementById('custoCompartilhadoDescricao').value.trim() || null,
+                observacoes: document.getElementById('custoCompartilhadoObservacoes').value.trim() || null
+            };
+
+            try {
+                if (id) {
+                    const { error } = await supabase
+                        .from('custos_compartilhados')
+                        .update(custoData)
+                        .eq('id', id);
+                    
+                    if (error) throw error;
+                    alert('Custo compartilhado atualizado com sucesso!');
+                } else {
+                    const { error } = await supabase
+                        .from('custos_compartilhados')
+                        .insert([custoData]);
+                    
+                    if (error) throw error;
+                    alert('Custo compartilhado criado com sucesso!');
+                }
+                
+                closeCustoCompartilhadoModal();
+                await loadCustosCompartilhados();
+            } catch (error) {
+                console.error('Erro ao salvar custo compartilhado:', error);
+                alert('Erro ao salvar: ' + (error.message || 'Erro desconhecido'));
+            }
+        });
+
+        // Editar custo compartilhado
+        function editCustoCompartilhado(id) {
+            openCustoCompartilhadoModal(id);
+        }
+
+        // Excluir custo compartilhado
+        async function deleteCustoCompartilhado(id) {
+            if (!confirm('Tem certeza que deseja excluir este custo compartilhado?')) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('custos_compartilhados')
+                    .delete()
+                    .eq('id', id);
+                
+                if (error) throw error;
+                
+                alert('Custo compartilhado excluído com sucesso!');
+                await loadCustosCompartilhados();
+            } catch (error) {
+                console.error('Erro ao excluir custo compartilhado:', error);
+                alert('Erro ao excluir: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Carregar custos por projeto
+        async function loadCustosProjetos() {
+            const loading = document.getElementById('custosProjetosLoading');
+            const table = document.getElementById('custosProjetosTable');
+            const empty = document.getElementById('custosProjetosEmpty');
+            
+            if (loading) loading.classList.add('active');
+            if (table) table.style.display = 'none';
+            if (empty) empty.style.display = 'none';
+
+            try {
+                const { data, error } = await supabase
+                    .from('custos_projetos')
+                    .select('*, projetos(nome)')
+                    .order('data', { ascending: false });
+
+                if (error) throw error;
+
+                allCustosProjetos = data || [];
+                filteredCustosProjetos = [...allCustosProjetos];
+                
+                updateResumoCustos();
+                renderCustosProjetos();
+                loadProjetosForCustoSelect();
+            } catch (error) {
+                console.error('Erro ao carregar custos por projeto:', error);
+                if (error.code === 'PGRST116') {
+                    allCustosProjetos = [];
+                    filteredCustosProjetos = [];
+                    renderCustosProjetos();
+                }
+            } finally {
+                if (loading) loading.classList.remove('active');
+            }
+        }
+
+        // Renderizar custos por projeto
+        function renderCustosProjetos() {
+            const tbody = document.getElementById('custosProjetosTableBody');
+            const table = document.getElementById('custosProjetosTable');
+            const empty = document.getElementById('custosProjetosEmpty');
+
+            if (!tbody) return;
+
+            if (filteredCustosProjetos.length === 0) {
+                if (table) table.style.display = 'none';
+                if (empty) empty.style.display = 'block';
+                return;
+            }
+
+            if (table) table.style.display = 'table';
+            if (empty) empty.style.display = 'none';
+
+            tbody.innerHTML = filteredCustosProjetos.map(custo => {
+                const projetoNome = custo.projetos?.nome || 'Projeto não encontrado';
+                const tipoMap = {
+                    'unico': 'Único',
+                    'mensal': 'Mensal',
+                    'anual': 'Anual',
+                    'outro': 'Outro'
+                };
+
+                return `
+                    <tr>
+                        <td>${projetoNome}</td>
+                        <td>${custo.descricao || ''}</td>
+                        <td>${formatCurrency(custo.valor || 0)}</td>
+                        <td>${formatDate(custo.data)}</td>
+                        <td>${tipoMap[custo.tipo] || custo.tipo}</td>
+                        <td>
+                            <button class="btn-action" onclick="editCustoProjeto('${custo.id}')" style="border-color: var(--primary); color: var(--primary);">Editar</button>
+                            <button class="btn-action" onclick="deleteCustoProjeto('${custo.id}')" style="border-color: var(--danger); color: var(--danger);">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filtrar custos por projeto
+        function filterCustosProjetos() {
+            const search = document.getElementById('custoProjetoSearch')?.value.toLowerCase() || '';
+            const projetoFilter = document.getElementById('custoProjetoProjetoFilter')?.value || '';
+
+            filteredCustosProjetos = allCustosProjetos.filter(custo => {
+                const projetoNome = (custo.projetos?.nome || '').toLowerCase();
+                const matchSearch = !search || 
+                    projetoNome.includes(search) ||
+                    (custo.descricao && custo.descricao.toLowerCase().includes(search)) ||
+                    (custo.categoria && custo.categoria.toLowerCase().includes(search));
+                
+                const matchProjeto = !projetoFilter || custo.projeto_id === projetoFilter;
+                
+                return matchSearch && matchProjeto;
+            });
+
+            renderCustosProjetos();
+        }
+
+        // Carregar projetos para select
+        async function loadProjetosForCustoSelect() {
+            try {
+                const { data, error } = await supabase
+                    .from('projetos')
+                    .select('id, nome')
+                    .order('nome', { ascending: true });
+
+                if (error) throw error;
+
+                const select = document.getElementById('custoProjetoProjetoId');
+                const filterSelect = document.getElementById('custoProjetoProjetoFilter');
+                
+                if (select) {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">Selecione um projeto</option>';
+                    (data || []).forEach(projeto => {
+                        const option = document.createElement('option');
+                        option.value = projeto.id;
+                        option.textContent = projeto.nome;
+                        select.appendChild(option);
+                    });
+                    if (currentValue) select.value = currentValue;
+                }
+
+                if (filterSelect) {
+                    filterSelect.innerHTML = '<option value="">Todos os projetos</option>';
+                    (data || []).forEach(projeto => {
+                        const option = document.createElement('option');
+                        option.value = projeto.id;
+                        option.textContent = projeto.nome;
+                        filterSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Erro ao carregar projetos:', error);
+            }
+        }
+
+        // Abrir modal de custo por projeto
+        async function openCustoProjetoModal(id = null) {
+            await loadProjetosForCustoSelect();
+            
+            const modal = document.getElementById('custoProjetoModal');
+            const form = document.getElementById('custoProjetoForm');
+            const title = document.getElementById('custoProjetoModalTitle');
+
+            if (id) {
+                title.textContent = 'Editar Custo por Projeto';
+                const custo = allCustosProjetos.find(c => c.id === id);
+                if (custo) {
+                    document.getElementById('custoProjetoId').value = custo.id;
+                    document.getElementById('custoProjetoProjetoId').value = custo.projeto_id || '';
+                    document.getElementById('custoProjetoDescricao').value = custo.descricao || '';
+                    document.getElementById('custoProjetoValor').value = custo.valor || '';
+                    document.getElementById('custoProjetoData').value = custo.data || '';
+                    document.getElementById('custoProjetoTipo').value = custo.tipo || 'unico';
+                    document.getElementById('custoProjetoCategoria').value = custo.categoria || '';
+                    document.getElementById('custoProjetoObservacoes').value = custo.observacoes || '';
+                }
+            } else {
+                title.textContent = 'Novo Custo por Projeto';
+                form.reset();
+                document.getElementById('custoProjetoId').value = '';
+                document.getElementById('custoProjetoData').value = new Date().toISOString().split('T')[0];
+                document.getElementById('custoProjetoTipo').value = 'unico';
+            }
+
+            if (modal) modal.style.display = 'flex';
+        }
+
+        // Fechar modal de custo por projeto
+        function closeCustoProjetoModal() {
+            const modal = document.getElementById('custoProjetoModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // Salvar custo por projeto
+        document.getElementById('custoProjetoForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('custoProjetoId').value;
+            const custoData = {
+                projeto_id: document.getElementById('custoProjetoProjetoId').value,
+                descricao: document.getElementById('custoProjetoDescricao').value.trim(),
+                valor: parseFloat(document.getElementById('custoProjetoValor').value) || 0,
+                data: document.getElementById('custoProjetoData').value,
+                tipo: document.getElementById('custoProjetoTipo').value,
+                categoria: document.getElementById('custoProjetoCategoria').value.trim() || null,
+                observacoes: document.getElementById('custoProjetoObservacoes').value.trim() || null
+            };
+
+            try {
+                if (id) {
+                    const { error } = await supabase
+                        .from('custos_projetos')
+                        .update(custoData)
+                        .eq('id', id);
+                    
+                    if (error) throw error;
+                    alert('Custo por projeto atualizado com sucesso!');
+                } else {
+                    const { error } = await supabase
+                        .from('custos_projetos')
+                        .insert([custoData]);
+                    
+                    if (error) throw error;
+                    alert('Custo por projeto criado com sucesso!');
+                }
+                
+                closeCustoProjetoModal();
+                await loadCustosProjetos();
+            } catch (error) {
+                console.error('Erro ao salvar custo por projeto:', error);
+                alert('Erro ao salvar: ' + (error.message || 'Erro desconhecido'));
+            }
+        });
+
+        // Editar custo por projeto
+        function editCustoProjeto(id) {
+            openCustoProjetoModal(id);
+        }
+
+        // Excluir custo por projeto
+        async function deleteCustoProjeto(id) {
+            if (!confirm('Tem certeza que deseja excluir este custo?')) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('custos_projetos')
+                    .delete()
+                    .eq('id', id);
+                
+                if (error) throw error;
+                
+                alert('Custo excluído com sucesso!');
+                await loadCustosProjetos();
+            } catch (error) {
+                console.error('Erro ao excluir custo:', error);
+                alert('Erro ao excluir: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // Atualizar resumo de custos
+        function updateResumoCustos() {
+            const totalCompartilhados = allCustosCompartilhados
+                .filter(c => c.status === 'ativo')
+                .reduce((sum, c) => sum + (parseFloat(c.valor_mensal) || 0), 0);
+            
+            const totalProjetos = allCustosProjetos
+                .reduce((sum, c) => sum + (parseFloat(c.valor) || 0), 0);
+            
+            const projetosAtivos = allProjetos.filter(p => 
+                p.status === 'em_andamento' || p.status === 'planejamento'
+            ).length;
+            
+            const rateioTotal = projetosAtivos > 0 
+                ? (totalCompartilhados / projetosAtivos)
+                : 0;
+            
+            const custoMedio = projetosAtivos > 0
+                ? (totalProjetos / projetosAtivos) + rateioTotal
+                : 0;
+
+            const totalCompartilhadosEl = document.getElementById('totalCustosCompartilhados');
+            const totalProjetosEl = document.getElementById('totalCustosProjetos');
+            const projetosAtivosEl = document.getElementById('projetosAtivosCount');
+            const custoMedioEl = document.getElementById('custoMedioProjeto');
+
+            if (totalCompartilhadosEl) totalCompartilhadosEl.textContent = formatCurrency(totalCompartilhados);
+            if (totalProjetosEl) totalProjetosEl.textContent = formatCurrency(totalProjetos);
+            if (projetosAtivosEl) projetosAtivosEl.textContent = projetosAtivos;
+            if (custoMedioEl) custoMedioEl.textContent = formatCurrency(custoMedio);
+        }
+
+        // Carregar relatório de custos
+        async function loadRelatorioCustos() {
+            try {
+                // Calcular custos por projeto
+                const projetosAtivos = allProjetos.filter(p => 
+                    p.status === 'em_andamento' || p.status === 'planejamento'
+                );
+                
+                const totalCompartilhados = allCustosCompartilhados
+                    .filter(c => c.status === 'ativo')
+                    .reduce((sum, c) => sum + (parseFloat(c.valor_mensal) || 0), 0);
+                
+                const rateioPorProjeto = projetosAtivos.length > 0 
+                    ? (totalCompartilhados / projetosAtivos.length)
+                    : 0;
+
+                const relatorio = projetosAtivos.map(projeto => {
+                    const custosEspecificos = allCustosProjetos
+                        .filter(c => c.projeto_id === projeto.id)
+                        .reduce((sum, c) => sum + (parseFloat(c.valor) || 0), 0);
+                    
+                    return {
+                        projeto: projeto.nome,
+                        custosEspecificos: custosEspecificos,
+                        rateio: rateioPorProjeto,
+                        total: custosEspecificos + rateioPorProjeto
+                    };
+                });
+
+                const tbody = document.getElementById('relatorioCustosTableBody');
+                if (tbody) {
+                    tbody.innerHTML = relatorio.map(r => `
+                        <tr>
+                            <td>${r.projeto}</td>
+                            <td>${formatCurrency(r.custosEspecificos)}</td>
+                            <td>${formatCurrency(r.rateio)}</td>
+                            <td><strong>${formatCurrency(r.total)}</strong></td>
+                        </tr>
+                    `).join('');
+                }
+
+                // Criar gráfico
+                if (typeof Chart !== 'undefined') {
+                    const ctx = document.getElementById('graficoCustos');
+                    if (ctx) {
+                        new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: relatorio.map(r => r.projeto),
+                                datasets: [{
+                                    label: 'Custos Específicos',
+                                    data: relatorio.map(r => r.custosEspecificos),
+                                    backgroundColor: 'rgba(255, 102, 0, 0.6)'
+                                }, {
+                                    label: 'Rateio Compartilhado',
+                                    data: relatorio.map(r => r.rateio),
+                                    backgroundColor: 'rgba(251, 191, 36, 0.6)'
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar relatório:', error);
+            }
+        }
+
+        // Carregar dados quando a página de custos for aberta
+        function loadCustosPage() {
+            loadCustosCompartilhados();
+            loadCustosProjetos();
+            updateResumoCustos();
         }
 
         // ========== CRUD IDEIAS DE MELHORIAS ==========
