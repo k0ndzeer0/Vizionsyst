@@ -2,7 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title id="pageTitle">Sistema de Gestão Empresarial</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,6 +35,19 @@
             background: #000000;
             color: var(--text);
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* Prevenir scroll horizontal */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         /* Login Page */
@@ -2013,6 +2029,295 @@
             }
 
             .section-card {
+                padding: 12px;
+            }
+        }
+
+        /* ========== MELHORIAS ADICIONAIS DE RESPONSIVIDADE ========== */
+        @media (max-width: 768px) {
+            /* Garantir que todos os elementos sejam responsivos */
+            * {
+                -webkit-tap-highlight-color: rgba(255, 102, 0, 0.3);
+            }
+
+            /* Melhorar área de toque em todos os botões */
+            button, .btn, .btn-action, a.menu-item {
+                min-height: 44px;
+                min-width: 44px;
+                touch-action: manipulation;
+            }
+
+            /* Tabs responsivas */
+            .financeiro-tab, .custos-tab-content {
+                padding: 12px 0;
+            }
+
+            /* Tabs buttons - stack verticalmente se necessário */
+            .section-card > div:first-child {
+                flex-wrap: wrap;
+                gap: 8px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x mandatory;
+            }
+
+            .section-card > div:first-child button {
+                flex: 1;
+                min-width: calc(50% - 4px);
+                font-size: 13px;
+                padding: 10px 8px;
+                white-space: nowrap;
+            }
+
+            /* Botões de visualização (Tabela/Kanban/Timeline) */
+            .page-content > div:first-child > div:last-child {
+                flex-wrap: wrap;
+            }
+
+            .page-content > div:first-child > div:last-child button {
+                flex: 1;
+                min-width: calc(33.333% - 6px);
+                font-size: 12px;
+                padding: 10px 8px;
+            }
+
+            /* Cards de custos */
+            .cards-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Tabelas de custos */
+            #custosCompartilhadosTable,
+            #custosProjetosTable,
+            #relatorioCustosTable {
+                font-size: 14px;
+            }
+
+            /* Formulários de custos */
+            #custoCompartilhadoForm .form-row,
+            #custoProjetoForm .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            /* Perfis de custo - cards em grid */
+            #perfisCustoGrid {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Header com múltiplos botões */
+            .page-content > div:first-child {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .page-content > div:first-child > div:last-child {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .page-content > div:first-child > div:last-child .btn {
+                width: 100%;
+                margin: 0;
+            }
+
+            /* Kanban board mobile */
+            .kanban-board {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x mandatory;
+                padding-bottom: 16px;
+            }
+
+            .kanban-column {
+                scroll-snap-align: start;
+                min-width: 280px;
+                max-width: 280px;
+            }
+
+            /* Gráficos responsivos */
+            canvas {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+
+            /* Loading spinner */
+            .loading {
+                padding: 20px;
+            }
+
+            .spinner {
+                width: 40px;
+                height: 40px;
+            }
+
+            /* Notificações */
+            #notificacoesProjetos {
+                max-height: 60vh;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* Sidebar menu items */
+            .menu-item {
+                padding: 14px 16px;
+                font-size: 15px;
+            }
+
+            /* Search bars com selects */
+            .search-bar select {
+                width: 100% !important;
+                margin-top: 8px;
+            }
+
+            /* Modais - garantir scroll suave */
+            .modal-content {
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior-y: contain;
+            }
+
+            /* Cards de dashboard */
+            .card-header {
+                flex-wrap: wrap;
+            }
+
+            .card-icon {
+                font-size: 32px;
+            }
+
+            /* Tarefas e hábitos */
+            .tarefa-item,
+            .habito-card {
+                padding: 12px;
+            }
+
+            /* Form inputs - evitar zoom no iOS */
+            input[type="text"],
+            input[type="email"],
+            input[type="number"],
+            input[type="date"],
+            input[type="password"],
+            textarea,
+            select {
+                font-size: 16px !important;
+            }
+
+            /* Prevenir zoom duplo toque */
+            * {
+                touch-action: pan-y;
+            }
+
+            button, a, input, select, textarea {
+                touch-action: manipulation;
+            }
+
+            /* Melhorar scroll em iOS */
+            .table-container,
+            .kanban-column-body,
+            .modal-content {
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* Ajustar padding geral */
+            .main-content {
+                padding: 8px;
+            }
+
+            .section-card {
+                margin: 0 -8px 16px -8px;
+                border-radius: 0;
+            }
+
+            /* Cards grid sempre em coluna única */
+            .cards-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Botões de ação em tabelas */
+            td:last-child {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                padding-top: 12px;
+            }
+
+            td:last-child .btn-action {
+                flex: 1;
+                min-width: calc(50% - 4px);
+                text-align: center;
+            }
+
+            /* Timeline e Kanban */
+            #projetosTimelineView {
+                padding: 0;
+            }
+
+            /* Orçamentos - melhorar visualização mobile */
+            #orcamentoPreview {
+                padding: 12px;
+                font-size: 13px;
+            }
+
+            /* Contratos */
+            #contratosTable {
+                font-size: 14px;
+            }
+
+            /* Plataformas grid */
+            .plataformas-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Orion - ajustes mobile */
+            #orionContent {
+                padding: 8px;
+            }
+
+            .orion-tab-content {
+                padding: 12px 0;
+            }
+
+            /* Melhorar visualização de gráficos */
+            #graficoCustos,
+            #graficoReceitasDespesas,
+            #graficoProjetosStatus {
+                max-height: 300px !important;
+            }
+        }
+
+        /* Tablets (768px - 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-content {
+                padding: 16px;
+            }
+
+            .sidebar {
+                width: 240px;
+            }
+        }
+
+        /* Melhorias para telas muito pequenas */
+        @media (max-width: 320px) {
+            .page-title {
+                font-size: 18px;
+            }
+
+            .card-value {
+                font-size: 18px;
+            }
+
+            .btn {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+
+            .modal-content {
                 padding: 12px;
             }
         }
