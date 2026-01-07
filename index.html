@@ -2985,6 +2985,10 @@
                 <span>💳</span>
                 <span>Custos de Projetos</span>
             </a>
+            <a href="#" class="menu-item" data-page="prospeccao" onclick="closeSidebarMobile()">
+                <span>🔍</span>
+                <span>Prospecção</span>
+            </a>
             <a href="#" class="menu-item" data-page="orion" onclick="closeSidebarMobile()">
                 <span>🤖</span>
                 <span>Orion - Assistente</span>
@@ -3625,6 +3629,117 @@
                         </table>
                         <div id="contratosEmpty" class="empty-state" style="display: none;">
                             Nenhum contrato encontrado
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Página Prospecção de Empresas -->
+            <div id="prospeccaoContent" class="page-content" style="display: none;">
+                <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 class="page-title">🔍 Prospecção de Empresas</h1>
+                        <p class="page-subtitle">Estude e organize informações sobre empresas para prospectar</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openProspeccaoModal()">+ Nova Empresa</button>
+                </div>
+
+                <!-- Cards de Resumo -->
+                <div class="cards-grid" style="margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Total de Empresas</div>
+                                <div class="card-value" id="totalEmpresasProspeccao">0</div>
+                            </div>
+                            <div class="card-icon">🏢</div>
+                        </div>
+                        <div class="card-footer">Cadastradas</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Em Análise</div>
+                                <div class="card-value" id="empresasAnalise" style="color: var(--warning);">0</div>
+                            </div>
+                            <div class="card-icon">📊</div>
+                        </div>
+                        <div class="card-footer">Status: Em Análise</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Convertidas</div>
+                                <div class="card-value" id="empresasConvertidas" style="color: var(--success);">0</div>
+                            </div>
+                            <div class="card-icon">✅</div>
+                        </div>
+                        <div class="card-footer">Status: Convertida</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Prioridade Alta</div>
+                                <div class="card-value" id="empresasPrioridadeAlta" style="color: var(--danger);">0</div>
+                            </div>
+                            <div class="card-icon">🔥</div>
+                        </div>
+                        <div class="card-footer">Alta prioridade</div>
+                    </div>
+                </div>
+
+                <!-- Filtros e Busca -->
+                <div class="section-card">
+                    <div class="search-bar">
+                        <input 
+                            type="text" 
+                            id="prospeccaoSearch" 
+                            class="search-input" 
+                            placeholder="Buscar por nome, site, tipo de serviço..."
+                            onkeyup="filterProspeccao()"
+                        >
+                        <select id="prospeccaoStatusFilter" class="form-input" style="width: 200px;" onchange="filterProspeccao()">
+                            <option value="">Todos os status</option>
+                            <option value="em_analise">Em Análise</option>
+                            <option value="contato_inicial">Contato Inicial</option>
+                            <option value="proposta_enviada">Proposta Enviada</option>
+                            <option value="negociacao">Em Negociação</option>
+                            <option value="convertida">Convertida</option>
+                            <option value="arquivada">Arquivada</option>
+                        </select>
+                        <select id="prospeccaoPrioridadeFilter" class="form-input" style="width: 200px;" onchange="filterProspeccao()">
+                            <option value="">Todas as prioridades</option>
+                            <option value="alta">Alta</option>
+                            <option value="media">Média</option>
+                            <option value="baixa">Baixa</option>
+                        </select>
+                    </div>
+
+                    <div class="table-container">
+                        <div id="prospeccaoLoading" class="loading active">
+                            <div class="spinner"></div>
+                            <p>Carregando empresas...</p>
+                        </div>
+                        <table id="prospeccaoTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Empresa</th>
+                                    <th>Contato</th>
+                                    <th>Site</th>
+                                    <th>Tipo de Serviço</th>
+                                    <th>Prioridade</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="prospeccaoTableBody">
+                            </tbody>
+                        </table>
+                        <div id="prospeccaoEmpty" class="empty-state" style="display: none;">
+                            Nenhuma empresa encontrada. Comece adicionando uma nova empresa para prospectar.
                         </div>
                     </div>
                 </div>
@@ -6539,6 +6654,164 @@
 
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeTemplateModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Prospecção de Empresa -->
+    <div id="prospeccaoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="prospeccaoModalTitle">Nova Empresa para Prospectar</h2>
+                <button class="btn-close" onclick="closeProspeccaoModal()">&times;</button>
+            </div>
+            <form id="prospeccaoForm">
+                <input type="hidden" id="prospeccaoId">
+                
+                <!-- Informações Básicas -->
+                <h3 style="color: var(--primary); margin: 20px 0 12px 0; font-size: 16px; border-bottom: 1px solid rgba(255, 102, 0, 0.3); padding-bottom: 8px;">📋 Informações Básicas</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Nome da Empresa *</label>
+                        <input type="text" id="prospeccaoNome" class="form-input" placeholder="Ex: Empresa XYZ Ltda" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">CNPJ</label>
+                        <input type="text" id="prospeccaoCnpj" class="form-input" placeholder="00.000.000/0000-00" maxlength="18">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Telefone *</label>
+                        <input type="text" id="prospeccaoTelefone" class="form-input" placeholder="(00) 00000-0000" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="prospeccaoEmail" class="form-input" placeholder="contato@empresa.com.br">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Site</label>
+                        <input type="url" id="prospeccaoSite" class="form-input" placeholder="https://www.empresa.com.br">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rede Social</label>
+                        <input type="text" id="prospeccaoRedeSocial" class="form-input" placeholder="Instagram, LinkedIn, etc.">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Endereço</label>
+                        <input type="text" id="prospeccaoEndereco" class="form-input" placeholder="Rua, número, bairro">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cidade/Estado</label>
+                        <input type="text" id="prospeccaoCidade" class="form-input" placeholder="Cidade - UF">
+                    </div>
+                </div>
+
+                <!-- Análise da Empresa -->
+                <h3 style="color: var(--primary); margin: 24px 0 12px 0; font-size: 16px; border-bottom: 1px solid rgba(255, 102, 0, 0.3); padding-bottom: 8px;">🔍 Análise da Empresa</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Serviço/Produto *</label>
+                        <input type="text" id="prospeccaoTipoServico" class="form-input" placeholder="Ex: E-commerce, Marketing Digital, Consultoria..." required>
+                        <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                            💡 Que tipo de serviço ou produto a empresa oferece?
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Setor/Área de Atuação</label>
+                        <input type="text" id="prospeccaoSetor" class="form-input" placeholder="Ex: Varejo, Tecnologia, Saúde...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Pontos Fortes *</label>
+                    <textarea id="prospeccaoPontosFortes" class="form-input" rows="4" placeholder="Descreva os pontos fortes da empresa que você identificou durante sua análise..." required></textarea>
+                    <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                        💡 O que a empresa faz bem? Quais são suas vantagens competitivas?
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Pontos Fracos / Oportunidades *</label>
+                    <textarea id="prospeccaoPontosFracos" class="form-input" rows="4" placeholder="Descreva os pontos fracos ou oportunidades de melhoria que você identificou..." required></textarea>
+                    <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                        💡 Onde a empresa pode melhorar? Quais são as oportunidades de negócio?
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Necessidades Identificadas *</label>
+                    <textarea id="prospeccaoNecessidades" class="form-input" rows="4" placeholder="Quais necessidades da empresa você identificou que seus serviços podem resolver?" required></textarea>
+                    <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                        💡 Que problemas ou necessidades você pode ajudar a resolver?
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Observações e Anotações</label>
+                    <textarea id="prospeccaoObservacoes" class="form-input" rows="5" placeholder="Anotações adicionais sobre a empresa, conversas, pesquisas, insights importantes..."></textarea>
+                    <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                        💡 Use este campo para salvar qualquer informação relevante que você descobriu durante sua pesquisa
+                    </small>
+                </div>
+
+                <!-- Status e Prioridade -->
+                <h3 style="color: var(--primary); margin: 24px 0 12px 0; font-size: 16px; border-bottom: 1px solid rgba(255, 102, 0, 0.3); padding-bottom: 8px;">📊 Status e Prioridade</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Status *</label>
+                        <select id="prospeccaoStatus" class="form-input" required>
+                            <option value="em_analise">Em Análise</option>
+                            <option value="contato_inicial">Contato Inicial</option>
+                            <option value="proposta_enviada">Proposta Enviada</option>
+                            <option value="negociacao">Em Negociação</option>
+                            <option value="convertida">Convertida</option>
+                            <option value="arquivada">Arquivada</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prioridade *</label>
+                        <select id="prospeccaoPrioridade" class="form-input" required>
+                            <option value="baixa">Baixa</option>
+                            <option value="media" selected>Média</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Data do Primeiro Contato</label>
+                        <input type="date" id="prospeccaoDataContato" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Próximo Follow-up</label>
+                        <input type="date" id="prospeccaoProximoFollowup" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Valor Estimado do Projeto</label>
+                    <input type="number" id="prospeccaoValorEstimado" class="form-input" step="0.01" min="0" placeholder="0.00">
+                    <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                        💡 Valor estimado do projeto/serviço que você pode oferecer
+                    </small>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeProspeccaoModal()">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Salvar</button>
                 </div>
             </form>
@@ -11363,6 +11636,7 @@
                     'analises': 'Análises Avançadas',
                     'precificacao': 'Precificação',
                     'custos': 'Custos de Projetos',
+                    'prospeccao': 'Prospecção',
                     'orion': 'Orion - Assistente'
                 };
                 headerTitle.textContent = pageTitles[page] || 'Dashboard';
@@ -11399,6 +11673,8 @@
                 loadTemplates();
             } else if (page === 'custos') {
                 loadCustosPage();
+            } else if (page === 'prospeccao') {
+                loadProspeccao();
             }
         }
 
@@ -17032,6 +17308,421 @@ Obrigado pela confiança! 🙏`;
             } catch (error) {
                 console.error('Erro no preview:', error);
                 alert('Erro ao gerar preview: ' + (error.message || 'Erro desconhecido'));
+            }
+        }
+
+        // ========== PROSPECÇÃO DE EMPRESAS ==========
+        let allProspeccao = [];
+        let filteredProspeccao = [];
+
+        // Carregar empresas prospectadas
+        async function loadProspeccao() {
+            const loading = document.getElementById('prospeccaoLoading');
+            const table = document.getElementById('prospeccaoTable');
+            const empty = document.getElementById('prospeccaoEmpty');
+            
+            if (loading) loading.classList.add('active');
+            if (table) table.style.display = 'none';
+            if (empty) empty.style.display = 'none';
+
+            try {
+                const { data, error } = await supabase
+                    .from('prospeccao_empresas')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                allProspeccao = data || [];
+                filteredProspeccao = [...allProspeccao];
+                
+                updateResumoProspeccao();
+                renderProspeccao();
+            } catch (error) {
+                console.error('Erro ao carregar prospecção:', error);
+                if (error.code === 'PGRST116') {
+                    allProspeccao = [];
+                    filteredProspeccao = [];
+                    renderProspeccao();
+                }
+            } finally {
+                if (loading) loading.classList.remove('active');
+            }
+        }
+
+        // Renderizar empresas prospectadas
+        function renderProspeccao() {
+            const tbody = document.getElementById('prospeccaoTableBody');
+            const table = document.getElementById('prospeccaoTable');
+            const empty = document.getElementById('prospeccaoEmpty');
+
+            if (!tbody) return;
+
+            if (filteredProspeccao.length === 0) {
+                if (table) table.style.display = 'none';
+                if (empty) empty.style.display = 'block';
+                return;
+            }
+
+            if (table) table.style.display = 'table';
+            if (empty) empty.style.display = 'none';
+
+            const statusMap = {
+                'em_analise': { label: 'Em Análise', class: 'badge-planejamento' },
+                'contato_inicial': { label: 'Contato Inicial', class: 'badge-em-andamento' },
+                'proposta_enviada': { label: 'Proposta Enviada', class: 'badge-enviado' },
+                'negociacao': { label: 'Em Negociação', class: 'badge-prioridade-media' },
+                'convertida': { label: 'Convertida', class: 'badge-ativo' },
+                'arquivada': { label: 'Arquivada', class: 'badge-inativo' }
+            };
+
+            const prioridadeMap = {
+                'alta': { label: 'Alta', class: 'badge-prioridade-alta' },
+                'media': { label: 'Média', class: 'badge-prioridade-media' },
+                'baixa': { label: 'Baixa', class: 'badge-prioridade-baixa' }
+            };
+
+            tbody.innerHTML = filteredProspeccao.map(empresa => {
+                const status = statusMap[empresa.status] || { label: empresa.status, class: 'badge-planejamento' };
+                const prioridade = prioridadeMap[empresa.prioridade] || { label: empresa.prioridade, class: 'badge-prioridade-media' };
+                const siteLink = empresa.site ? `<a href="${empresa.site}" target="_blank" style="color: var(--primary); text-decoration: none;">${empresa.site.replace(/^https?:\/\//, '')}</a>` : '-';
+                
+                return `
+                    <tr>
+                        <td data-label="Empresa">
+                            <strong>${empresa.nome || ''}</strong>
+                            ${empresa.cnpj ? `<br><small style="color: var(--text-gray);">${empresa.cnpj}</small>` : ''}
+                        </td>
+                        <td data-label="Contato">
+                            ${empresa.telefone || '-'}<br>
+                            ${empresa.email ? `<small style="color: var(--text-gray);">${empresa.email}</small>` : ''}
+                        </td>
+                        <td data-label="Site">${siteLink}</td>
+                        <td data-label="Tipo de Serviço">
+                            ${empresa.tipo_servico || '-'}
+                            ${empresa.setor ? `<br><small style="color: var(--text-gray);">${empresa.setor}</small>` : ''}
+                        </td>
+                        <td data-label="Prioridade">
+                            <span class="badge ${prioridade.class}">${prioridade.label}</span>
+                        </td>
+                        <td data-label="Status">
+                            <span class="badge ${status.class}">${status.label}</span>
+                        </td>
+                        <td data-label="Ações">
+                            <button class="btn-action" onclick="viewProspeccaoDetails('${empresa.id}')" style="border-color: var(--primary); color: var(--primary);">Ver</button>
+                            <button class="btn-action" onclick="editProspeccao('${empresa.id}')" style="border-color: var(--warning); color: var(--warning);">Editar</button>
+                            <button class="btn-action" onclick="deleteProspeccao('${empresa.id}')" style="border-color: var(--danger); color: var(--danger);">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filtrar empresas prospectadas
+        function filterProspeccao() {
+            const search = document.getElementById('prospeccaoSearch')?.value.toLowerCase() || '';
+            const statusFilter = document.getElementById('prospeccaoStatusFilter')?.value || '';
+            const prioridadeFilter = document.getElementById('prospeccaoPrioridadeFilter')?.value || '';
+
+            filteredProspeccao = allProspeccao.filter(empresa => {
+                const matchSearch = !search || 
+                    (empresa.nome && empresa.nome.toLowerCase().includes(search)) ||
+                    (empresa.site && empresa.site.toLowerCase().includes(search)) ||
+                    (empresa.tipo_servico && empresa.tipo_servico.toLowerCase().includes(search)) ||
+                    (empresa.setor && empresa.setor.toLowerCase().includes(search)) ||
+                    (empresa.email && empresa.email.toLowerCase().includes(search));
+                
+                const matchStatus = !statusFilter || empresa.status === statusFilter;
+                const matchPrioridade = !prioridadeFilter || empresa.prioridade === prioridadeFilter;
+                
+                return matchSearch && matchStatus && matchPrioridade;
+            });
+
+            renderProspeccao();
+        }
+
+        // Atualizar resumo de prospecção
+        function updateResumoProspeccao() {
+            const total = allProspeccao.length;
+            const emAnalise = allProspeccao.filter(e => e.status === 'em_analise').length;
+            const convertidas = allProspeccao.filter(e => e.status === 'convertida').length;
+            const prioridadeAlta = allProspeccao.filter(e => e.prioridade === 'alta').length;
+
+            const totalEl = document.getElementById('totalEmpresasProspeccao');
+            const analiseEl = document.getElementById('empresasAnalise');
+            const convertidasEl = document.getElementById('empresasConvertidas');
+            const prioridadeEl = document.getElementById('empresasPrioridadeAlta');
+
+            if (totalEl) totalEl.textContent = total;
+            if (analiseEl) analiseEl.textContent = emAnalise;
+            if (convertidasEl) convertidasEl.textContent = convertidas;
+            if (prioridadeEl) prioridadeEl.textContent = prioridadeAlta;
+        }
+
+        // Abrir modal de prospecção
+        function openProspeccaoModal(id = null) {
+            const modal = document.getElementById('prospeccaoModal');
+            const form = document.getElementById('prospeccaoForm');
+            const title = document.getElementById('prospeccaoModalTitle');
+
+            if (id) {
+                title.textContent = 'Editar Empresa';
+                const empresa = allProspeccao.find(e => e.id === id);
+                if (empresa) {
+                    document.getElementById('prospeccaoId').value = empresa.id;
+                    document.getElementById('prospeccaoNome').value = empresa.nome || '';
+                    document.getElementById('prospeccaoCnpj').value = empresa.cnpj || '';
+                    document.getElementById('prospeccaoTelefone').value = empresa.telefone || '';
+                    document.getElementById('prospeccaoEmail').value = empresa.email || '';
+                    document.getElementById('prospeccaoSite').value = empresa.site || '';
+                    document.getElementById('prospeccaoRedeSocial').value = empresa.rede_social || '';
+                    document.getElementById('prospeccaoEndereco').value = empresa.endereco || '';
+                    document.getElementById('prospeccaoCidade').value = empresa.cidade || '';
+                    document.getElementById('prospeccaoTipoServico').value = empresa.tipo_servico || '';
+                    document.getElementById('prospeccaoSetor').value = empresa.setor || '';
+                    document.getElementById('prospeccaoPontosFortes').value = empresa.pontos_fortes || '';
+                    document.getElementById('prospeccaoPontosFracos').value = empresa.pontos_fracos || '';
+                    document.getElementById('prospeccaoNecessidades').value = empresa.necessidades || '';
+                    document.getElementById('prospeccaoObservacoes').value = empresa.observacoes || '';
+                    document.getElementById('prospeccaoStatus').value = empresa.status || 'em_analise';
+                    document.getElementById('prospeccaoPrioridade').value = empresa.prioridade || 'media';
+                    document.getElementById('prospeccaoDataContato').value = empresa.data_contato || '';
+                    document.getElementById('prospeccaoProximoFollowup').value = empresa.proximo_followup || '';
+                    document.getElementById('prospeccaoValorEstimado').value = empresa.valor_estimado || '';
+                }
+            } else {
+                title.textContent = 'Nova Empresa para Prospectar';
+                form.reset();
+                document.getElementById('prospeccaoId').value = '';
+                document.getElementById('prospeccaoStatus').value = 'em_analise';
+                document.getElementById('prospeccaoPrioridade').value = 'media';
+            }
+
+            if (modal) modal.style.display = 'flex';
+        }
+
+        // Fechar modal de prospecção
+        function closeProspeccaoModal() {
+            const modal = document.getElementById('prospeccaoModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // Salvar empresa prospectada
+        document.getElementById('prospeccaoForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('prospeccaoId').value;
+            const empresaData = {
+                nome: document.getElementById('prospeccaoNome').value.trim(),
+                cnpj: document.getElementById('prospeccaoCnpj').value.trim() || null,
+                telefone: document.getElementById('prospeccaoTelefone').value.trim(),
+                email: document.getElementById('prospeccaoEmail').value.trim() || null,
+                site: document.getElementById('prospeccaoSite').value.trim() || null,
+                rede_social: document.getElementById('prospeccaoRedeSocial').value.trim() || null,
+                endereco: document.getElementById('prospeccaoEndereco').value.trim() || null,
+                cidade: document.getElementById('prospeccaoCidade').value.trim() || null,
+                tipo_servico: document.getElementById('prospeccaoTipoServico').value.trim(),
+                setor: document.getElementById('prospeccaoSetor').value.trim() || null,
+                pontos_fortes: document.getElementById('prospeccaoPontosFortes').value.trim(),
+                pontos_fracos: document.getElementById('prospeccaoPontosFracos').value.trim(),
+                necessidades: document.getElementById('prospeccaoNecessidades').value.trim(),
+                observacoes: document.getElementById('prospeccaoObservacoes').value.trim() || null,
+                status: document.getElementById('prospeccaoStatus').value,
+                prioridade: document.getElementById('prospeccaoPrioridade').value,
+                data_contato: document.getElementById('prospeccaoDataContato').value || null,
+                proximo_followup: document.getElementById('prospeccaoProximoFollowup').value || null,
+                valor_estimado: parseFloat(document.getElementById('prospeccaoValorEstimado').value) || null
+            };
+
+            try {
+                if (id) {
+                    const { error } = await supabase
+                        .from('prospeccao_empresas')
+                        .update(empresaData)
+                        .eq('id', id);
+                    
+                    if (error) throw error;
+                    alert('Empresa atualizada com sucesso!');
+                } else {
+                    const { error } = await supabase
+                        .from('prospeccao_empresas')
+                        .insert([empresaData]);
+                    
+                    if (error) throw error;
+                    alert('Empresa cadastrada com sucesso!');
+                }
+                
+                closeProspeccaoModal();
+                await loadProspeccao();
+            } catch (error) {
+                console.error('Erro ao salvar empresa:', error);
+                alert('Erro ao salvar: ' + (error.message || 'Erro desconhecido'));
+            }
+        });
+
+        // Ver detalhes da empresa
+        function viewProspeccaoDetails(id) {
+            const empresa = allProspeccao.find(e => e.id === id);
+            if (!empresa) return;
+
+            currentProspeccaoEditId = id;
+            const modal = document.getElementById('prospeccaoDetailsModal');
+            if (!modal) {
+                // Criar modal de detalhes se não existir
+                createProspeccaoDetailsModal(empresa);
+            } else {
+                populateProspeccaoDetailsModal(empresa);
+                modal.style.display = 'flex';
+            }
+        }
+
+        // Criar modal de detalhes
+        function createProspeccaoDetailsModal(empresa) {
+            const modalHTML = `
+                <div id="prospeccaoDetailsModal" class="modal">
+                    <div class="modal-content" style="max-width: 800px;">
+                        <div class="modal-header">
+                            <h2 class="modal-title">Detalhes da Empresa</h2>
+                            <button class="btn-close" onclick="closeProspeccaoDetailsModal()">&times;</button>
+                        </div>
+                        <div id="prospeccaoDetailsContent" style="padding: 20px;">
+                            <!-- Conteúdo será preenchido dinamicamente -->
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeProspeccaoDetailsModal()">Fechar</button>
+                            <button type="button" class="btn btn-primary" onclick="editProspeccaoFromDetails()">Editar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            populateProspeccaoDetailsModal(empresa);
+            document.getElementById('prospeccaoDetailsModal').style.display = 'flex';
+        }
+
+        // Preencher modal de detalhes
+        function populateProspeccaoDetailsModal(empresa) {
+            const content = document.getElementById('prospeccaoDetailsContent');
+            if (!content) return;
+
+            const statusMap = {
+                'em_analise': 'Em Análise',
+                'contato_inicial': 'Contato Inicial',
+                'proposta_enviada': 'Proposta Enviada',
+                'negociacao': 'Em Negociação',
+                'convertida': 'Convertida',
+                'arquivada': 'Arquivada'
+            };
+
+            content.innerHTML = `
+                <div style="margin-bottom: 24px;">
+                    <h3 style="color: var(--primary); margin-bottom: 16px;">${empresa.nome || 'Sem nome'}</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                        <div>
+                            <strong style="color: var(--text-gray); font-size: 12px;">Status</strong>
+                            <div>${statusMap[empresa.status] || empresa.status}</div>
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-gray); font-size: 12px;">Prioridade</strong>
+                            <div>${empresa.prioridade || 'Média'}</div>
+                        </div>
+                        ${empresa.valor_estimado ? `
+                        <div>
+                            <strong style="color: var(--text-gray); font-size: 12px;">Valor Estimado</strong>
+                            <div>${formatCurrency(empresa.valor_estimado)}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h4 style="color: var(--primary); margin-bottom: 12px; border-bottom: 1px solid rgba(255, 102, 0, 0.3); padding-bottom: 8px;">📞 Contato</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                        ${empresa.telefone ? `<div><strong>Telefone:</strong> ${empresa.telefone}</div>` : ''}
+                        ${empresa.email ? `<div><strong>Email:</strong> ${empresa.email}</div>` : ''}
+                        ${empresa.site ? `<div><strong>Site:</strong> <a href="${empresa.site}" target="_blank" style="color: var(--primary);">${empresa.site}</a></div>` : ''}
+                        ${empresa.rede_social ? `<div><strong>Rede Social:</strong> ${empresa.rede_social}</div>` : ''}
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h4 style="color: var(--primary); margin-bottom: 12px; border-bottom: 1px solid rgba(255, 102, 0, 0.3); padding-bottom: 8px;">🏢 Informações</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                        ${empresa.cnpj ? `<div><strong>CNPJ:</strong> ${empresa.cnpj}</div>` : ''}
+                        ${empresa.tipo_servico ? `<div><strong>Tipo de Serviço:</strong> ${empresa.tipo_servico}</div>` : ''}
+                        ${empresa.setor ? `<div><strong>Setor:</strong> ${empresa.setor}</div>` : ''}
+                        ${empresa.endereco ? `<div><strong>Endereço:</strong> ${empresa.endereco}</div>` : ''}
+                        ${empresa.cidade ? `<div><strong>Cidade:</strong> ${empresa.cidade}</div>` : ''}
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h4 style="color: var(--primary); margin-bottom: 12px; border-bottom: 1px solid rgba(255, 102, 0, 0.3); padding-bottom: 8px;">✅ Pontos Fortes</h4>
+                    <div style="background: var(--tertiary); padding: 16px; border-radius: 8px; white-space: pre-wrap;">${empresa.pontos_fortes || 'Não informado'}</div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h4 style="color: var(--primary); margin-bottom: 12px; border-bottom: 1px solid rgba(255, 102, 0, 0.3); padding-bottom: 8px;">⚠️ Pontos Fracos / Oportunidades</h4>
+                    <div style="background: var(--tertiary); padding: 16px; border-radius: 8px; white-space: pre-wrap;">${empresa.pontos_fracos || 'Não informado'}</div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h4 style="color: var(--primary); margin-bottom: 12px; border-bottom: 1px solid rgba(255, 102, 0, 0.3); padding-bottom: 8px;">💡 Necessidades Identificadas</h4>
+                    <div style="background: var(--tertiary); padding: 16px; border-radius: 8px; white-space: pre-wrap;">${empresa.necessidades || 'Não informado'}</div>
+                </div>
+
+                ${empresa.observacoes ? `
+                <div style="margin-bottom: 24px;">
+                    <h4 style="color: var(--primary); margin-bottom: 12px; border-bottom: 1px solid rgba(255, 102, 0, 0.3); padding-bottom: 8px;">📝 Observações</h4>
+                    <div style="background: var(--tertiary); padding: 16px; border-radius: 8px; white-space: pre-wrap;">${empresa.observacoes}</div>
+                </div>
+                ` : ''}
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 20px;">
+                    ${empresa.data_contato ? `<div><strong>Primeiro Contato:</strong> ${formatDate(empresa.data_contato)}</div>` : ''}
+                    ${empresa.proximo_followup ? `<div><strong>Próximo Follow-up:</strong> ${formatDate(empresa.proximo_followup)}</div>` : ''}
+                </div>
+            `;
+        }
+
+        // Fechar modal de detalhes
+        function closeProspeccaoDetailsModal() {
+            const modal = document.getElementById('prospeccaoDetailsModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // Editar a partir dos detalhes
+        let currentProspeccaoEditId = null;
+        function editProspeccaoFromDetails() {
+            if (currentProspeccaoEditId) {
+                closeProspeccaoDetailsModal();
+                openProspeccaoModal(currentProspeccaoEditId);
+            }
+        }
+
+        // Editar empresa
+        function editProspeccao(id) {
+            currentProspeccaoEditId = id;
+            openProspeccaoModal(id);
+        }
+
+        // Excluir empresa
+        async function deleteProspeccao(id) {
+            if (!confirm('Tem certeza que deseja excluir esta empresa?')) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('prospeccao_empresas')
+                    .delete()
+                    .eq('id', id);
+                
+                if (error) throw error;
+                
+                alert('Empresa excluída com sucesso!');
+                await loadProspeccao();
+            } catch (error) {
+                console.error('Erro ao excluir empresa:', error);
+                alert('Erro ao excluir: ' + (error.message || 'Erro desconhecido'));
             }
         }
 
