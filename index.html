@@ -3394,6 +3394,9 @@
                         <button class="btn btn-secondary" id="tabCustosProjetos" onclick="switchCustosTab('projetos')" style="border-radius: 8px 8px 0 0; margin-bottom: -1px;">
                             📁 Custos por Projeto
                         </button>
+                        <button class="btn btn-secondary" id="tabCustosBase" onclick="switchCustosTab('base')" style="border-radius: 8px 8px 0 0; margin-bottom: -1px;">
+                            💰 Custo Base
+                        </button>
                         <button class="btn btn-secondary" id="tabCustosRelatorios" onclick="switchCustosTab('relatorios')" style="border-radius: 8px 8px 0 0; margin-bottom: -1px;">
                             📊 Relatórios
                         </button>
@@ -3477,6 +3480,106 @@
                             </table>
                             <div id="custosProjetosEmpty" class="empty-state" style="display: none;">
                                 Nenhum custo por projeto encontrado
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Custo Base -->
+                    <div id="custosBaseView" class="custos-tab-content" style="display: none;">
+                        <div class="section-card" style="margin-bottom: 24px;">
+                            <h2 class="section-title">💰 Custo Base para um Projeto</h2>
+                            <p style="color: var(--text-gray); margin-bottom: 24px;">
+                                Esta é a base de custos mínimos necessários para desenvolver um projeto. Use como referência para precificação.
+                            </p>
+                            
+                            <!-- Card de Custo Base -->
+                            <div class="cards-grid" style="margin-bottom: 24px;">
+                                <div class="card" style="border: 2px solid var(--primary);">
+                                    <div class="card-header">
+                                        <div>
+                                            <div class="card-title">Custo Base Mensal</div>
+                                            <div class="card-value" id="custoBaseMensal" style="color: var(--primary); font-size: 32px;">R$ 0,00</div>
+                                        </div>
+                                        <div class="card-icon">💵</div>
+                                    </div>
+                                    <div class="card-footer">Rateio + Custos Mínimos</div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div>
+                                            <div class="card-title">Rateio Compartilhado</div>
+                                            <div class="card-value" id="custoBaseRateio" style="color: var(--warning);">R$ 0,00</div>
+                                        </div>
+                                        <div class="card-icon">🔗</div>
+                                    </div>
+                                    <div class="card-footer">Por projeto ativo</div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div>
+                                            <div class="card-title">Custos Mínimos</div>
+                                            <div class="card-value" id="custoBaseMinimos" style="color: var(--success);">R$ 0,00</div>
+                                        </div>
+                                        <div class="card-icon">📦</div>
+                                    </div>
+                                    <div class="card-footer">Custos essenciais</div>
+                                </div>
+                            </div>
+
+                            <!-- Detalhamento -->
+                            <div style="background: var(--tertiary); padding: 20px; border-radius: 12px; margin-bottom: 24px;">
+                                <h3 style="margin-bottom: 16px; color: var(--primary);">📋 Detalhamento do Custo Base</h3>
+                                
+                                <div style="margin-bottom: 16px;">
+                                    <h4 style="color: var(--text); margin-bottom: 8px;">Custos Compartilhados (Rateados)</h4>
+                                    <div id="detalhamentoCompartilhados" style="color: var(--text-gray);">
+                                        <!-- Será preenchido dinamicamente -->
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 style="color: var(--text); margin-bottom: 8px;">Custos Mínimos por Projeto</h4>
+                                    <div id="detalhamentoMinimos" style="color: var(--text-gray);">
+                                        <!-- Será preenchido dinamicamente -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sugestão de Precificação -->
+                            <div style="background: linear-gradient(135deg, var(--primary) 0%, #ff8533 100%); padding: 24px; border-radius: 12px; color: white;">
+                                <h3 style="margin-bottom: 16px;">💡 Sugestão de Precificação</h3>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                                    <div>
+                                        <div style="font-size: 12px; opacity: 0.9; margin-bottom: 4px;">Custo Base</div>
+                                        <div id="sugestaoCustoBase" style="font-size: 24px; font-weight: bold;">R$ 0,00</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 12px; opacity: 0.9; margin-bottom: 4px;">Margem Sugerida (50%)</div>
+                                        <div id="sugestaoMargem" style="font-size: 24px; font-weight: bold;">R$ 0,00</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 12px; opacity: 0.9; margin-bottom: 4px;">Valor Mínimo Sugerido</div>
+                                        <div id="sugestaoValorMinimo" style="font-size: 24px; font-weight: bold;">R$ 0,00</div>
+                                    </div>
+                                </div>
+                                <div style="font-size: 14px; opacity: 0.9;">
+                                    <strong>Nota:</strong> O valor mínimo sugerido considera o custo base + 50% de margem. 
+                                    Ajuste conforme a complexidade e valor agregado do projeto.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Perfis de Custo -->
+                        <div class="section-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h2 class="section-title">📊 Perfis de Custo</h2>
+                                <button class="btn btn-primary" onclick="openPerfilCustoModal()">+ Novo Perfil</button>
+                            </div>
+                            
+                            <div id="perfisCustoGrid" class="cards-grid">
+                                <!-- Perfis serão inseridos aqui -->
                             </div>
                         </div>
                     </div>
@@ -3846,7 +3949,7 @@
                             <div id="orionStatusIndicator" style="width: 12px; height: 12px; border-radius: 50%; background: var(--danger);"></div>
                             <span id="orionStatusText" style="font-size: 14px; color: var(--text-gray);">Desativado</span>
                         </div>
-                        <button id="orionMicButton" class="btn btn-primary" onclick="toggleOrionVoice()" style="position: relative;">
+                        <button id="orionMicButton" class="btn btn-primary" onclick="toggleOrionVoice()" style="position: relative; display: none;" title="Funcionalidade de voz desativada">
                             <span id="orionMicIcon">🎤</span>
                             <span id="orionMicText">Ativar Voz</span>
                         </button>
@@ -6138,6 +6241,54 @@
     </div>
 
     <!-- Modais de Custos de Projetos -->
+    <!-- Modal Perfil de Custo -->
+    <div id="perfilCustoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="perfilCustoModalTitle">Novo Perfil de Custo</h2>
+                <button class="btn-close" onclick="closePerfilCustoModal()">&times;</button>
+            </div>
+            <form id="perfilCustoForm">
+                <input type="hidden" id="perfilCustoId">
+                
+                <div class="form-group">
+                    <label class="form-label">Nome do Perfil *</label>
+                    <input type="text" id="perfilCustoNome" class="form-input" placeholder="Ex: Projeto Básico, Projeto Médio, Projeto Complexo..." required>
+                    <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                        💡 Exemplos: "Projeto Básico", "Projeto Premium", "E-commerce Completo"
+                    </small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Custo Base (R$) *</label>
+                        <input type="number" id="perfilCustoCustoBase" class="form-input" step="0.01" min="0" placeholder="0.00" required>
+                        <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                            Custo mínimo necessário para este tipo de projeto
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Margem de Lucro (%) *</label>
+                        <input type="number" id="perfilCustoMargem" class="form-input" step="0.1" min="0" max="100" placeholder="50" value="50" required>
+                        <small style="color: var(--text-gray); font-size: 12px; margin-top: 4px; display: block;">
+                            Percentual de margem sobre o custo base
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea id="perfilCustoDescricao" class="form-input" rows="3" placeholder="Descreva quando usar este perfil, quais serviços inclui, etc..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closePerfilCustoModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal Custo Compartilhado -->
     <div id="custoCompartilhadoModal" class="modal">
         <div class="modal-content">
@@ -6266,11 +6417,11 @@
         // Inicializar cliente Supabase (com proteção contra redeclaração)
         if (!window.supabaseClient && window.supabase && window.supabase.createClient) {
             window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-                auth: {
-                    persistSession: false,
-                    autoRefreshToken: false
-                }
-            });
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false
+            }
+        });
         }
         
         // Criar alias local para compatibilidade (usar var para permitir redeclaração sem erro)
@@ -16612,6 +16763,9 @@ Obrigado pela confiança! 🙏`;
             } else if (tab === 'projetos') {
                 document.getElementById('custosProjetosView').style.display = 'block';
                 loadCustosProjetos();
+            } else if (tab === 'base') {
+                document.getElementById('custosBaseView').style.display = 'block';
+                loadCustoBase();
             } else if (tab === 'relatorios') {
                 document.getElementById('custosRelatoriosView').style.display = 'block';
                 loadRelatorioCustos();
@@ -17170,6 +17324,263 @@ Obrigado pela confiança! 🙏`;
             loadCustosCompartilhados();
             loadCustosProjetos();
             updateResumoCustos();
+        }
+
+        // ========== CUSTO BASE PARA PRECIFICAÇÃO ==========
+        let allPerfisCusto = [];
+
+        // Carregar custo base
+        async function loadCustoBase() {
+            try {
+                // Calcular custo base
+                const projetosAtivos = allProjetos.filter(p => 
+                    p.status === 'em_andamento' || p.status === 'planejamento'
+                );
+                
+                const custosCompartilhadosAtivos = allCustosCompartilhados.filter(c => c.status === 'ativo');
+                const totalCompartilhados = custosCompartilhadosAtivos.reduce((sum, c) => 
+                    sum + (parseFloat(c.valor_mensal) || 0), 0
+                );
+                
+                const rateioPorProjeto = projetosAtivos.length > 0 
+                    ? (totalCompartilhados / projetosAtivos.length)
+                    : totalCompartilhados; // Se não houver projetos, usar o total
+
+                // Calcular custos mínimos médios (média dos custos específicos dos projetos)
+                const custosEspecificos = allCustosProjetos.map(c => parseFloat(c.valor) || 0);
+                const custoMinimoMedio = custosEspecificos.length > 0
+                    ? custosEspecificos.reduce((sum, v) => sum + v, 0) / custosEspecificos.length
+                    : 0;
+
+                const custoBaseMensal = rateioPorProjeto + custoMinimoMedio;
+
+                // Atualizar cards
+                const custoBaseMensalEl = document.getElementById('custoBaseMensal');
+                const custoBaseRateioEl = document.getElementById('custoBaseRateio');
+                const custoBaseMinimosEl = document.getElementById('custoBaseMinimos');
+
+                if (custoBaseMensalEl) custoBaseMensalEl.textContent = formatCurrency(custoBaseMensal);
+                if (custoBaseRateioEl) custoBaseRateioEl.textContent = formatCurrency(rateioPorProjeto);
+                if (custoBaseMinimosEl) custoBaseMinimosEl.textContent = formatCurrency(custoMinimoMedio);
+
+                // Detalhamento compartilhados
+                const detalhamentoCompartilhados = document.getElementById('detalhamentoCompartilhados');
+                if (detalhamentoCompartilhados) {
+                    if (custosCompartilhadosAtivos.length === 0) {
+                        detalhamentoCompartilhados.innerHTML = '<p>Nenhum custo compartilhado cadastrado.</p>';
+                    } else {
+                        detalhamentoCompartilhados.innerHTML = custosCompartilhadosAtivos.map(c => {
+                            const rateio = projetosAtivos.length > 0 
+                                ? (parseFloat(c.valor_mensal) / projetosAtivos.length).toFixed(2)
+                                : parseFloat(c.valor_mensal).toFixed(2);
+                            return `<div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <span>${c.nome}</span>
+                                <span style="color: var(--primary); font-weight: bold;">${formatCurrency(parseFloat(rateio))}/projeto</span>
+                            </div>`;
+                        }).join('');
+                    }
+                }
+
+                // Detalhamento mínimos
+                const detalhamentoMinimos = document.getElementById('detalhamentoMinimos');
+                if (detalhamentoMinimos) {
+                    if (custosEspecificos.length === 0) {
+                        detalhamentoMinimos.innerHTML = '<p>Nenhum custo específico cadastrado ainda. Use a média histórica ou defina um valor padrão.</p>';
+                    } else {
+                        detalhamentoMinimos.innerHTML = `
+                            <p>Média baseada em ${custosEspecificos.length} custos específicos cadastrados.</p>
+                            <p style="margin-top: 8px;"><strong>Valor médio:</strong> ${formatCurrency(custoMinimoMedio)}</p>
+                        `;
+                    }
+                }
+
+                // Sugestão de precificação (custo base + 50% margem)
+                const margem = custoBaseMensal * 0.5;
+                const valorMinimoSugerido = custoBaseMensal + margem;
+
+                const sugestaoCustoBase = document.getElementById('sugestaoCustoBase');
+                const sugestaoMargem = document.getElementById('sugestaoMargem');
+                const sugestaoValorMinimo = document.getElementById('sugestaoValorMinimo');
+
+                if (sugestaoCustoBase) sugestaoCustoBase.textContent = formatCurrency(custoBaseMensal);
+                if (sugestaoMargem) sugestaoMargem.textContent = formatCurrency(margem);
+                if (sugestaoValorMinimo) sugestaoValorMinimo.textContent = formatCurrency(valorMinimoSugerido);
+
+                // Carregar perfis de custo
+                await loadPerfisCusto();
+            } catch (error) {
+                console.error('Erro ao carregar custo base:', error);
+            }
+        }
+
+        // Carregar perfis de custo
+        async function loadPerfisCusto() {
+            try {
+                const { data, error } = await supabase
+                    .from('perfis_custo')
+                    .select('*')
+                    .order('nome', { ascending: true });
+
+                if (error) throw error;
+
+                allPerfisCusto = data || [];
+                renderPerfisCusto();
+            } catch (error) {
+                console.error('Erro ao carregar perfis de custo:', error);
+                if (error.code === 'PGRST116') {
+                    allPerfisCusto = [];
+                    renderPerfisCusto();
+                }
+            }
+        }
+
+        // Renderizar perfis de custo
+        function renderPerfisCusto() {
+            const grid = document.getElementById('perfisCustoGrid');
+            if (!grid) return;
+
+            if (allPerfisCusto.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <p>Nenhum perfil de custo cadastrado.</p>
+                        <p style="color: var(--text-gray); font-size: 14px; margin-top: 8px;">
+                            Crie perfis como "Projeto Básico", "Projeto Médio", "Projeto Complexo" para facilitar a precificação.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = allPerfisCusto.map(perfil => {
+                const custoBase = parseFloat(perfil.custo_base) || 0;
+                const margem = parseFloat(perfil.margem_percentual) || 50;
+                const valorSugerido = custoBase * (1 + margem / 100);
+
+                return `
+                    <div class="card" style="border: 2px solid var(--primary);">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">${perfil.nome || 'Sem nome'}</div>
+                                <div class="card-value" style="color: var(--primary); font-size: 24px;">${formatCurrency(valorSugerido)}</div>
+                            </div>
+                            <div class="card-icon">📊</div>
+                        </div>
+                        <div style="padding: 16px; border-top: 1px solid rgba(255,255,255,0.1);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="color: var(--text-gray);">Custo Base:</span>
+                                <span style="font-weight: bold;">${formatCurrency(custoBase)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="color: var(--text-gray);">Margem:</span>
+                                <span style="font-weight: bold;">${margem}%</span>
+                            </div>
+                            ${perfil.descricao ? `<p style="color: var(--text-gray); font-size: 12px; margin-top: 8px;">${perfil.descricao}</p>` : ''}
+                        </div>
+                        <div style="padding: 12px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px;">
+                            <button class="btn btn-sm" onclick="editPerfilCusto('${perfil.id}')" style="flex: 1; background: var(--primary); border-color: var(--primary);">Editar</button>
+                            <button class="btn btn-sm" onclick="deletePerfilCusto('${perfil.id}')" style="flex: 1; background: var(--danger); border-color: var(--danger);">Excluir</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Abrir modal de perfil de custo
+        async function openPerfilCustoModal(id = null) {
+            const modal = document.getElementById('perfilCustoModal');
+            const form = document.getElementById('perfilCustoForm');
+            const title = document.getElementById('perfilCustoModalTitle');
+
+            if (id) {
+                title.textContent = 'Editar Perfil de Custo';
+                const perfil = allPerfisCusto.find(p => p.id === id);
+                if (perfil) {
+                    document.getElementById('perfilCustoId').value = perfil.id;
+                    document.getElementById('perfilCustoNome').value = perfil.nome || '';
+                    document.getElementById('perfilCustoCustoBase').value = perfil.custo_base || '';
+                    document.getElementById('perfilCustoMargem').value = perfil.margem_percentual || 50;
+                    document.getElementById('perfilCustoDescricao').value = perfil.descricao || '';
+                }
+            } else {
+                title.textContent = 'Novo Perfil de Custo';
+                form.reset();
+                document.getElementById('perfilCustoId').value = '';
+                // Preencher com custo base atual
+                const custoBaseAtual = parseFloat(document.getElementById('custoBaseMensal')?.textContent.replace(/[^\d,]/g, '').replace(',', '.') || 0);
+                document.getElementById('perfilCustoCustoBase').value = custoBaseAtual || '';
+                document.getElementById('perfilCustoMargem').value = 50;
+            }
+
+            if (modal) modal.style.display = 'flex';
+        }
+
+        // Fechar modal de perfil de custo
+        function closePerfilCustoModal() {
+            const modal = document.getElementById('perfilCustoModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // Salvar perfil de custo
+        document.getElementById('perfilCustoForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('perfilCustoId').value;
+            const perfilData = {
+                nome: document.getElementById('perfilCustoNome').value.trim(),
+                custo_base: parseFloat(document.getElementById('perfilCustoCustoBase').value) || 0,
+                margem_percentual: parseFloat(document.getElementById('perfilCustoMargem').value) || 50,
+                descricao: document.getElementById('perfilCustoDescricao').value.trim() || null
+            };
+
+            try {
+                if (id) {
+                    const { error } = await supabase
+                        .from('perfis_custo')
+                        .update(perfilData)
+                        .eq('id', id);
+                    
+                    if (error) throw error;
+                    alert('Perfil atualizado com sucesso!');
+                } else {
+                    const { error } = await supabase
+                        .from('perfis_custo')
+                        .insert([perfilData]);
+                    
+                    if (error) throw error;
+                    alert('Perfil criado com sucesso!');
+                }
+                
+                closePerfilCustoModal();
+                await loadPerfisCusto();
+            } catch (error) {
+                console.error('Erro ao salvar perfil:', error);
+                alert('Erro ao salvar: ' + (error.message || 'Erro desconhecido'));
+            }
+        });
+
+        // Editar perfil de custo
+        function editPerfilCusto(id) {
+            openPerfilCustoModal(id);
+        }
+
+        // Excluir perfil de custo
+        async function deletePerfilCusto(id) {
+            if (!confirm('Tem certeza que deseja excluir este perfil?')) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('perfis_custo')
+                    .delete()
+                    .eq('id', id);
+                
+                if (error) throw error;
+                
+                alert('Perfil excluído com sucesso!');
+                await loadPerfisCusto();
+            } catch (error) {
+                console.error('Erro ao excluir perfil:', error);
+                alert('Erro ao excluir: ' + (error.message || 'Erro desconhecido'));
+            }
         }
 
         // ========== CRUD IDEIAS DE MELHORIAS ==========
@@ -21186,7 +21597,7 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
                     <span id="orionStatusText">Pronto</span>
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <button id="orionToggleBtn" class="orion-toggle-btn" onclick="startOrionListening()" title="Clique para falar">
+                    <button id="orionToggleBtn" class="orion-toggle-btn" onclick="startOrionListening()" title="Funcionalidade de voz desativada" style="display: none;">
                         <span id="orionToggleIcon">🎤</span>
                 </button>
                     <button class="orion-close-btn" onclick="toggleOrion()" title="Fechar Orion">✕</button>
@@ -21873,6 +22284,10 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
 
         // Iniciar escuta
         async function startOrionListening() {
+            // Funcionalidade de voz DESATIVADA
+            console.log('Funcionalidade de voz desativada');
+            return;
+            
             if (!orionRecognition) {
                 console.error('Reconhecimento de voz não disponível');
                 orionSpeak('Reconhecimento de voz não está disponível. Por favor, use um navegador compatível como Chrome ou Edge.');
@@ -23131,20 +23546,33 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
             if (empty) empty.style.display = 'none';
 
             try {
-                // Usar tabela temporária ou localStorage
+                // Buscar do Supabase
+                const { data, error } = await supabase
+                    .from('tarefas')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                allTarefas = data || [];
+                filteredTarefas = [...allTarefas];
+                renderTarefas();
+            } catch (error) {
+                console.error('Erro ao carregar tarefas:', error);
+                // Se a tabela não existir, usar localStorage como fallback
+                if (error.code === 'PGRST116') {
                 const stored = localStorage.getItem('tarefas');
                 if (stored) {
                     allTarefas = JSON.parse(stored);
                 } else {
                     allTarefas = [];
                 }
-                
                 filteredTarefas = [...allTarefas];
                 renderTarefas();
-            } catch (error) {
-                console.error('Erro ao carregar tarefas:', error);
+                } else {
                 allTarefas = [];
                 filteredTarefas = [];
+                }
             } finally {
                 if (loading) loading.classList.remove('active');
             }
@@ -23240,32 +23668,56 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
             openModal(document.getElementById('tarefaModal'));
         }
 
-        function toggleTarefa(id) {
+        async function toggleTarefa(id) {
             const tarefa = allTarefas.find(t => t.id === id);
             if (!tarefa) return;
 
-            tarefa.status = tarefa.status === 'concluida' ? 'pendente' : 'concluida';
-            if (tarefa.status === 'concluida') {
-                tarefa.data_conclusao = new Date().toISOString().split('T')[0];
-            }
-            
-            saveTarefas();
+            const novoStatus = tarefa.status === 'concluida' ? 'pendente' : 'concluida';
+            const dataConclusao = novoStatus === 'concluida' 
+                ? new Date().toISOString().split('T')[0] 
+                : null;
+
+            try {
+                const { error } = await supabase
+                    .from('tarefas')
+                    .update({ 
+                        status: novoStatus,
+                        data_conclusao: dataConclusao
+                    })
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                tarefa.status = novoStatus;
+                tarefa.data_conclusao = dataConclusao;
             renderTarefas();
+            } catch (error) {
+                console.error('Erro ao atualizar tarefa:', error);
+                alert('Erro ao atualizar tarefa: ' + (error.message || 'Erro desconhecido'));
+            }
         }
 
-        function deleteTarefa(id) {
+        async function deleteTarefa(id) {
             if (!confirm('Tem certeza que deseja excluir esta tarefa?')) return;
             
+            try {
+                const { error } = await supabase
+                    .from('tarefas')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+            
             allTarefas = allTarefas.filter(t => t.id !== id);
-            saveTarefas();
-            loadTarefas();
+                filteredTarefas = filteredTarefas.filter(t => t.id !== id);
+                await loadTarefas();
+            } catch (error) {
+                console.error('Erro ao excluir tarefa:', error);
+                alert('Erro ao excluir tarefa: ' + (error.message || 'Erro desconhecido'));
+            }
         }
 
-        function saveTarefas() {
-            localStorage.setItem('tarefas', JSON.stringify(allTarefas));
-        }
-
-        document.getElementById('tarefaForm')?.addEventListener('submit', (e) => {
+        document.getElementById('tarefaForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const id = document.getElementById('tarefaId').value;
@@ -23273,26 +23725,37 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
                 titulo: document.getElementById('tarefaTitulo').value.trim(),
                 descricao: document.getElementById('tarefaDescricao').value.trim() || null,
                 prioridade: document.getElementById('tarefaPrioridade').value,
-                status: document.getElementById('tarefaStatus').value,
+                status: document.getElementById('tarefaStatus').value || 'pendente',
                 data_vencimento: document.getElementById('tarefaDataVencimento').value || null,
-                projeto_id: document.getElementById('tarefaProjetoId').value || null,
-                created_at: new Date().toISOString()
+                projeto_id: document.getElementById('tarefaProjetoId').value || null
             };
 
+            try {
             if (id) {
-                const index = allTarefas.findIndex(t => t.id === id);
-                if (index !== -1) {
-                    allTarefas[index] = { ...allTarefas[index], ...tarefaData };
-                }
+                    // Atualizar
+                    const { error } = await supabase
+                        .from('tarefas')
+                        .update(tarefaData)
+                        .eq('id', id);
+                    
+                    if (error) throw error;
+                    alert('Tarefa atualizada com sucesso!');
             } else {
-                tarefaData.id = 'tarefa_' + Date.now();
-                allTarefas.push(tarefaData);
-            }
+                    // Criar
+                    const { error } = await supabase
+                        .from('tarefas')
+                        .insert([tarefaData]);
+                    
+                    if (error) throw error;
+                    alert('Tarefa criada com sucesso!');
+                }
 
-            saveTarefas();
             closeTarefaModal();
-            loadTarefas();
-            alert('Tarefa salva com sucesso!');
+                await loadTarefas();
+            } catch (error) {
+                console.error('Erro ao salvar tarefa:', error);
+                alert('Erro ao salvar tarefa: ' + (error.message || 'Erro desconhecido'));
+            }
         });
 
         function switchTarefasTab(tab) {
@@ -23309,19 +23772,33 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
 
         async function loadHabitos() {
             try {
+                // Buscar do Supabase
+                const { data, error } = await supabase
+                    .from('habitos')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                allHabitos = data || [];
+                filteredHabitos = [...allHabitos];
+                renderHabitos();
+            } catch (error) {
+                console.error('Erro ao carregar hábitos:', error);
+                // Se a tabela não existir, usar localStorage como fallback
+                if (error.code === 'PGRST116') {
                 const stored = localStorage.getItem('habitos');
                 if (stored) {
                     allHabitos = JSON.parse(stored);
                 } else {
                     allHabitos = [];
                 }
-                
                 filteredHabitos = [...allHabitos];
                 renderHabitos();
-            } catch (error) {
-                console.error('Erro ao carregar hábitos:', error);
+                } else {
                 allHabitos = [];
                 filteredHabitos = [];
+                }
             }
         }
 
@@ -23397,7 +23874,7 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
             return streak;
         }
 
-        function registrarHabito(id) {
+        async function registrarHabito(id) {
             const habito = allHabitos.find(h => h.id === id);
             if (!habito) return;
 
@@ -23406,9 +23883,21 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
             
             if (!habito.registros.includes(hoje)) {
                 habito.registros.push(hoje);
-                saveHabitos();
+                
+                try {
+                    const { error } = await supabase
+                        .from('habitos')
+                        .update({ registros: habito.registros })
+                        .eq('id', id);
+
+                    if (error) throw error;
+
                 renderHabitos();
                 alert('Hábito registrado com sucesso! 🔥');
+                } catch (error) {
+                    console.error('Erro ao registrar hábito:', error);
+                    alert('Erro ao registrar hábito: ' + (error.message || 'Erro desconhecido'));
+                }
             } else {
                 alert('Hábito já registrado hoje!');
             }
@@ -23458,19 +23947,27 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
             openModal(document.getElementById('habitoModal'));
         }
 
-        function deleteHabito(id) {
+        async function deleteHabito(id) {
             if (!confirm('Tem certeza que deseja excluir este hábito?')) return;
             
+            try {
+                const { error } = await supabase
+                    .from('habitos')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+            
             allHabitos = allHabitos.filter(h => h.id !== id);
-            saveHabitos();
-            loadHabitos();
+                filteredHabitos = filteredHabitos.filter(h => h.id !== id);
+                await loadHabitos();
+            } catch (error) {
+                console.error('Erro ao excluir hábito:', error);
+                alert('Erro ao excluir hábito: ' + (error.message || 'Erro desconhecido'));
+            }
         }
 
-        function saveHabitos() {
-            localStorage.setItem('habitos', JSON.stringify(allHabitos));
-        }
-
-        document.getElementById('habitoForm')?.addEventListener('submit', (e) => {
+        document.getElementById('habitoForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const id = document.getElementById('habitoId').value;
@@ -23480,24 +23977,44 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
                 frequencia: document.getElementById('habitoFrequencia').value,
                 meta: parseInt(document.getElementById('habitoMeta').value) || 1,
                 data_inicio: document.getElementById('habitoDataInicio').value || new Date().toISOString().split('T')[0],
-                status: 'ativo',
-                registros: []
+                status: 'ativo'
             };
 
+            try {
             if (id) {
-                const index = allHabitos.findIndex(h => h.id === id);
-                if (index !== -1) {
-                    allHabitos[index] = { ...allHabitos[index], ...habitoData, registros: allHabitos[index].registros || [] };
-                }
-            } else {
-                habitoData.id = 'habito_' + Date.now();
-                allHabitos.push(habitoData);
-            }
+                    // Manter registros existentes
+                    const habitoExistente = allHabitos.find(h => h.id === id);
+                    if (habitoExistente && habitoExistente.registros) {
+                        habitoData.registros = habitoExistente.registros;
+                    } else {
+                        habitoData.registros = [];
+                    }
 
-            saveHabitos();
+                    // Atualizar
+                    const { error } = await supabase
+                        .from('habitos')
+                        .update(habitoData)
+                        .eq('id', id);
+                    
+                    if (error) throw error;
+                    alert('Hábito atualizado com sucesso!');
+            } else {
+                    // Criar novo
+                    habitoData.registros = [];
+                    const { error } = await supabase
+                        .from('habitos')
+                        .insert([habitoData]);
+                    
+                    if (error) throw error;
+                    alert('Hábito criado com sucesso!');
+                }
+
             closeHabitoModal();
-            loadHabitos();
-            alert('Hábito salvo com sucesso!');
+                await loadHabitos();
+            } catch (error) {
+                console.error('Erro ao salvar hábito:', error);
+                alert('Erro ao salvar hábito: ' + (error.message || 'Erro desconhecido'));
+            }
         });
 
         // ========== ANÁLISES AVANÇADAS ==========
@@ -24550,8 +25067,12 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
             orionSpeak(randomMessage);
         }
 
-        // Toggle voz do Orion
+        // Toggle voz do Orion - DESATIVADO
         function toggleOrionVoice() {
+            // Funcionalidade de voz desativada
+            console.log('Funcionalidade de voz desativada');
+            return;
+            
             if (orionIsActive) {
                 deactivateOrion();
             } else {
@@ -25124,11 +25645,11 @@ Em caso de não conformidade, a CONTRATADA se compromete a corrigir os problemas
                 localStorage.setItem('orion_habits', JSON.stringify(orionHabits));
             }
 
-            // Inicializar sistema de voz (verificar compatibilidade)
-            const voiceInitialized = initOrionVoice();
-            if (voiceInitialized) {
-                loadOrionVoices();
-            }
+            // Sistema de voz DESATIVADO
+            // const voiceInitialized = initOrionVoice();
+            // if (voiceInitialized) {
+            //     loadOrionVoices();
+            // }
             updateOrionUI();
         }
 
